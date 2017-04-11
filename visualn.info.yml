@@ -1,0 +1,5 @@
+name: VisualN
+type: module
+description: Data visualization api
+core: 8.x
+package: VisualN

@@ -1,0 +1,16 @@
+# @todo: Fill-in the file. See image.schema.yml for reference
+
+visualn.visualn_style.*:
+  type: config_entity
+  label: 'VisualN style config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+    drawer:
+      type: serial

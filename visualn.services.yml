@@ -1,0 +1,13 @@
+services:
+  plugin.manager.visualn.drawer:
+    class: Drupal\visualn\Plugin\VisualNDrawerManager
+    parent: default_plugin_manager
+  plugin.manager.visualn.mapper:
+    class: Drupal\visualn\Plugin\VisualNMapperManager
+    parent: default_plugin_manager
+  plugin.manager.visualn.adapter:
+    class: Drupal\visualn\Plugin\VisualNAdapterManager
+    parent: default_plugin_manager
+  plugin.manager.visualn.manager:
+    class: Drupal\visualn\Plugin\VisualNManagerManager
+    parent: default_plugin_manager

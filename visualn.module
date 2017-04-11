@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Contains visualn.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\visualn\Entity\VisualNStyle;
+use Drupal\Core\Template\Attribute;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_help().
+ */
+function visualn_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the visualn module.
+    case 'help.page.visualn':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Data visualization api') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Gets an array of image styles suitable for using as select list options.
+ *
+ * @param $include_empty
+ *   If TRUE a '- None -' option will be inserted in the options array.
+ * @return
+ *   Array of image styles both key and value are set to style name.
+ */
+function visualn_style_options($include_empty = TRUE) {
+  $styles = VisualNStyle::loadMultiple();
+  $options = array();
+  if ($include_empty && !empty($styles)) {
+    $options[''] = t('- None -');
+  }
+  foreach ($styles as $name => $style) {
+    $options[$name] = $style->label();
+  }
+
+  if (empty($options)) {
+    $options[''] = t('No defined styles');
+  }
+  return $options;
+}
+

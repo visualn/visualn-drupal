@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains visualn_resource.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function visualn_resource_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the visualn_resource module.
+    case 'help.page.visualn_resource':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('VisualN support for url resources') . '</p>';
+      return $output;
+
+    default:
+  }
+}

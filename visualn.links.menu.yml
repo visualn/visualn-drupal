@@ -1,0 +1,7 @@
+entity.visualn_style.collection:
+  title: 'Visualization styles'
+  route_name: entity.visualn_style.collection
+  description: 'List Visualization styles'
+  parent: system.admin_config_media
+  weight: 99
+
