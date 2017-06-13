@@ -29,6 +29,18 @@
       sourceD3.push(item);
     });
 
+    // attach link to show/hide results
+    $("." + html_selector + " .view-content").hide();
+    var toggleResultsLink = $( "<div><a href=''>show results</a></div>" );
+    toggleResultsLink.click(function(e){
+      e.preventDefault();
+      $("." + html_selector + " .view-content").toggle( "slow", function() {
+        var linkText = $(this).is(':visible') ? 'hide results' : 'show results';
+        toggleResultsLink.find('a').text(linkText);
+      });
+    });
+    $("." + html_selector + " .view-content").before(toggleResultsLink);
+
     var data = sourceD3;
     managerCallback(data);
     return sourceD3;
