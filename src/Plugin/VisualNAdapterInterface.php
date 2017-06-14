@@ -7,16 +7,6 @@ namespace Drupal\visualn\Plugin;
  */
 interface VisualNAdapterInterface extends VisualNPluginInterface {
 
-
-  /**
-   * Attach adapter libraries to render array.
-   *
-   * @param array $build
-   *
-   * @param array $options
-   */
-  public function prepareBuild(array &$build, array $options = []);
-
   /**
    * Get adapter plugin info. Includes data output type etc.
    *

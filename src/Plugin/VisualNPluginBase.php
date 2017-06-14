@@ -12,6 +12,12 @@ abstract class VisualNPluginBase extends PluginBase implements VisualNPluginInte
   /**
    * @inheritdoc
    */
+  public function prepareBuild(array &$build, array $options = []) {
+  }
+
+  /**
+   * @inheritdoc
+   */
   public function jsId() {
     return $this->getPluginId();
   }

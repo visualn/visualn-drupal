@@ -7,13 +7,6 @@ namespace Drupal\visualn\Plugin;
  */
 abstract class VisualNMapperBase extends VisualNPluginBase implements VisualNMapperInterface {
 
-
-  /**
-   * @inheritdoc
-   */
-  public function prepareBuild(array &$build, array $options = []) {
-  }
-
   /**
    * @inheritdoc
    */

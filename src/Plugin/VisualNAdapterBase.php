@@ -7,13 +7,6 @@ namespace Drupal\visualn\Plugin;
  */
 abstract class VisualNAdapterBase extends VisualNPluginBase implements VisualNAdapterInterface {
 
-
-  /**
-   * @inheritdoc
-   */
-  public function prepareBuild(array &$build, array $options = []) {
-  }
-
   /**
    * @inheritdoc
    */

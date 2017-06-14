@@ -19,15 +19,6 @@ interface VisualNDrawerInterface extends VisualNPluginInterface {
   public function prepareJSCofig(array &$drawer_config);
 
   /**
-   * Attach drawer libraries to render array.
-   *
-   * @param array $build
-   *
-   * @param array $options
-   */
-  public function prepareBuild(array &$build, array $options = []);
-
-  /**
    * Get Drawer default configuration for config form.
    *
    * @return array $config

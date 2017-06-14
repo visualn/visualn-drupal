@@ -10,6 +10,15 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 interface VisualNPluginInterface extends PluginInspectionInterface {
 
   /**
+   * Attach plugin libraries and settings to render array.
+   *
+   * @param array $build
+   *
+   * @param array $options
+   */
+  public function prepareBuild(array &$build, array $options = []);
+
+  /**
    * Get plugin jsId.
    * Plugin jsId is used in plugin (drawer, mapper, adapter) js script to identify its function object.
    *

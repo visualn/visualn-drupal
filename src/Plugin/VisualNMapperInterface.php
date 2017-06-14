@@ -7,16 +7,6 @@ namespace Drupal\visualn\Plugin;
  */
 interface VisualNMapperInterface extends VisualNPluginInterface {
 
-
-  /**
-   * Attach mapper libraries to render array.
-   *
-   * @param array $build
-   *
-   * @param array $options
-   */
-  public function prepareBuild(array &$build, array $options = []);
-
   /**
    * Get mapper plugin info. Includes data input and output types etc.
    *
