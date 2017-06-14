@@ -2,25 +2,16 @@
 
 namespace Drupal\visualn\Plugin;
 
-use Drupal\Component\Plugin\PluginBase;
-
 /**
  * Base class for VisualN Adapter plugins.
  */
-abstract class VisualNAdapterBase extends PluginBase implements VisualNAdapterInterface {
+abstract class VisualNAdapterBase extends VisualNPluginBase implements VisualNAdapterInterface {
 
 
   /**
    * @inheritdoc
    */
   public function prepareBuild(array &$build, array $options = []) {
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function jsId() {
-    return $this->getPluginId();
   }
 
   /**

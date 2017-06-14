@@ -2,14 +2,13 @@
 
 namespace Drupal\visualn\Plugin;
 
-use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\visualn\Entity\VisualNStyleInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines an interface for VisualN Drawer plugins.
  */
-interface VisualNDrawerInterface extends PluginInspectionInterface {
+interface VisualNDrawerInterface extends VisualNPluginInterface {
 
   /**
    * Modify drawer_config before attaching to js settings.
@@ -65,14 +64,6 @@ interface VisualNDrawerInterface extends PluginInspectionInterface {
    * @return array $drawer_config_values
    */
   public function extractConfigArrayValues(array $values, array $array_parents);
-
-  /**
-   * Get drawer jsId.
-   * Drawer jsId is used in drawer js script to identify drawer function.
-   *
-   * @return string $js_id
-   */
-  public function jsId();
 
   /**
    * Return a list of data keys used by the drawer script.

@@ -3,14 +3,13 @@
 namespace Drupal\visualn\Plugin;
 
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Component\Plugin\PluginBase;
 use Drupal\visualn\Entity\VisualNStyleInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Base class for VisualN Drawer plugins.
  */
-abstract class VisualNDrawerBase extends PluginBase implements VisualNDrawerInterface {
+abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDrawerInterface {
 
   /**
    * @inheritdoc
@@ -61,13 +60,6 @@ abstract class VisualNDrawerBase extends PluginBase implements VisualNDrawerInte
   public function extractConfigArrayValues(array $values, array $array_parents) {
     $values = NestedArray::getValue($values, $array_parents);
     return !empty($values) ? $values : [];
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function jsId() {
-    return $this->getPluginId();
   }
 
   /**
