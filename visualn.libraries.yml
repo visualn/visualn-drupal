@@ -54,4 +54,5 @@ visualn-core:
     js/visualn-core.js: {}
   dependencies:
     - core/jquery
+    - core/jquery.once
 
