@@ -31,4 +31,18 @@ class VisualNMapper extends Plugin {
    */
   public $label;
 
+  /**
+   * The data input type of the plugin.
+   *
+   * @var string
+   */
+  public $input = 'visualn_generic';
+
+  /**
+   * The data output type of the plugin.
+   *
+   * @var string
+   */
+  public $output = 'visualn_generic';
+
 }
