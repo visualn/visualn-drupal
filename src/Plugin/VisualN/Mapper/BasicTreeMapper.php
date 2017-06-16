@@ -10,9 +10,18 @@ use Drupal\visualn\Plugin\VisualNMapperBase;
  * @VisualNMapper(
  *  id = "visualn_basic_tree",
  *  label = @Translation("Basic Tree Mapper"),
+ *  input = "visualn_basic_tree_input",
+ *  output = "visualn_generic_output",
  * )
  */
 class BasicTreeMapper extends VisualNMapperBase {
+
+  // used to build mapper plugins chain
+  // @todo: find better terms here instead of input and output keys
+  //    because this leads to misunderstanding
+  // @todo: maybe this should return arrays (optional) to support multiple
+  //    input and output format types (e.g. visualn_generic_input and visualn_generic_output for "output" key), or provide groups of formats structures somewhere else
+  // @todo: e.g. visualn_plain -> visualn_plain with/without keys remapping/renaming
 
   /**
    * {@inheritdoc}
@@ -72,23 +81,6 @@ class BasicTreeMapper extends VisualNMapperBase {
    */
   public function jsId() {
     return 'visualnBasicTreeMapper';
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function getInfo() {
-    // used to build mapper plugins chain
-    // @todo: find better terms here instead of input and output keys
-    //    because this leads to misunderstanding
-    // @todo: maybe this should return arrays (optional) to support multiple
-    //    input and output format types (e.g. visualn_generic_input and visualn_generic_output for "output" key), or provide groups of formats structures somewhere else
-    // @todo: e.g. visualn_plain -> visualn_plain with/without keys remapping/renaming
-    return [
-      'input' => 'visualn_basic_tree_input',
-      'output' => 'visualn_generic_output',
-      //'output' => 'visualn_generic_input',
-    ];
   }
 
 }

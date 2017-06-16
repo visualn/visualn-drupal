@@ -10,6 +10,8 @@ use Drupal\visualn\Plugin\VisualNMapperBase;
  * @VisualNMapper(
  *  id = "visualn_default",
  *  label = @Translation("Default Mapper"),
+ *  input =  "visualn_generic_input",
+ *  output =  "visualn_generic_output",
  * )
  */
 class DefaultMapper extends VisualNMapperBase {
@@ -36,16 +38,6 @@ class DefaultMapper extends VisualNMapperBase {
    */
   public function jsId() {
     return 'visualnDefaultMapper';
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function getInfo() {
-    return [
-      'input' => 'visualn_generic_input',
-      'output' => 'visualn_generic_output',
-    ];
   }
 
 }

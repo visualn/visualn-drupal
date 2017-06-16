@@ -10,9 +10,12 @@ use Drupal\visualn\Plugin\VisualNAdapterBase;
  * @VisualNAdapter(
  *  id = "visualn_html_views_default",
  *  label = @Translation("Html Views Default Adapter"),
+ *  output = "visualn_generic_input",
  * )
  */
 class HtmlViewsDefaultAdapter extends VisualNAdapterBase {
+  // It is supposed that the adapter doesn't need mapper (since it does it mapping by itself)
+  // see 'output' property in plugin definition.
 
 
   /**
@@ -36,17 +39,6 @@ class HtmlViewsDefaultAdapter extends VisualNAdapterBase {
    */
   public function jsId() {
     return 'visualnHtmlViewsDefaultAdapter';
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function getInfo() {
-    $info = parent::getInfo();
-    // It is supposed that the adapter doesn't need mapper (since it does it mapping by itself)
-    $info['output'] = 'visualn_generic_input';
-
-    return $info;
   }
 
 }

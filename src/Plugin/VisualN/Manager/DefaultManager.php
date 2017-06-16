@@ -192,8 +192,8 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
         $chain['adapter'][] = $adapter_plugin;
 
         // get mapper for drawer-adapter pair
-        $input = $drawer->getInfo()['input'];
-        $output = $adapter_plugin->getInfo()['output'];
+        $input = $drawer->getPluginDefinition()['input'];
+        $output = $adapter_plugin->getPluginDefinition()['output'];
         if ($input == $output) {
           $mapper_plugin_id = '';
         }

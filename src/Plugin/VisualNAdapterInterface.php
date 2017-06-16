@@ -7,11 +7,4 @@ namespace Drupal\visualn\Plugin;
  */
 interface VisualNAdapterInterface extends VisualNPluginInterface {
 
-  /**
-   * Get adapter plugin info. Includes data output type etc.
-   *
-   * @return array $adapter_info
-   */
-  public function getInfo();
-
 }

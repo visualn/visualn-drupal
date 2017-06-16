@@ -72,11 +72,4 @@ interface VisualNDrawerInterface extends VisualNPluginInterface {
    */
   public function dataKeysStructure();
 
-  /**
-   * Get drawer plugin info. Includes data input type etc.
-   *
-   * @return array $drawer_info
-   */
-  public function getInfo();
-
 }

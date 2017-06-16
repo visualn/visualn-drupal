@@ -43,7 +43,8 @@ class VisualNDrawer extends Plugin {
    *
    * @var string
    */
-  public $input = 'visualn_generic';
+  public $input = 'visualn_generic_input';
+  //public $input = 'visualn_generic';
 
   /**
    * The data output type of the plugin. Generally, not used.

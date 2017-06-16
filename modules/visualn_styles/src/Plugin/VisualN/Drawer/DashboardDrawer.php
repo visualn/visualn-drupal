@@ -16,6 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @VisualNDrawer(
  *  id = "visualn_dashboard",
  *  label = @Translation("Dashboard"),
+ *  input = "visualn_basic_tree_input",
  * )
  */
 class DashboardDrawer extends VisualNDrawerBase {
@@ -67,15 +68,6 @@ class DashboardDrawer extends VisualNDrawerBase {
         ],
       ],
     ];
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function getInfo() {
-    $info = parent::getInfo();
-    $info['input'] = 'visualn_basic_tree_input';
-    return $info;
   }
 
 }

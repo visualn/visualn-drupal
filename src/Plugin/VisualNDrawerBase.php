@@ -80,14 +80,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
     return [];
   }
 
-  /**
-   * @inheritdoc
-   */
-  public function getInfo() {
-    return [
-      // @todo: should it be d3.js or just a generic js object?
-      'input' => 'visualn_generic_input', // this input type represents a generic d3.js object with correctly mapped data keys
-    ];
-  }
+  // @todo: should it be d3.js or just a generic js object?
+  //'input' =>$this->pluginDefinition['input'], // this input type represents a generic d3.js object with correctly mapped data keys
 
 }

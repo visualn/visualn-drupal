@@ -36,13 +36,14 @@ class VisualNAdapter extends Plugin {
    *
    * @var string
    */
-  public $input = 'visualn_generic';
+  public $input = '';
 
   /**
    * The data output type of the plugin.
    *
    * @var string
    */
-  public $output = 'visualn_generic';
+  public $output = 'visualn_generic_output';
+  //public $output = 'visualn_generic_unmapped';
 
 }

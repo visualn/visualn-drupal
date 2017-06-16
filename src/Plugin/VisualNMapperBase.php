@@ -18,14 +18,4 @@ abstract class VisualNMapperBase extends VisualNPluginBase implements VisualNMap
     $build['#attached']['drupalSettings']['visualn']['handlerItems']['mappers'][$mapper_js_id][$vuid] = $vuid;  // @todo: this settings is just for reference
   }
 
-  /**
-   * @inheritdoc
-   */
-  public function getInfo() {
-    return [
-      'input' => '',
-      'output' => '',
-    ];
-  }
-
 }
