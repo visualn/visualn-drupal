@@ -1,5 +1,5 @@
 VisualN Style
-Config entity that attaches plugins to fields and views.
+Config entity that attaches drawer plugins to fields and views.
 
 There are four types of components: Drawer, Mapper, Adapter and Manager. Drawer can be considered the central place where visualization drawing occurs.
 Each component generally consists of two files - a drupal plugin of a certain type and a js file. If needed, css files and other media may be included.

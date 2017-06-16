@@ -18,6 +18,9 @@ class DefaultMapper extends VisualNMapperBase {
    * {@inheritdoc}
    */
   public function prepareBuild(array &$build, array $options = []) {
+    // Attach drawer config to js settings
+    parent::prepareBuild($build, $options);
+
     $vuid = $options['vuid'];
 
     // mapper specific js settings

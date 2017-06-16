@@ -21,6 +21,9 @@ class FileGenericDefaultAdapter extends VisualNAdapterBase {
    * @inheritdoc
    */
   public function prepareBuild(array &$build, array $options = []) {
+    // Attach drawer config to js settings
+    parent::prepareBuild($build, $options);
+
     $url = $options['adapter_settings']['file_url'];
     $vuid = $options['vuid'];
 

@@ -19,6 +19,9 @@ class HtmlViewsDefaultAdapter extends VisualNAdapterBase {
    * @inheritdoc
    */
   public function prepareBuild(array &$build, array $options = []) {
+    // Attach drawer config to js settings
+    parent::prepareBuild($build, $options);
+
     $vuid = $options['vuid'];
 
     // adapter specific js settings

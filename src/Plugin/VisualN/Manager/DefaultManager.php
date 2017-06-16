@@ -10,6 +10,7 @@ use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNAdapterManager;
 use Drupal\visualn\Plugin\VisualNMapperManager;
 use Drupal\visualn\Entity\VisualNStyle;
+use Drupal\visualn\Plugin\VisualNDrawerInterface;
 
 /**
  * Provides a 'Default Manager' VisualN manager.
@@ -86,6 +87,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
    */
   public function prepareBuild(array &$build, $options = []) {
     // @todo: visualn-core.js should be attached before other visualn js scripts (drawers, mappers, adapters, managers)
+    // @todo: move into base class or even into dependencies for manager js script and attach it here instead of end of method function
     $build['#attached']['library'][] = 'visualn/visualn-core';
     $vuid = $options['vuid'];
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
@@ -100,46 +102,43 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
       'adapter_settings' => [],  // optional (in some cases, e.g. file_csv, it is needed to pass file url)
     ];
     // @todo: do we really need style_id here? maybe just pass drawer_plugin_id or both
+    //  manager needs to know nothing about the visualn style
     $visualn_style_id = $options['style_id'];
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
     if (empty($visualn_style)) {
       return;
     }
 
-    $chain = $this->composePluginsChain($visualn_style, $options);
+    $chain = ['drawer' => [], 'mapper' => [], 'adapter' => []];
+    // @todo: maybe create an intermediary "drawing info" object and pass to chaing builder
+    // @todo: there may be different input_options required for different adapters (and other plugin types)
+    // @todo: do we have chain_plugins_configs here? i.e. in case chain is built for the first time
+    //    is chain stored anywhere (in config settings)?
+    $drawer = $this->visualNDrawerManager->createInstance($visualn_style->getDrawerId(), $options['drawer_config']);
+
+    //$chain = $this->composePluginsChain($drawer, $input_type, $input_data);
+    $chain = $this->composePluginsChain($drawer, $options['adapter_group'], []); // $drawer, $input_type, $input_options
     // processPluginsChain()
 
-    $drawer_plugin = $chain['drawer'][0];
+    // generally this should be the same drawer as passed into composerPluginsChain()
+    $drawer = $chain['drawer'][0];
 
     // options contain vuid (which is required) and also other plugins (adapter, mapper) settings in case drawer
     // needs them
-    $drawer_plugin->prepareBuild($build, $options);
-
-    $drawer_js_id = $drawer_plugin->jsId();  // defaults to plugin id if not overriden in drawer plugin class.
-    $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['drawerId'] = $drawer_js_id;
-    $build['#attached']['drupalSettings']['visualn']['handlerItems']['drawings'][$drawer_js_id][$vuid] = $vuid;  // @todo: this settings is just for reference
+    // @todo: pass $vuid as an argument to ::prepareBuild()
+    $drawer->prepareBuild($build, $options);
 
     // this can be required by mappers (e.g. basic_tree_mapper)
-    $options['data_keys_structure'] = $drawer_plugin->dataKeysStructure();
+    $options['data_keys_structure'] = $drawer->dataKeysStructure();
 
-    // @todo: use foreach()
-    if (!empty($chain['adapter'])) {
-      $adapter_plugin = $chain['adapter'][0];
-      $adapter_plugin->prepareBuild($build, $options);
+    // @todo: also include 'drawer' into array_merge()
+    // $chain = array_merge($chain['drawer'], $chain['adapter'], $chain['mapper']);
 
-      $adapter_js_id = $adapter_plugin->jsId();  // defaults to plugin id if not overriden in drawer plugin class.
-      $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['adapterId'] = $adapter_js_id;
-      $build['#attached']['drupalSettings']['visualn']['handlerItems']['adapters'][$adapter_js_id][$vuid] = $vuid;  // @todo: this settings is just for reference
-    }
-
-    // @todo: use foreach()
-    if (!empty($chain['mapper'])) {
-      $mapper_plugin = $chain['mapper'][0];
-      $mapper_plugin->prepareBuild($build, $options);
-
-      $mapper_js_id = $mapper_plugin->jsId();  // defaults to plugin id if not overriden in drawer plugin class.
-      $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['mapper']['mapperId'] = $mapper_js_id;
-      $build['#attached']['drupalSettings']['visualn']['handlerItems']['mappers'][$mapper_js_id][$vuid] = $vuid;  // @todo: this settings is just for reference
+    // @todo: so there should be a special object that collects data from each plugin (e.g. for data_keys_structure)
+    $chain = array_merge($chain['adapter'], $chain['mapper']);
+    // generally there is one plugin of a kind
+    foreach ($chain as $chain_plugin) {
+      $chain_plugin->prepareBuild($build, $options);
     }
 
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['html_selector'] = $options['html_selector'];
@@ -154,24 +153,27 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
    * @todo: move to interface
    * @todo: and maybe rename
    * @todo: remove options from arguments
+   *
+   * @todo: pass input (array ['type', 'data']) and output as arguments
+   * @todo: cache chains
    */
-  public function composePluginsChain(VisualNStyle $visualn_style, array $options) {
+  protected function composePluginsChain(VisualNDrawerInterface $drawer, $input_type, array $input_options) {
     $chain = [
       'drawer' => [],
       'mapper' => [],
       'adapter' => [],
     ];
+
     // Apply style drawer to the view output.
-    $drawer_plugin_id = $visualn_style->getDrawerId();
+
     // pass final config to drawer plugin to attach required js properties to the form and maybe make some
     // other changes to the resulting element markup
-    $drawer_config = $options['drawer_config'];
-    $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
-    $chain['drawer'][] = $drawer_plugin;
+
+    $chain['drawer'][] = $drawer;
 
 
     // @todo: add a hook so that new adapter groups could be registered or altered (e.g. group default adapter)
-    $adapter_group = $options['adapter_group'];
+    $adapter_group = $input_type;
     if ($adapter_group) {
       $adapter_plugin_id = '';
       // @todo: there should be a 'none' or FALSE/Null option if drawer doesn't use an adapter
@@ -190,7 +192,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
         $chain['adapter'][] = $adapter_plugin;
 
         // get mapper for drawer-adapter pair
-        $input = $drawer_plugin->getInfo()['input'];
+        $input = $drawer->getInfo()['input'];
         $output = $adapter_plugin->getInfo()['output'];
         if ($input == $output) {
           $mapper_plugin_id = '';
