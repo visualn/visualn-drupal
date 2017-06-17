@@ -19,11 +19,9 @@ class DefaultMapper extends VisualNMapperBase {
   /**
    * {@inheritdoc}
    */
-  public function prepareBuild(array &$build, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, array $options = []) {
     // Attach drawer config to js settings
-    parent::prepareBuild($build, $options);
-
-    $vuid = $options['vuid'];
+    parent::prepareBuild($build, $vuid, $options);
 
     // mapper specific js settings
     $dataKeysMap = $options['drawer_fields'];  // here need both keys and values for remapping values

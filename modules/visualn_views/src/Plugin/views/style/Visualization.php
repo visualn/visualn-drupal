@@ -272,8 +272,8 @@ class Visualization extends StylePluginBase {
     $drawer_plugin_id = $visualn_style->getDrawerId();
     $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
     // @todo: pass options as part of $manager_config (?)
+    $vuid = $this->getVuid();
     $options = [
-      'vuid' => $this->getVuid(),
       'style_id' => $visualn_style_id,
       // @todo: maybe move into 'drawer_settings'
       // @todo: compare with the same row in VisualNFormatterSettingsTrait::visualnViewElements()
@@ -284,7 +284,7 @@ class Visualization extends StylePluginBase {
     ];
 
     // add selector for the drawing
-    $html_selector = 'js-visualn-selector-views-html--' . $this->view->id() . '--' . substr($options['vuid'], 0, 8);
+    $html_selector = 'js-visualn-selector-views-html--' . $this->view->id() . '--' . substr($vuid, 0, 8);
     $this->view->element['#attributes']['class'][] = $html_selector;
     $options['html_selector'] = $html_selector;  // where to attach drawing selector
 
@@ -292,7 +292,7 @@ class Visualization extends StylePluginBase {
     $manager_config = [];
     $manager_plugin = $this->visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
     // @todo: get mapping settings from style plugin object and pass to manager
-    $manager_plugin->prepareBuild($this->view->element, $options);
+    $manager_plugin->prepareBuild($this->view->element, $vuid, $options);
   }
 
   /**

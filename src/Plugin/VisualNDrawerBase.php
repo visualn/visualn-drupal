@@ -20,8 +20,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, array $options = []) {
-    $vuid = $options['vuid'];
+  public function prepareBuild(array &$build, $vuid, array $options = []) {
     $drawer_config =  $this->configuration + $this->getDefaultConfig();
     $this->prepareJSCofig($drawer_config);
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['config'] = $drawer_config;

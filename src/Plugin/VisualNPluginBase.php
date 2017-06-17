@@ -12,7 +12,7 @@ abstract class VisualNPluginBase extends PluginBase implements VisualNPluginInte
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, array $options = []) {
   }
 
   /**

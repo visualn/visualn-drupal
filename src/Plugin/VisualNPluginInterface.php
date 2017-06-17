@@ -14,9 +14,11 @@ interface VisualNPluginInterface extends PluginInspectionInterface {
    *
    * @param array $build
    *
+   * @param string $vuid
+   *
    * @param array $options
    */
-  public function prepareBuild(array &$build, array $options = []);
+  public function prepareBuild(array &$build, $vuid, array $options = []);
 
   /**
    * Get plugin jsId.

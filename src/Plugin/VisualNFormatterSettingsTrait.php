@@ -273,7 +273,7 @@ trait VisualNFormatterSettingsTrait {
       }
 
       // @todo: generate and set unique visualization (picture/canvas) id
-      $options['vuid'] = \Drupal::service('uuid')->generate();
+      $vuid = \Drupal::service('uuid')->generate();
 
       /*$file = $element['#file'];
       $url = $file->url();
@@ -283,14 +283,14 @@ trait VisualNFormatterSettingsTrait {
       // set additional options for the formatter type for each single delta (can be overridden by the formatter)
       $options = $this->visualnViewElementsOptionsEach($element, $options);
       // add selector for the drawing
-      $html_selector = 'js-visualn-selector-file--' . $delta . '--' . substr($options['vuid'], 0, 8);
+      $html_selector = 'js-visualn-selector-file--' . $delta . '--' . substr($vuid, 0, 8);
       //$elements[$delta]['#attributes']['class'][] = $html_selector;
       $elements[$delta]['#suffix'] = isset($elements[$delta]['#suffix']) ? $elements[$delta]['#suffix'] : '';
       $elements[$delta]['#suffix'] .= "<div class='{$html_selector}'></div></div>";
       $options['html_selector'] = $html_selector;  // where to attach drawing selector
 
       // @todo: for different drawers there can be different managers
-      $manager_plugin->prepareBuild($elements[$delta], $options);
+      $manager_plugin->prepareBuild($elements[$delta], $vuid, $options);
     }
     return $elements;
   }

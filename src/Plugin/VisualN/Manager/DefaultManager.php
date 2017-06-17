@@ -85,16 +85,15 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
    * @todo: some or all options should be passed as part of manager_config (at least visualn_style_id)
    *  at plugin object instatiation
    */
-  public function prepareBuild(array &$build, $options = []) {
+  public function prepareBuild(array &$build, $vuid, $options = []) {
     // @todo: visualn-core.js should be attached before other visualn js scripts (drawers, mappers, adapters, managers)
     // @todo: move into base class or even into dependencies for manager js script and attach it here instead of end of method function
     $build['#attached']['library'][] = 'visualn/visualn-core';
-    $vuid = $options['vuid'];
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
     $manager_id = 'visualnDefaultManager';
     $build['#attached']['drupalSettings']['visualn']['handlerItems']['managers'][$manager_id][$vuid] = $vuid;  // @todo: this settings is just for reference
 
-    // required options: style_id, vuid, html_selector
+    // required options: style_id, html_selector
     // add optional options
     $options += [
       'adapter_group' => '',  // optional (drawer can perform adapter functionality by itself)
@@ -128,8 +127,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
 
     // options contain vuid (which is required) and also other plugins (adapter, mapper) settings in case drawer
     // needs them
-    // @todo: pass $vuid as an argument to ::prepareBuild()
-    $drawer->prepareBuild($build, $options);
+    $drawer->prepareBuild($build, $vuid, $options);
 
     // this can be required by mappers (e.g. basic_tree_mapper)
     $options['data_keys_structure'] = $drawer->dataKeysStructure();
@@ -142,7 +140,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     $chain = array_merge($chain['adapter'], $chain['mapper']);
     // generally there is one plugin of a kind
     foreach ($chain as $chain_plugin) {
-      $chain_plugin->prepareBuild($build, $options);
+      $chain_plugin->prepareBuild($build, $vuid, $options);
     }
 
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['html_selector'] = $options['html_selector'];

@@ -24,9 +24,9 @@ class StackedGroupedBarsDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, array $options = []) {
     // Attach drawer config to js settings
-    parent::prepareBuild($build, $options);
+    parent::prepareBuild($build, $vuid, $options);
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn_styles/stacked-grouped-bars';
   }
