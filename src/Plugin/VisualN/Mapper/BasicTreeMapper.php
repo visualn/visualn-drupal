@@ -10,8 +10,8 @@ use Drupal\visualn\Plugin\VisualNMapperBase;
  * @VisualNMapper(
  *  id = "visualn_basic_tree",
  *  label = @Translation("Basic Tree Mapper"),
- *  input = "visualn_basic_tree_input",
- *  output = "visualn_generic_output",
+ *  input = "visualn_generic_output",
+ *  output = "visualn_basic_tree_input",
  * )
  */
 class BasicTreeMapper extends VisualNMapperBase {

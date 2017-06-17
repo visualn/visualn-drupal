@@ -10,6 +10,7 @@ use Drupal\visualn\Plugin\VisualNAdapterBase;
  * @VisualNAdapter(
  *  id = "visualn_file_generic_default",
  *  label = @Translation("File Generic Default Adapter"),
+ *  input = "file_dsv",
  * )
  */
 class FileGenericDefaultAdapter extends VisualNAdapterBase {

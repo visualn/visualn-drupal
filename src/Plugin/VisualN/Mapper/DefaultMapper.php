@@ -10,8 +10,8 @@ use Drupal\visualn\Plugin\VisualNMapperBase;
  * @VisualNMapper(
  *  id = "visualn_default",
  *  label = @Translation("Default Mapper"),
- *  input =  "visualn_generic_input",
- *  output =  "visualn_generic_output",
+ *  input =  "visualn_generic_output",
+ *  output =  "visualn_generic_input",
  * )
  */
 class DefaultMapper extends VisualNMapperBase {

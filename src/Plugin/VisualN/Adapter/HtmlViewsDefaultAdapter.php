@@ -10,6 +10,7 @@ use Drupal\visualn\Plugin\VisualNAdapterBase;
  * @VisualNAdapter(
  *  id = "visualn_html_views_default",
  *  label = @Translation("Html Views Default Adapter"),
+ *  input = "html_views",
  *  output = "visualn_generic_input",
  * )
  */

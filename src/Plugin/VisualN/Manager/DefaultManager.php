@@ -109,7 +109,6 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
       return;
     }
 
-    $chain = ['drawer' => [], 'mapper' => [], 'adapter' => []];
     // @todo: maybe create an intermediary "drawing info" object and pass to chaing builder
     // @todo: there may be different input_options required for different adapters (and other plugin types)
     // @todo: do we have chain_plugins_configs here? i.e. in case chain is built for the first time
@@ -118,7 +117,11 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
 
     //$chain = $this->composePluginsChain($drawer, $input_type, $input_data);
     $chain = $this->composePluginsChain($drawer, $options['adapter_group'], []); // $drawer, $input_type, $input_options
-    // processPluginsChain()
+
+    // there could be now drawer after composing chain
+    if (empty($chain['drawer'])) {
+      return;
+    }
 
     // generally this should be the same drawer as passed into composerPluginsChain()
     $drawer = $chain['drawer'][0];
@@ -132,6 +135,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     $options['data_keys_structure'] = $drawer->dataKeysStructure();
 
     // @todo: also include 'drawer' into array_merge()
+    //    and decide which order is correct and if it matters at all
     // $chain = array_merge($chain['drawer'], $chain['adapter'], $chain['mapper']);
 
     // @todo: so there should be a special object that collects data from each plugin (e.g. for data_keys_structure)
@@ -150,99 +154,71 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
   /**
    * @inheritdoc
    *
-   * @todo: move to interface
-   * @todo: and maybe rename
-   * @todo: remove options from arguments
-   *
-   * @todo: pass input (array ['type', 'data']) and output as arguments
-   * @todo: cache chains
+   * @todo: move to interface and maybe rename
    */
   protected function composePluginsChain(VisualNDrawerInterface $drawer, $input_type, array $input_options) {
-    $chain = [
-      'drawer' => [],
-      'mapper' => [],
-      'adapter' => [],
-    ];
-
-    // Apply style drawer to the view output.
-
-    // pass final config to drawer plugin to attach required js properties to the form and maybe make some
-    // other changes to the resulting element markup
+    $chain = ['drawer' => [], 'mapper' => [], 'adapter' => []];
 
     $chain['drawer'][] = $drawer;
+    $drawer_input = $drawer->getPluginDefinition()['input'];
 
-
-    // @todo: add a hook so that new adapter groups could be registered or altered (e.g. group default adapter)
-    $adapter_group = $input_type;
-    if ($adapter_group) {
-      $adapter_plugin_id = '';
-      // @todo: there should be a 'none' or FALSE/Null option if drawer doesn't use an adapter
-      switch ($adapter_group) {
-        case 'html_views' :
-          $adapter_plugin_id = 'visualn_html_views_default'; // default adapter for "html_views" adapter group
-          break;
-        case 'file_dsv' : // delimiter separated values file
-          $adapter_plugin_id = 'visualn_file_generic_default'; // default adapter for "file_csv" adapter group
-          break;
+    // get all adapter candidates
+    $matched_adapters = [];
+    $adapterDefinitions = $this->visualNAdapterManager->getDefinitions();
+    foreach ($adapterDefinitions as $adapter_id => $definition) {
+      if ($definition['input'] == $input_type) {
+        $matched_adapters[$adapter_id] = $definition['output'];
       }
+    }
 
-      if ($adapter_plugin_id) {
-        $adapter_config = [];  // @todo:
-        $adapter_plugin = $this->visualNAdapterManager->createInstance($adapter_plugin_id, $adapter_config);
-        $chain['adapter'][] = $adapter_plugin;
+    // get all mapper candidates
+    $matched_mappers = [];
+    $mapperDefinitions = $this->visualNMapperManager->getDefinitions();
+    foreach ($mapperDefinitions as $mapper_id => $definition) {
+      if ($definition['output'] == $drawer_input) {
+        $matched_mappers[$mapper_id] = $definition['input'];
+      }
+    }
 
-        // get mapper for drawer-adapter pair
-        $input = $drawer->getPluginDefinition()['input'];
-        $output = $adapter_plugin->getPluginDefinition()['output'];
-        if ($input == $output) {
-          $mapper_plugin_id = '';
+    // choose matching adapters and mappers for the chain
+    $adapter_id = $mapper_id = NULL;
+    $array_intersect = array_unique(array_values(array_intersect($matched_adapters, $matched_mappers)));
+    if (!empty($array_intersect)) {
+      // @todo: there should be some criteria to choose an optimal chain but not just the first matched
+      $join_type = $array_intersect[0];
+      $adapter_id  = array_search($join_type, $matched_adapters);
+      $mapper_id = array_search($join_type, $matched_mappers);
+      $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
+      $chain['mapper'][] = $this->visualNMapperManager->createInstance($mapper_id, []);
+    }
+    else {
+      if (!empty($matched_adapters) || !empty($matched_mappers)) {
+        // @todo: there is a question which one to choose
+        //  here we may have two possibilities: an adapter or a mapper serves as both, adapter and mapper
+        //  first check adapters
+        $result_adapters = array_keys($matched_adapters, $drawer_input);
+        if (!empty($result_adapters)) {
+          $adapter_id = $result_adapters[0];
+          $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
         }
         else {
-          // @todo: mapper depends on input and output
-          $mapper_plugin_id = 'visualn_default';
-          // @todo: get mappers chain
-          $mappers_chain = $this->buildMappersChain($output, $input);
-          if (!empty($mappers_chain)) {
-            // @todo: actually all the chain should be used
-            $mapper_plugin_id = $mappers_chain[0];
+          $result_mappers = array_keys($matched_mappers, $drawer_input);
+          if (!empty($result_mappers)) {
+            $mapper_id = $result_mappers[0];
+            $chain['mapper'][] = $this->visualNMapperManager->createInstance($mapper_id, []);
           }
-          else {
-            // @todo: this is supposed to be an error
-            $mapper_plugin_id = '';
-          }
-        }
-        // we don't need a mapper if adapter isn't used
-        if (!empty($mapper_plugin_id)) {
-          // @todo: check if config is needed
-          $mapper_config = [];
-          //$mapper_plugin_id = 'visualn_default';
-          $mapper_plugin = $this->visualNMapperManager->createInstance($mapper_plugin_id, $mapper_config);
-          $chain['mapper'][] = $mapper_plugin;
         }
       }
+    }
 
+    // if source output is equal to drawer input (e.g. no need in mapper or adapter)
+    // else empty the chain (no drawing will be drawn)
+    if (empty($chain['adapter']) && empty($chain['mapper']) && $drawer_input != $input_type) {
+      $chain = ['drawer' => [], 'mapper' => [], 'adapter' => []];
     }
-    return $chain;
-  }
 
-  /**
-   * @inheritdoc
-   *
-   * @todo: move to interface
-   * @todo: or buildMappersChain()
-   */
-  public function buildMappersChain($output, $input) {
-    // @todo:
-    $chain = [];
-    if ($input == $output) {
-      // @todo:
-    }
-    elseif($input == 'visualn_generic_input' && $output == 'visualn_generic_output') {
-      $chain[] = 'visualn_default';
-    }
-    elseif($input == 'visualn_basic_tree_input' && $output == 'visualn_generic_output') {
-      $chain[] = 'visualn_basic_tree';
-    }
+    // @todo: cache chains
+
     return $chain;
   }
 
