@@ -28,6 +28,8 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
     $drawer_js_id = $this->jsId();  // defaults to plugin id if not overriden in drawer plugin class.
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['drawerId'] = $drawer_js_id;
     $build['#attached']['drupalSettings']['visualn']['handlerItems']['drawings'][$drawer_js_id][$vuid] = $vuid;  // @todo: this settings is just for reference
+
+    $build['#visualn']['drawing_info']['data_keys_structure'] = $this->dataKeysStructure();
   }
 
   /**

@@ -108,7 +108,6 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
       return;
     }
 
-    // @todo: maybe create an intermediary "drawing info" object and pass to chaing builder
     // @todo: there may be different input_options required for different adapters (and other plugin types)
     // @todo: do we have chain_plugins_configs here? i.e. in case chain is built for the first time
     //    is chain stored anywhere (in config settings)?
@@ -123,22 +122,18 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     }
 
     // generally this should be the same drawer as passed into composerPluginsChain()
-    $drawer = $chain['drawer'][0];
+    //$drawer = $chain['drawer'][0];
 
-    // options contain vuid (which is required) and also other plugins (adapter, mapper) settings in case drawer
-    // needs them
-    $drawer->prepareBuild($build, $vuid, $options);
-
+    // @todo: maybe rename to 'chain_info'
+    // '#visualn' array collects data from each plugin (e.g. for data_keys_structure)
     // this can be required by mappers (e.g. basic_tree_mapper)
-    $options['data_keys_structure'] = $drawer->dataKeysStructure();
+    $build['#visualn'] = ['drawing_info' => ['data_keys_structure' => []]];
 
-    // @todo: also include 'drawer' into array_merge()
-    //    and decide which order is correct and if it matters at all
-    // $chain = array_merge($chain['drawer'], $chain['adapter'], $chain['mapper']);
+    // options contain other plugins (adapter, mapper) settings in case drawer needs them
 
-    // @todo: so there should be a special object that collects data from each plugin (e.g. for data_keys_structure)
-    $chain = array_merge($chain['adapter'], $chain['mapper']);
-    // generally there is one plugin of a kind
+    // @todo: decide which order is correct and if it matters at all
+    $chain = array_merge($chain['drawer'], $chain['adapter'], $chain['mapper']);
+    // generally there is one plugin of each kind
     foreach ($chain as $chain_plugin) {
       $chain_plugin->prepareBuild($build, $vuid, $options);
     }
