@@ -124,19 +124,52 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     // generally this should be the same drawer as passed into composerPluginsChain()
     //$drawer = $chain['drawer'][0];
 
-    // @todo: maybe rename to 'chain_info'
-    // '#visualn' array collects data from each plugin (e.g. for data_keys_structure)
-    // this can be required by mappers (e.g. basic_tree_mapper)
-    $build['#visualn'] = ['drawing_info' => ['data_keys_structure' => []]];
+    // The $build['#visualn'] array collects data from each plugin (e.g. for data_keys_structure) since
+    // it can be required by mappers (e.g. basic_tree_mapper) or adapters.
+    // The info is attached to the $build array (instead of using a certain variable)
+    // in case it could be required in some non-standard workflow or even anywhere outside VisualN process.
+    $build['#visualn'] = [];
 
     // options contain other plugins (adapter, mapper) settings in case drawer needs them
 
-    // @todo: decide which order is correct and if it matters at all
+    // First drawer plugins are called, so they could set data_keys_structure.
+    // Then adapter plugins since they can provide some data for mappers.
+    $plugin_types = ['drawer', 'adapter', 'mapper'];
+    foreach ($plugin_types as $plugin_type) {
+      // generally there is one plugin of each kind
+      foreach ($chain[$plugin_type] as $k => $chain_plugin) {
+        $input_options = [];
+        if ($plugin_type == 'adapter' && $k == 0) {
+          $input_options = [
+            'adapter_settings' => $options['adapter_settings'] ?: [],
+            'drawer_fields' => $options['drawer_fields'] ?: [],
+          ];
+        }
+        elseif ($plugin_type == 'mapper' && $k == 0) {
+          $input_options = [
+            'data_keys_structure' => $build['#visualn']['chain_info']['drawer'][0]['data_keys_structure'],
+            'drawer_fields' => $options['drawer_fields'] ?: [],
+          ];
+        }
+        $chain_plugin->prepareBuild($build, $vuid, $input_options);
+      }
+    }
+
+/*
     $chain = array_merge($chain['drawer'], $chain['adapter'], $chain['mapper']);
-    // generally there is one plugin of each kind
     foreach ($chain as $chain_plugin) {
+
+      // @todo: Implement Linker plugin. Currently the login is implemented in the cycle above.
+      //    Linkers would provide data required by specific plugin and would allow users to override default workflow
+      //    for specific plugins. Also they make data used by each plugin transparent.
+      //    Linkers would need a way to get plugin type, so a corresponding method should be implemented in the
+      //    plugins base class.
+      //    An example could be "$input_options = Linker($chain_plugin, $build['#visualn'], $options);"
+      //
+
       $chain_plugin->prepareBuild($build, $vuid, $options);
     }
+*/
 
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['html_selector'] = $options['html_selector'];
     // Attach visualn manager js script.
@@ -150,9 +183,11 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
    * @todo: move to interface and maybe rename
    */
   protected function composePluginsChain(VisualNDrawerInterface $drawer, $input_type, array $input_options) {
-    $chain = ['drawer' => [], 'mapper' => [], 'adapter' => []];
+    // The arrays are used to allow multiple plugins of each type in the chain
+    // though generally this isn't used and wasn't tested. In most cases
+    // this seems to have no sense (at least for drawer plugins).
+    $chain = ['drawer' => [$drawer], 'mapper' => [], 'adapter' => []];
 
-    $chain['drawer'][] = $drawer;
     $drawer_input = $drawer->getPluginDefinition()['input'];
 
     // get all adapter candidates

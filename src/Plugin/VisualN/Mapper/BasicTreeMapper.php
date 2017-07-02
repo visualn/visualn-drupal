@@ -32,7 +32,7 @@ class BasicTreeMapper extends VisualNMapperBase {
 
     // mapper specific js settings
     $dataKeysMap = $options['drawer_fields'];  // here need both keys and values for remapping values
-    $dataKeysStructure = $build['#visualn']['drawing_info']['data_keys_structure'];
+    $dataKeysStructure = $options['data_keys_structure'];
 
     // process data keys structure to attach a cleaner settings tree to js
     $this->prepareJSKeysStructure($dataKeysStructure);
@@ -40,7 +40,6 @@ class BasicTreeMapper extends VisualNMapperBase {
     // @todo: exclude this settings for views
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['mapper']['dataKeysMap'] = $dataKeysMap;
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['mapper']['dataKeysStructure'] = $dataKeysStructure;
-    // @todo: attach dataKeysStructure
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn/basic-tree-mapper';
   }
