@@ -117,7 +117,7 @@ class VisualNWidget extends FileWidget {
       // @todo:
       '#ajax' => [
         // [get_called_class(), 'uploadAjaxCallback'],
-        'callback' => '\Drupal\visualn\Plugin\Field\FieldWidget\VisualNWidget::ajaxCallback',
+        'callback' => '\Drupal\visualn_file\Plugin\Field\FieldWidget\VisualNWidget::ajaxCallback',
         //'callback' => [[get_class($this), 'ajaxCallback']],
         // @todo: ajax wrapper id for style id is ignored, and image (file) widget native one is called
         //   for multiple field
