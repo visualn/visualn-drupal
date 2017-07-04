@@ -14,12 +14,12 @@ use Drupal\Core\Form\FormStateInterface;
  * Plugin implementation of the 'visualn' field type.
  *
  * @FieldType(
- *   id = "visualn",
+ *   id = "visualn_file",
  *   label = @Translation("VisualN file"),
  *   description = @Translation("This field stores the ID of a file as integer value."),
  *   category = @Translation("Reference"),
- *   default_widget = "visualn_visualn",
- *   default_formatter = "visualn",
+ *   default_widget = "visualn_file",
+ *   default_formatter = "visualn_file",
  *   list_class = "\Drupal\file\Plugin\Field\FieldType\FileFieldItemList",
  *   constraints = {"ReferenceAccess" = {}, "FileValidation" = {}}
  * )

@@ -15,10 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
  * Plugin implementation of the 'visualn_visualn' widget.
  *
  * @FieldWidget(
- *   id = "visualn_visualn",
+ *   id = "visualn_file",
  *   label = @Translation("VisualN"),
  *   field_types = {
- *     "visualn"
+ *     "visualn_file"
  *   }
  * )
  */

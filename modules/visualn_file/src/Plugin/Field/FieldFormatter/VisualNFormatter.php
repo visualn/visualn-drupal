@@ -23,10 +23,10 @@ use Drupal\visualn\Plugin\VisualNFormatterSettingsTrait;
  * Plugin implementation of the 'visualn' formatter.
  *
  * @FieldFormatter(
- *   id = "visualn",
+ *   id = "visualn_file",
  *   label = @Translation("VisualN"),
  *   field_types = {
- *     "visualn"
+ *     "visualn_file"
  *   }
  * )
  */
