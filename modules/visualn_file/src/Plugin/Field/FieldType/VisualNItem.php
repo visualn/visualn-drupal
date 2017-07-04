@@ -2,10 +2,8 @@
 
 namespace Drupal\visualn_file\Plugin\Field\FieldType;
 
-//use Drupal\Component\Utility\Random;
 //use Drupal\Core\Field\FieldDefinitionInterface;
 //use Drupal\Core\Field\FieldItemBase;
-//use Drupal\Core\Field\FieldStorageDefinitionInterface;
 //use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\file\Plugin\Field\FieldType\FileItem;
@@ -53,10 +51,8 @@ class VisualNItem extends FileItem {
     $properties = parent::propertyDefinitions($field_definition);
     $properties['visualn_style_id'] = DataDefinition::create('string')
       ->setLabel(t('VisualN Style'));
-    $properties['drawer_config'] = DataDefinition::create('string')
-      ->setLabel(t('VisualN Drawer config'));
-    $properties['drawer_fields'] = DataDefinition::create('string')
-      ->setLabel(t('VisualN Drawer fields mapping'));
+    $properties['visualn_data'] = DataDefinition::create('string')
+      ->setLabel(t('VisualN Data'));
 
     return $properties;
   }
@@ -74,17 +70,10 @@ class VisualNItem extends FileItem {
       'type' => 'varchar_ascii',
       'length' => 255,
     ];
-    // @todo: check 'serialized' property
-    $schema['columns']['drawer_config'] = [
-      'description' => 'Serialized drawer config.',
+    $schema['columns']['visualn_data'] = [
       'type' => 'text',
-      //'mysql_type' => 'blob',  // @todo:
-      //'not null' => TRUE,
-    ];
-    $schema['columns']['drawer_fields'] = [
-      'description' => 'Serialized drawer fields mapping.',
-      'type' => 'text',
-      //'mysql_type' => 'blob',  // @todo:
+      'mysql_type' => 'blob',
+      'description' => 'Serialized visualn drawer config and fields mapping data.',
     ];
 
     return $schema;

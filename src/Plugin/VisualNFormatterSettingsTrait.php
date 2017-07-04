@@ -251,7 +251,9 @@ trait VisualNFormatterSettingsTrait {
         $visualn_style_id = $items[$delta]->visualn_style_id;
         $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
         $drawer_plugin_id = $visualn_style->getDrawerId();
-        $drawer_config = !empty($items[$delta]->drawer_config) ? unserialize($items[$delta]->drawer_config) : [];
+        $visualn_data = !empty($items[$delta]->visualn_data) ? unserialize($items[$delta]->visualn_data) : [];
+        $drawer_config = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
+
         // don't use getSetting() if visualn_style is different from the one in formatter settings
         if ($visualn_style_id == $this->getSetting('visualn_style')) {
           $drawer_config += $this->getSetting('drawer_config');
@@ -264,10 +266,13 @@ trait VisualNFormatterSettingsTrait {
           'drawer_config' => $drawer_config,
           // @todo: use another name for adapter group
           // delimiter separated values file
+          // @todo:
+          //'output_type' => 'file_dsv',  // @todo: for each delta adapter_group can be different (e.g. csv, tsv, json, xml)
+          //'output_info' => ['mimetype' => ''],
           'adapter_group' => 'file_dsv',  // @todo: for each delta adapter_group can be different (e.g. csv, tsv, json, xml)
           // @todo: maybe rename to mapper_settings (though it is used in adapter in views display style)
           //   so can be used both in mapper and in adapter (or even in drawer, if it does remapping by itself)
-          'drawer_fields' => !empty($items[$delta]->drawer_fields) ? unserialize($items[$delta]->drawer_fields) : [],
+          'drawer_fields' => !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [],
           'adapter_settings' => [],
         ];
       }

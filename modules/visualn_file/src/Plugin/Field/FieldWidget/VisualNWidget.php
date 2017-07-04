@@ -77,6 +77,11 @@ class VisualNWidget extends FileWidget {
         // @todo: unset()
       }
       $new_values[$key]['drawer_fields'] = serialize($drawer_fields);
+      $visualn_data = [
+        'drawer_config' => $drawer_config,
+        'drawer_fields' => $drawer_fields,
+      ];
+      $new_values[$key]['visualn_data'] = serialize($visualn_data);
     }
 
     return $new_values;
@@ -90,10 +95,10 @@ class VisualNWidget extends FileWidget {
 
     $item = $element['#value'];
     // @todo: check if not empty
-    // @todo: add 'serialize' property to schema()
-    //dsm(unserialize($item['drawer_fields']));
-    $item['drawer_fields'] = !empty($item['drawer_fields']) ? unserialize($item['drawer_fields']) : [];
-    $item['drawer_config'] = !empty($item['drawer_config']) ? unserialize($item['drawer_config']) : [];
+    $item['visualn_data'] = !empty($item['visualn_data']) ? unserialize($item['visualn_data']) : [];
+    $item['drawer_config'] = !empty($item['visualn_data']['drawer_config']) ? $item['visualn_data']['drawer_config'] : [];
+    $item['drawer_fields'] = !empty($item['visualn_data']['drawer_fields']) ? $item['visualn_data']['drawer_fields'] : [];
+
     if (empty($item['fids'])) {
       return parent::process($element, $form_state, $form);
     }

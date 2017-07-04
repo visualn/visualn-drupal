@@ -2,14 +2,13 @@
 
 namespace Drupal\visualn_resource\Plugin\Field\FieldType;
 
-//use Drupal\Component\Utility\Random;
 //use Drupal\Core\Field\FieldDefinitionInterface;
 //use Drupal\Core\Field\FieldItemBase;
-//use Drupal\Core\Field\FieldStorageDefinitionInterface;
-//use Drupal\Core\Form\FormStateInterface;
 //use Drupal\Core\StringTranslation\TranslatableMarkup;
-//use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\TypedData\DataDefinition;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'visualn_resource' field type.
@@ -24,5 +23,73 @@ use Drupal\link\Plugin\Field\FieldType\LinkItem;
  * )
  */
 class VisualNResourceItem extends LinkItem {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function defaultFieldSettings() {
+    // @todo: check
+    return array(
+      'override_style_id' => 0,
+      'drawer_config' => [],
+      'drawer_fields' => [],
+    ) + parent::defaultFieldSettings();
+  }
+
+  // @todo: check comment regarding isEmpty() in visualn_file submodule field type
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
+    // @todo:
+    $properties = parent::propertyDefinitions($field_definition);
+    $properties['visualn_style_id'] = DataDefinition::create('string')
+      ->setLabel(t('VisualN Style'));
+    $properties['visualn_data'] = DataDefinition::create('string')
+      ->setLabel(t('VisualN Data'));
+
+    return $properties;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function schema(FieldStorageDefinitionInterface $field_definition) {
+    $schema = parent::schema($field_definition);
+
+    // @todo: check the keys. also it seems to behave like an entityreference that
+    //   references a visualn style
+    $schema['columns']['visualn_style_id'] = [
+      'description' => 'The ID of the visualn style used if overridden.',
+      'type' => 'varchar_ascii',
+      'length' => 255,
+    ];
+    $schema['columns']['visualn_data'] = [
+      'type' => 'text',
+      'mysql_type' => 'blob',
+      'description' => 'Serialized visualn drawer config and fields mapping data.',
+    ];
+
+    return $schema;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fieldSettingsForm(array $form, FormStateInterface $form_state) {
+    $element = parent::fieldSettingsForm($form, $form_state);
+
+    $settings = $this->getSettings();
+
+    $element['override_style_id'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Override style'),
+      '#default_value' => $settings['override_style_id'],
+      '#description' => t('This allows to override default VisualN Style that is set in field formatter settings.'),
+    );
+
+    return $element;
+  }
 
 }
