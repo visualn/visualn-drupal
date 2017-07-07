@@ -146,7 +146,7 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
   }
 
   public function visualnViewElementsOptionsAll($elements, array $options) {
-    $options['adapter_group'] = 'file_dsv';  // @todo: for each delta adapter_group can be different (e.g. csv, tsv, json, xml)
+    $options['output_type'] = 'file_dsv';  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
     return $options;
   }
 

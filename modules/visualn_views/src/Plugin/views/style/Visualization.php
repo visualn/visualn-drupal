@@ -280,7 +280,7 @@ class Visualization extends StylePluginBase {
       'drawer_config' => $style_options['drawer_config'],
       // @todo: maybe move into 'mapper_settings' (even though used in adapter)
       'drawer_fields' => $style_options['drawer_fields'],  // this setting should be used in adapter
-      'adapter_group' => 'html_views',
+      'output_type' => 'html_views',
     ];
 
     // add selector for the drawing

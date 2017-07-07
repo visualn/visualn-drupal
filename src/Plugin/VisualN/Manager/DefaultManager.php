@@ -96,7 +96,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     // required options: style_id, html_selector
     // add optional options
     $options += [
-      'adapter_group' => '',  // optional (drawer can perform adapter functionality by itself)
+      'output_type' => '',  // optional (drawer can perform adapter functionality by itself)
       'drawer_config' => [],  // optional (drawer default config is considered)
       'adapter_settings' => [],  // optional (in some cases, e.g. file_csv, it is needed to pass file url)
     ];
@@ -114,7 +114,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     $drawer = $this->visualNDrawerManager->createInstance($visualn_style->getDrawerId(), $options['drawer_config']);
 
     //$chain = $this->composePluginsChain($drawer, $input_type, $input_data);
-    $chain = $this->composePluginsChain($drawer, $options['adapter_group'], []); // $drawer, $input_type, $input_options
+    $chain = $this->composePluginsChain($drawer, $options['output_type'], []); // $drawer, $input_type, $input_options
 
     // there could be now drawer after composing chain
     if (empty($chain['drawer'])) {

@@ -229,7 +229,7 @@ trait VisualNFormatterSettingsTrait {
       'drawer_config' => $visualn_style->get('drawer') + $this->getSetting('drawer_config'),
       // @todo: use another name for adapter group
       // delimiter separated values file
-      /*'adapter_group' => 'file_dsv',  // @todo: for each delta adapter_group can be different (e.g. csv, tsv, json, xml)*/
+      /*'output_type' => 'file_dsv',  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)*/
       // @todo: maybe rename to mapper_settings (though it is used in adapter in views display style)
       //   so can be used both in mapper and in adapter (or even in drawer, if it does remapping by itself)
       'drawer_fields' => $this->getSetting('drawer_fields'),
@@ -267,9 +267,8 @@ trait VisualNFormatterSettingsTrait {
           // @todo: use another name for adapter group
           // delimiter separated values file
           // @todo:
-          //'output_type' => 'file_dsv',  // @todo: for each delta adapter_group can be different (e.g. csv, tsv, json, xml)
+          'output_type' => 'file_dsv',  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
           //'output_info' => ['mimetype' => ''],
-          'adapter_group' => 'file_dsv',  // @todo: for each delta adapter_group can be different (e.g. csv, tsv, json, xml)
           // @todo: maybe rename to mapper_settings (though it is used in adapter in views display style)
           //   so can be used both in mapper and in adapter (or even in drawer, if it does remapping by itself)
           'drawer_fields' => !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [],
@@ -302,7 +301,7 @@ trait VisualNFormatterSettingsTrait {
 
   // @todo: currently these settings are added for visualn_file formatter so should be moved there
   public function visualnViewElementsOptionsAll($elements, array $options) {
-    $options['adapter_group'] = 'file_dsv';  // @todo: for each delta adapter_group can be different (e.g. csv, tsv, json, xml)
+    $options['output_type'] = 'file_dsv';  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
     return $options;
   }
 
