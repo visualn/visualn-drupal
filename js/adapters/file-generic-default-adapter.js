@@ -13,6 +13,10 @@
       //var mimeType = '';
       switch (fileType) {
         case 'csv' :
+          var sourceD3 = d3.csv(drawings[vuid].adapter.fileUrl, function(error, data) {
+            // pass data to manager callback when request successfully finished
+            managerCallback(data);
+          });
           break;
         case 'tsv' :
           //mimeType = 'text/tab-separated-values';

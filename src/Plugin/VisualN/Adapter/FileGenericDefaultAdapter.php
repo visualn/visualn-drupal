@@ -34,6 +34,9 @@ class FileGenericDefaultAdapter extends VisualNAdapterBase {
         case 'text/tab-separated-values' :
           $file_type = 'tsv';
           break;
+        case 'text/csv' :
+          $file_type = 'csv';
+          break;
       }
     }
 
