@@ -266,23 +266,19 @@ trait VisualNFormatterSettingsTrait {
           'drawer_config' => $drawer_config,
           // @todo: use another name for adapter group
           // delimiter separated values file
-          // @todo:
+          // @todo: xml or json can't be considered dsv a file
           'output_type' => 'file_dsv',  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
-          //'output_info' => ['mimetype' => ''],
+          //'output_info' => ['mimetype' => ''],  // currently it is passed via 'adapter_settings'
           // @todo: maybe rename to mapper_settings (though it is used in adapter in views display style)
           //   so can be used both in mapper and in adapter (or even in drawer, if it does remapping by itself)
           'drawer_fields' => !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [],
+          // @todo: rename to ouput_info/output_data or something like that
           'adapter_settings' => [],
         ];
       }
 
       // @todo: generate and set unique visualization (picture/canvas) id
       $vuid = \Drupal::service('uuid')->generate();
-
-      /*$file = $element['#file'];
-      $url = $file->url();
-      $options['adapter_settings']['file_url'] = $url;
-      $options['adapter_settings']['file_mimetype'] = $file->getMimeType();*/
 
       // set additional options for the formatter type for each single delta (can be overridden by the formatter)
       $options = $this->visualnViewElementsOptionsEach($element, $options);

@@ -167,7 +167,7 @@ class Visualization extends StylePluginBase {
     $form['visualn_style'] = array(
       '#type' => 'select',
       '#title' => $this->t('VisualN style'),
-      '#description' => $this->t('Dafault style for the data to render.'),
+      '#description' => $this->t('Default style for the data to render.'),
       '#default_value' => $this->options['visualn_style'],
       '#options' => $visualn_styles,
       // @todo: add permission check for current user

@@ -143,7 +143,6 @@ class VisualNWidget extends FileWidget {
       //$visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
       $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);  // @todo: replacement
       $drawer_plugin_id = $visualn_style->getDrawerId();
-      // @todo: maybe pass form by reference and extend it in the VisualNDrawer::getConfigForm()
       $drawer_config = $visualn_style->get('drawer');  // @todo: rename the property for drawer config for style
       // @todo: set default option value to empty array
       $stored_drawer_config = $item['drawer_config'];  // @todo: replacement
