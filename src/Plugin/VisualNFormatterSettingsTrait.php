@@ -281,7 +281,7 @@ trait VisualNFormatterSettingsTrait {
       $vuid = \Drupal::service('uuid')->generate();
 
       // set additional options for the formatter type for each single delta (can be overridden by the formatter)
-      $options = $this->visualnViewElementsOptionsEach($element, $options);
+      $options = $this->visualnViewElementsOptionsEach($element, $options, $item);
       // add selector for the drawing
       $html_selector = 'js-visualn-selector-file--' . $delta . '--' . substr($vuid, 0, 8);
       //$elements[$delta]['#attributes']['class'][] = $html_selector;
@@ -302,7 +302,7 @@ trait VisualNFormatterSettingsTrait {
   }
 
   // @todo: currently these settings are added for visualn_file formatter so should be moved there
-  public function visualnViewElementsOptionsEach($element, array $options) {
+  public function visualnViewElementsOptionsEach($element, array $options, $item) {
     $file = $element['#file'];
     $url = $file->url();
     $options['adapter_settings']['file_url'] = $url;

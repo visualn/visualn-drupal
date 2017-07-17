@@ -13,6 +13,7 @@ use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
+use Drupal\visualn\Plugin\VisualNResourceFormatManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\visualn\Plugin\VisualNFormatterSettingsTrait;
@@ -56,6 +57,13 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
   protected $visualNManagerManager;
 
   /**
+   * The visualn resource format manager service.
+   *
+   * @var \Drupal\visualn\Plugin\VisualNResourceFormatManager
+   */
+  protected $visualNResourceFormatManager;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -70,7 +78,8 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
     $container->get('path.validator'),
     $container->get('entity_type.manager')->getStorage('visualn_style'),
     $container->get('plugin.manager.visualn.drawer'),
-    $container->get('plugin.manager.visualn.manager')
+    $container->get('plugin.manager.visualn.manager'),
+    $container->get('plugin.manager.visualn.resource_format')
     );
   }
 
@@ -94,11 +103,12 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, PathValidatorInterface $path_validator, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, PathValidatorInterface $path_validator, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceFormatManager $visualn_resource_format_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, $path_validator);
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
     $this->visualNManagerManager = $visualn_manager_manager;
+    $this->visualNResourceFormatManager = $visualn_resource_format_manager;
   }
 
   /**
@@ -150,7 +160,23 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
     return $options;
   }
 
-  public function visualnViewElementsOptionsEach($element, array $options) {
+  // @todo: define $item class type (and also in the VisualNFomratterSettingsTrait.php)
+  public function visualnViewElementsOptionsEach($element, array $options, $item) {
+    $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
+    if (!empty($visualn_data['resource_format'])) {
+      $resource_format_plugin_id = $visualn_data['resource_format'];
+      $options['output_type'] = $this->visualNResourceFormatManager->getDefinition($resource_format_plugin_id)['output'];
+    }
+    else {
+      // @todo: By default use DSV Generic Resource Format
+      // @todo: load resource format plugin and get resource form by plugin id
+      // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
+      $options['output_type'] = 'file_dsv';
+
+      // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
+      $options['adapter_settings']['file_mimetype'] = 'text/tab-separated-values';
+    }
+
     // see LinkFormatter::viewElements
     if (!empty($settings['url_only']) && !empty($settings['url_plain'])) {
       $url = $element['#plain_text'];
@@ -162,9 +188,6 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
     //$url = $file->url();
     $options['adapter_settings']['file_url'] = $url;
     //$options['adapter_settings']['file_mimetype'] = $file->getMimeType();
-
-    // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
-    $options['adapter_settings']['file_mimetype'] = 'text/tab-separated-values';
 
     return $options;
   }

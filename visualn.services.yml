@@ -11,3 +11,6 @@ services:
   plugin.manager.visualn.manager:
     class: Drupal\visualn\Plugin\VisualNManagerManager
     parent: default_plugin_manager
+  plugin.manager.visualn.resource_format:
+    class: Drupal\visualn\Plugin\VisualNResourceFormatManager
+    parent: default_plugin_manager

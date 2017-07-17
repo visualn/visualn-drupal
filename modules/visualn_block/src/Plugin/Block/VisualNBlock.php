@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
+use Drupal\visualn\Plugin\VisualNResourceFormatManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
@@ -47,6 +48,12 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
   protected $visualNManagerManager;
 
   /**
+   * The visualn resource format manager service.
+   *
+   * @var \Drupal\visualn\Plugin\VisualNResourceFormatManager
+   */
+  protected $visualNResourceFormatManager;
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -56,7 +63,8 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $plugin_definition,
     $container->get('entity_type.manager')->getStorage('visualn_style'),
     $container->get('plugin.manager.visualn.drawer'),
-    $container->get('plugin.manager.visualn.manager')
+    $container->get('plugin.manager.visualn.manager'),
+    $container->get('plugin.manager.visualn.resource_format')
     );
   }
 
@@ -75,12 +83,13 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceFormatManager $visualn_resource_format_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
     $this->visualNManagerManager = $visualn_manager_manager;
+    $this->visualNResourceFormatManager = $visualn_resource_format_manager;
   }
 
 
@@ -90,7 +99,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
   public function defaultConfiguration() {
     return [
          'resource_url' => '',
-         //'resource_format' => '',
+         'resource_format' => '',
          'visualn_style_id' => '',
          'drawer_config' => [],
          'drawer_fields' => [],
@@ -112,6 +121,23 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       '#size' => 64,
       '#weight' => '1',
       '#required' => TRUE,
+    ];
+
+    // Get resource formats plugins list
+    $definitions = $this->visualNResourceFormatManager->getDefinitions();
+    // @todo: there should be some default behaviour for the 'None' choice
+    $resource_formats = ['' => $this->t('- None -')];
+    foreach ($definitions as $definition) {
+      $resource_formats[$definition['id']] = $definition['label'];
+    }
+
+    $form['resource_format'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Resource format'),
+      '#description' => $this->t('The format of the data source'),
+      '#default_value' => $this->configuration['resource_format'],
+      '#options' => $resource_formats,
+      '#weight' => '2',
     ];
 
     //$visualn_styles = visualn_style_options(FALSE);
@@ -139,13 +165,13 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
         'wrapper' => $ajax_wrapper_id,
       ],
       '#required' => TRUE,
-      '#weight' => '2',
+      '#weight' => '10',
     ];
     $form['drawer_container'] = [
       '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
       '#suffix' => '</div>',
       '#type' => 'container',
-      '#weight' => '3',
+      '#weight' => '11',
     ];
 
     // @todo: review this check after the main issue in drupal core is resolved
@@ -209,7 +235,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
     $this->configuration['resource_url'] = $form_state->getValue('resource_url');
-    //$this->configuration['resource_format'] = $form_state->getValue('resource_format');
+    $this->configuration['resource_format'] = $form_state->getValue('resource_format');
     $this->configuration['visualn_style_id'] = $form_state->getValue('visualn_style_id');
     $this->configuration['drawer_config'] = $form_state->getValue(['drawer_container', 'drawer_config']);
     $drawer_fields = $form_state->getValue(['drawer_container', 'drawer_fields']);
@@ -246,26 +272,33 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $manager_plugin = $this->visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
     // @todo: pass options as part of $manager_config (?)
     $options = [
-      //'style_id' => $this->getSetting('visualn_style'),
       'style_id' => $visualn_style_id,
       'drawer_config' => $visualn_style->get('drawer') + $this->configuration['drawer_config'],
       'drawer_fields' => $this->configuration['drawer_fields'],
       'adapter_settings' => [],
     ];
 
-    $options['output_type'] = 'file_dsv';  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
+    if (!empty($this->configuration['resource_format'])) {
+      $resource_format_plugin_id = $this->configuration['resource_format'];
+      $options['output_type'] = $this->visualNResourceFormatManager->getDefinition($resource_format_plugin_id)['output'];
+    }
+    else {
+      // @todo: By default use DSV Generic Resource Format
+      // @todo: load resource format plugin and get resource form by plugin id
+      // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
+      $options['output_type'] = 'file_dsv';
+
+      // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
+      $options['adapter_settings']['file_mimetype'] = 'text/tab-separated-values';
+    }
 
     $options['adapter_settings']['file_url'] = $this->configuration['resource_url'];
-
-    // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
-    $options['adapter_settings']['file_mimetype'] = 'text/tab-separated-values';
 
     // @todo: generate and set unique visualization (picture/canvas) id
     $vuid = \Drupal::service('uuid')->generate();
     // add selector for the drawing
-    $html_selector = 'js-visualn-selector-file--' . $delta . '--' . substr($vuid, 0, 8);
+    $html_selector = 'js-visualn-selector-block--' . substr($vuid, 0, 8);
 
-    //$build['visualn_block']['#markup'] = '<p>' . $this->configuration['resource_url'] . '</p>';
     $build['visualn_block']['#markup'] = "<div class='{$html_selector}'></div></div>";
 
     $options['html_selector'] = $html_selector;  // where to attach drawing selector

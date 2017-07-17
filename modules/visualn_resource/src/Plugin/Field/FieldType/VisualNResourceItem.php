@@ -33,6 +33,7 @@ class VisualNResourceItem extends LinkItem {
       'override_style_id' => 0,
       'drawer_config' => [],
       'drawer_fields' => [],
+      'resource_format' => '',
     ) + parent::defaultFieldSettings();
   }
 
