@@ -34,9 +34,13 @@ function visualn_views_views_pre_build(ViewExecutable $view) {
 
   // enable exposed form for the view even if there are no exposed handlers
   // @see ViewExecutable::build() and visualn_form_alter()
-  $options = $view->style_plugin->options;
-  if (isset($options['expose_keys_mapping']) && $options['expose_keys_mapping'] == 1) {
-    $view->display_handler->has_exposed = TRUE;
+  // @todo: this check is requried sometimes, e.g. for full entities view
+  //    though it is strange (?)
+  if (!empty($view->style_plugin)) {
+    $options = $view->style_plugin->options;
+    if (isset($options['expose_keys_mapping']) && $options['expose_keys_mapping'] == 1) {
+      $view->display_handler->has_exposed = TRUE;
+    }
   }
 }
 

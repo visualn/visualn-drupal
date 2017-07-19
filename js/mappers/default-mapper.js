@@ -5,6 +5,8 @@
     var drawing = drawings[vuid];
     var data = drawing.adapter.responseData;
 
+    // @todo: Array.prototype.filter() can be used instead
+
     // @todo: return if data is empty
 
     //console.log(data);

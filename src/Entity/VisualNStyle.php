@@ -65,7 +65,7 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
    * {@inheritdoc}
    */
   public function getDrawerId() {
-    return $this->drawer['id'];
+    return $this->drawer['id'] ?: '';
   }
 
   /**

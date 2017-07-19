@@ -33,7 +33,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
     $drawer_info['data_keys_structure'] = $this->dataKeysStructure();
     // generally there will be only one element with "0" index but we keep it for consistency
     // with default workflow (see $chain array in DefaultManager class)
-    $build['#visualn']['chain_info']['drawer'] = $build['#visualn']['chain_info']['drawer'] ?: [];
+    $build['#visualn']['chain_info']['drawer'] = !empty($build['#visualn']['chain_info']['drawer']) ? $build['#visualn']['chain_info']['drawer'] : [];
     $build['#visualn']['chain_info']['drawer'][] = $drawer_info;
   }
 
