@@ -35,7 +35,7 @@ class BarChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function getDefaultConfig() {
+  public function defaultConfiguration() {
     $default_config = [
       'y_label' => 'Frequency',
       'y_axis_tick' => 'numeric', // "numeric"|"percent"
@@ -46,10 +46,10 @@ class BarChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function getConfigForm(array $configuration = []) {
+  protected function getConfigurationForm(array $configuration = []) {
     // @todo: pass form element $parents so that it could be used e.g. for elements 'states' visibility etc.
     //  here it is needed for scale setting depending on y_axis_tick setting
-    $configuration =  $configuration + $this->configuration + $this->getDefaultConfig();
+    $configuration =  $configuration + $this->configuration + $this->defaultConfiguration();
     $form = [];
     $form['y_label'] = [
       '#type' => 'textfield',

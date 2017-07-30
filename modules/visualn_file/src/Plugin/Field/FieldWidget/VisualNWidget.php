@@ -8,6 +8,7 @@ use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 //use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -34,10 +35,42 @@ class VisualNWidget extends FileWidget {
   }
 
   /**
+   * Restructure $form_state values for $drawer_fields.
+   * @todo: rename the method
+   */
+  public function validateDrawerFieldsForm(&$form, FormStateInterface $form_state) {
+    // see WidgetBase::extractFormValues()
+    $field_name = $this->fieldDefinition->getName();
+
+    $path = array_merge($form['#parents'], ['visualn_style_id']);
+    $key_exists = NULL;
+    $visualn_style_id = NestedArray::getValue($form_state->getValues(), $path, $key_exists);
+    if($visualn_style_id) {
+      $path = ['drawer_container', 'drawer_config'];
+      $key_exists = NULL;
+      $subform = NestedArray::getValue($form, $path, $key_exists);
+      if ($key_exists) {
+        $full_form = ['subform' => $subform, '#parents' => []]; // @todo: this is a hack
+        $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
+
+        $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
+        $drawer_plugin_id = $visualn_style->getDrawerId();
+        $drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, []);
+
+        // @todo: it is not correct to call submit inside a validate method (validateDrawerFieldsForm())
+        //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
+        $drawer_plugin->submitConfigurationForm($subform, $sub_form_state);
+      }
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
+
+    $element['#element_validate'][] = [$this, 'validateDrawerFieldsForm'];
 
     return $element;
   }
@@ -47,7 +80,7 @@ class VisualNWidget extends FileWidget {
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     $new_values = parent::massageFormValues($values, $form, $form_state);
-    // @todo: get values via extractConfigFormValues() and attach to $new_values
+    // @todo: get drawer config values and attach to $new_values
     foreach ($new_values as $key => $new_value) {
       $drawer_config = [];
       if (!empty($new_value['drawer_container']['drawer_config'])) {
@@ -56,20 +89,25 @@ class VisualNWidget extends FileWidget {
         }
         // @todo: unset()
       }
+      /*
       $visualn_style_id = $new_value['visualn_style_id'];
       if($visualn_style_id) {
         $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
         $drawer_plugin_id = $visualn_style->getDrawerId();
         $drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, []);
+        // @todo: submitConfigurationForm() should be used here instead of extractConfigArrayValues()
+        //     also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
         $extracted_values = $drawer_plugin->extractConfigArrayValues($new_value, ['drawer_container', 'drawer_config']);
         $drawer_config = $extracted_values;
       }
+      */
       /*if (is_array($drawer_config)) {
         $new_values[$key]['drawer_config'] = serialize($drawer_config);
       }*/
       $new_values[$key]['drawer_config'] = serialize($drawer_config);
 
       $drawer_fields = [];
+      // @todo: set correct #parents array for the data keys to avoid this part
       if (!empty($new_value['drawer_container']['drawer_fields'])) {
         foreach ($new_value['drawer_container']['drawer_fields'] as $drawer_field_key => $drawer_field) {
           $drawer_fields[$drawer_field_key] = $drawer_field['field'];
@@ -155,13 +193,13 @@ class VisualNWidget extends FileWidget {
       $drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, $drawer_config); // @todo: replacement
 
       // @todo: maybe there is no need to pass config since it is passed in createInstance
-      $config_form = $drawer_plugin->getConfigForm($drawer_config);
+      // @todo: what if drawer form uses #process callback by itself, isn't it a problem
+      //    since the current one is already a #process callback?
+      $element['drawer_container']['drawer_config'] = [];
+      $element['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($element['drawer_container']['drawer_config'], $form_state);
       // @todo: add a checkbox to choose whether to override default drawer config or not
       // or an option to reset to defaults
-      if (!empty($config_form)) {
-        // @todo: add group type of fieldset with info about overriding style drawer config
-        $element['drawer_container']['drawer_config'] = $config_form;
-      }
+      // @todo: add group type of fieldset with info about overriding style drawer config
 
       // @todo: trim values after submitting settings
       $data_keys = $drawer_plugin->dataKeys();

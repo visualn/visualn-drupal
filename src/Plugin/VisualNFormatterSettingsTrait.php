@@ -8,6 +8,7 @@
 namespace Drupal\visualn\Plugin;
 
 use Drupal\core\form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -83,22 +84,22 @@ trait VisualNFormatterSettingsTrait {
     if($visualn_style_id) {
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
       $drawer_plugin_id = $visualn_style->getDrawerId();
-      // @todo: maybe pass form by reference and extend it in the VisualNDrawer::getConfigForm()
-      // @todo: maybe pass drawer config into getConfigForm()
       $drawer_config = $visualn_style->get('drawer');
       $stored_drawer_config = $this->getSetting('drawer_config');
       $drawer_config = $stored_drawer_config + $drawer_config;
 
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
-      $config_form = $drawer_plugin->getConfigForm();
       $field_name = $this->fieldDefinition->getItemDefinition()->getFieldDefinition()->getName();
       // @todo: add a checkbox to choose whether to override default drawer config or not
       // or an option to reset to defaults
-      if (!empty($config_form)) {
-        // @todo: add group type of fieldset with info about overriding style drawer config
-        $form['drawer_container']['drawer_config'] = $config_form;
-        $form['drawer_container']['drawer_config']['#parents'] =  ['fields', $field_name, 'settings_edit_form', 'settings', 'drawer_config'];
-      }
+      // @todo: add group type of fieldset with info about overriding style drawer config
+
+      // @todo: if drawer_config form empty?
+      $form['drawer_container']['drawer_config'] = [];
+      $form['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_container']['drawer_config'], $form_state);
+      $form['drawer_container']['drawer_config']['#parents'] =  ['fields', $field_name, 'settings_edit_form', 'settings', 'drawer_config'];
+      // @todo: element #parents could be set in a #process callback since it's original #parents value is already set there
+      //$form['drawer_container']['drawer_config']['#process'] = [[get_class($this), 'processVisualnSettingsForm']];
 
       // @todo: trim values after submitting settings
       $data_keys = $drawer_plugin->dataKeys();
@@ -118,8 +119,8 @@ trait VisualNFormatterSettingsTrait {
           ];
         }
         $form['drawer_container']['drawer_fields']['#parents'] =  ['fields', $field_name, 'settings_edit_form', 'settings', 'drawer_fields'];
-        $form['drawer_container']['drawer_fields']['#element_validate'] = [[$this, 'validateDrawerFieldsForm']];
       }
+      $form['drawer_container']['#element_validate'] = [[$this, 'validateDrawerFieldsForm']];
     }
 
     return $form;
@@ -141,6 +142,7 @@ trait VisualNFormatterSettingsTrait {
 
   /**
    * Restructure $form_state values for $drawer_fields.
+   * @todo: rename the method
    */
   public function validateDrawerFieldsForm(&$form, FormStateInterface $form_state) {
     // set options values from table fields (i.e. remove "field" key from options path to the value)
@@ -150,15 +152,21 @@ trait VisualNFormatterSettingsTrait {
     foreach ($drawer_fields as $key => $drawer_field) {
       $form_state->setValue(array_merge($element_parents, [$key]), $drawer_field['field']);
     }
-    // @todo: extractConfigFormValues()
+
+    // @todo: use $element['#parents']
     $element_parents =  ['fields', $field_name, 'settings_edit_form', 'settings', 'drawer_config'];
     $visualn_style_id = $form_state->getValue(['fields', $field_name, 'settings_edit_form', 'settings', 'visualn_style']);
     if($visualn_style_id) {
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
       $drawer_plugin_id = $visualn_style->getDrawerId();
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, []);
-      $drawer_config_values = $drawer_plugin->extractConfigFormValues($form_state, $element_parents);
-      $form_state->setValue($element_parents, $drawer_config_values);
+
+      $subform = $form['drawer_config'];
+      $full_form = ['subform' => $form, '#parents' => []]; // @todo: this is a hack
+      $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
+      // @todo: it is not correct to call submit inside a validate method (validateDrawerFieldsForm())
+      //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
+      $drawer_plugin->submitConfigurationForm($subform, $sub_form_state);
     }
   }
 

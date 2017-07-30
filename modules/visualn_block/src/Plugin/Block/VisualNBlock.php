@@ -192,15 +192,15 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       $stored_drawer_config = $this->configuration['drawer_config'];
       $drawer_config = $stored_drawer_config + $drawer_config;
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
-      // @todo: maybe there is no need to pass config since it is passed in createInstance
-      $config_form = $drawer_plugin->getConfigForm($drawer_config);
-      if (!empty($config_form)) {
-        // @todo: add group type of fieldset with info about overriding style drawer config
-        $form['drawer_container']['drawer_config'] = $config_form;
-      }
+
+      // @todo: add group type of fieldset with info about overriding style drawer config
+      $form['drawer_container']['drawer_config'] = [];
+      $form['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_container']['drawer_config'], $form_state);
 
       // @todo: trim values after submitting settings
       $data_keys = $drawer_plugin->dataKeys();
+      // @todo: convert textfields into a table in a #process callback
+      //    maybe even inside Mapper config form method
       if (!empty($data_keys)) {
         // @todo: get option setting
         $drawer_fields = $this->configuration['drawer_fields'];

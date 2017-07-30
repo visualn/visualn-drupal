@@ -8,6 +8,7 @@
 namespace Drupal\visualn_views\Plugin\views\style;
 
 use Drupal\core\form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\views\Plugin\views\style\StylePluginBase;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -193,14 +194,11 @@ class Visualization extends StylePluginBase {
         $drawer_config = $this->options['drawer_config'] + $drawer_config;
       }
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
-      $config_form = $drawer_plugin->getConfigForm();
-
       // @todo: add a checkbox to choose whether to override default drawer config or not
-      // or an option to reset to defaults
-      if (!empty($config_form)) {
-        // @todo: add group type of fieldset with info about overriding style drawer config
-        $form['drawer_config'] = $config_form;
-      }
+      //    or an option to reset to defaults
+      // @todo: add group type of fieldset with info about overriding style drawer config
+      $form['drawer_config'] = [];
+      $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $form_state);
 
       $data_keys = $drawer_plugin->dataKeys();
       if (!empty($data_keys)) {
@@ -245,10 +243,17 @@ class Visualization extends StylePluginBase {
     // @todo: add check if visual_style_id is selected
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
     $drawer_plugin_id = $visualn_style->getDrawerId();
-    // here we don't need any config to use extractConfigFormValues()
     $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, []);
-    $drawer_config_values = $drawer_plugin->extractConfigFormValues($form_state, ['style_options', 'drawer_config']);
-    $form_state->setValue(['style_options', 'drawer_config'], $drawer_config_values);
+
+    // submit drawer config form values (allow plugin to extract and restructure form values)
+    // we need to getValue(['style_options', 'drawer_config']) and to set it there in submitConfigurationForm()
+    // @todo: check for a nicer way to get the full form for the subform if any
+
+    $subform = $form['drawer_config'];
+    //$full_form = ['style_options' => $form, '#parents' => []]; // @todo: this is a hack
+    $full_form = ['subform' => $form, '#parents' => []]; // @todo: this is a hack
+    $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
+    $drawer_plugin->submitConfigurationForm($subform, $sub_form_state);
   }
 
   /**

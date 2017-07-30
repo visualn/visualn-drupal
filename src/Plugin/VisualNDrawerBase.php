@@ -8,8 +8,38 @@ use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Base class for VisualN Drawer plugins.
+ *
+ * @see \Drupal\visualn\Plugin\VisualNDrawerInterface
  */
 abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDrawerInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    $config_values = $form_state->getValues();
+    $config_values = $this->extractConfigArrayValues($config_values, []);
+
+    $form_state->setValues($config_values);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    // @todo: remove ::getConfigurationForm() method
+    $config_form = $this->getConfigurationForm();
+    $form = $config_form + $form;
+
+    return $form;
+  }
+
 
   /**
    * @inheritdoc
@@ -21,7 +51,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
    * @inheritdoc
    */
   public function prepareBuild(array &$build, $vuid, array $options = []) {
-    $drawer_config =  $this->configuration + $this->getDefaultConfig();
+    $drawer_config =  $this->configuration + $this->defaultConfiguration();
     $this->prepareJSCofig($drawer_config);
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['config'] = $drawer_config;
 
@@ -38,28 +68,43 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
-  public function getDefaultConfig() {
+  public function defaultConfiguration() {
     return [];
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
-  public function getConfigForm(array $configuration = []) {
+  public function getConfiguration() {
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfiguration(array $configuration) {
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    return [];
+  }
+
+  /**
+   * Get Drawer configuration form array.
+   *
+   * @param array $configuration
+   *
+   * @return array $form
+   */
+  protected function getConfigurationForm(array $configuration = []) {
     // @todo: pass form element $parents so that it could be used e.g. for elements 'states' visibility etc.
     return [];
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function extractConfigFormValues(FormStateInterface $form_state, array $element_parents) {
-    $drawer_config_values  = $form_state->getValue($element_parents);
-    $drawer_config_values  = !empty($drawer_config_values) ? $drawer_config_values : [];
-    $drawer_config_values = $this->extractConfigArrayValues($drawer_config_values, []);
-    return $drawer_config_values;
   }
 
   /**

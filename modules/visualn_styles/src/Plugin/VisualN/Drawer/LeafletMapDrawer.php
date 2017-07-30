@@ -33,7 +33,7 @@ class LeafletMapDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function getDefaultConfig() {
+  public function defaultConfiguration() {
     $default_config = [
       'center_lat' => -27.11667,
       'center_lon' => -109.35000,
@@ -47,7 +47,7 @@ class LeafletMapDrawer extends VisualNDrawerBase {
    */
   public function extractConfigArrayValues(array $values, array $element_parents) {
     $values = parent::extractConfigArrayValues($values, $element_parents);
-    $default_config = $this->getDefaultConfig();  // @todo: remove if not used
+    $default_config = $this->defaultConfiguration();  // @todo: remove if not used
     $drawer_config_values = [
       'center_lat' => trim($values['center_lat']),
       'center_lon' => trim($values['center_lon']),
@@ -72,8 +72,8 @@ class LeafletMapDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function getConfigForm(array $configuration = []) {
-    $configuration =  $configuration + $this->configuration + $this->getDefaultConfig();
+  protected function getConfigurationForm(array $configuration = []) {
+    $configuration =  $configuration + $this->configuration + $this->defaultConfiguration();
     $form = [];
     $form['center_lat'] = [
       '#type' => 'textfield',

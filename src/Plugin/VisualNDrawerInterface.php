@@ -4,11 +4,15 @@ namespace Drupal\visualn\Plugin;
 
 use Drupal\visualn\Entity\VisualNStyleInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\Component\Plugin\ConfigurablePluginInterface;
 
 /**
  * Defines an interface for VisualN Drawer plugins.
+ *
+ * @see \Drupal\visualn\Plugin\VisualNDrawerBase
  */
-interface VisualNDrawerInterface extends VisualNPluginInterface {
+interface VisualNDrawerInterface extends VisualNPluginInterface, PluginFormInterface, ConfigurablePluginInterface {
 
   /**
    * Modify drawer_config before attaching to js settings.
@@ -17,33 +21,6 @@ interface VisualNDrawerInterface extends VisualNPluginInterface {
    * @param array $drawer_config
    */
   public function prepareJSCofig(array &$drawer_config);
-
-  /**
-   * Get Drawer default configuration for config form.
-   *
-   * @return array $config
-   */
-  public function getDefaultConfig();
-
-  /**
-   * Get Drawer configuration form array.
-   *
-   * @param array $configuration
-   *
-   * @return array $form
-   */
-  public function getConfigForm(array $configuration = []);
-
-  /**
-   * Extract configuration form values to map into VisualNStyle entity config.
-   *
-   * @param FormStateInterface $form_state
-   *
-   * @param  array $element_parents
-   *
-   * @return array $drawer_config_values
-   */
-  public function extractConfigFormValues(FormStateInterface $form_state, array $element_parents);
 
   /**
    * Extract configuration array values to map into VisualNStyle entity config.

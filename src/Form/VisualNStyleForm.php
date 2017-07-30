@@ -92,12 +92,16 @@ class VisualNStyleForm extends EntityForm {
     // Attach drawer configuration form
     $drawer_plugin_id = !empty($form_state->getValues()) ? $form_state->getValue('drawer_id') : $default_drawer;
     $config_form = [];
+
+    // @todo: potentially config values can override style values e.g. "label" (see "name" attribute, it should be
+    //    contained inside a container)
+    $form['drawer_config'] = [];
     if ($drawer_plugin_id) {
       $drawer_config = $this->entity->get('drawer');
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
-      $config_form = $drawer_plugin->getConfigForm();
+      $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $form_state);
     }
-    $form['drawer_config'] = $config_form ?: ['#type' => 'markup'];
+
     $form['drawer_config'] += [
       '#prefix' => '<div id="drawer-config-form-ajax">',
       '#suffix' => '</div>',
@@ -151,7 +155,8 @@ class VisualNStyleForm extends EntityForm {
     // and add drawer plugin id for the visualn style.
     $drawer_config_values['id'] = $drawer_plugin_id;
     // @todo: here id can be misused if there is a key with the same name in drawer config form
-    $drawer_config_values += $drawer_plugin->extractConfigFormValues($form_state, []);
+    $drawer_plugin->submitConfigurationForm($form, $form_state);
+    $drawer_config_values += $form_state->getValues();
     $this->entity->set('drawer', $drawer_config_values);
   }
 

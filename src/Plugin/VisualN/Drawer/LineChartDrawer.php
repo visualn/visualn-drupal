@@ -34,7 +34,7 @@ class LineChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function getDefaultConfig() {
+  public function defaultConfiguration() {
     $default_config = [
       'color' => 'steelblue',
       'y_label' => 'Y Axis',
@@ -54,9 +54,9 @@ class LineChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function getConfigForm(array $configuration = []) {
+  protected function getConfigurationForm(array $configuration = []) {
     // @todo: rename to this::defaultConfig() to get ConfigForm default values
-    $configuration =  $configuration + $this->configuration + $this->getDefaultConfig();
+    $configuration =  $configuration + $this->configuration + $this->defaultConfiguration();
     $form = [];
     $form['color'] = [
       '#type' => 'textfield',
@@ -78,7 +78,7 @@ class LineChartDrawer extends VisualNDrawerBase {
    */
   public function extractConfigArrayValues(array $values, array $element_parents) {
     $values = parent::extractConfigArrayValues($values, $element_parents);
-    $default_config = $this->getDefaultConfig();
+    $default_config = $this->defaultConfiguration();
     $drawer_config_values = [
       'color' => trim($values['color']),
       'y_label' => trim($values['y_label']),
