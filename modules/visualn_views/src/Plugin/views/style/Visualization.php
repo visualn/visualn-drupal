@@ -198,6 +198,7 @@ class Visualization extends StylePluginBase {
       //    or an option to reset to defaults
       // @todo: add group type of fieldset with info about overriding style drawer config
       $form['drawer_config'] = [];
+      // @todo: check for #ajax key in the form tree and add 'url' key (or look for a better solution)
       $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $form_state);
 
       $data_keys = $drawer_plugin->dataKeys();

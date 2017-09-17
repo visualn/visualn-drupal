@@ -26,6 +26,7 @@ class VisualNResourceWidget extends LinkWidget {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
     $item = $items[$delta];
     $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
+    $visualn_data['resource_format'] = !empty($visualn_data['resource_format']) ? $visualn_data['resource_format'] : '';
 
     $definitions = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinitions();
     // @todo: there should be some default behaviour for the 'None' choice (actually, this refers to formatter)

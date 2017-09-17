@@ -196,6 +196,11 @@ class VisualNWidget extends FileWidget {
       // @todo: what if drawer form uses #process callback by itself, isn't it a problem
       //    since the current one is already a #process callback?
       $element['drawer_container']['drawer_config'] = [];
+      // set new configuration. may be used by ajax calls from drawer forms
+      $configuration = $form_state->getValue(array_merge($element['#parents'], ['drawer_container', 'drawer_config']));
+      $configuration = !empty($configuration) ? $configuration : [];
+      $drawer_plugin->setConfiguration($configuration);
+      // @todo: pass Subform:createForSubform() instead of $form_state
       $element['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($element['drawer_container']['drawer_config'], $form_state);
       // @todo: add a checkbox to choose whether to override default drawer config or not
       // or an option to reset to defaults

@@ -85,6 +85,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
    * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
+    $this->configuration = $configuration;
     return $this;
   }
 
@@ -111,6 +112,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
    * @inheritdoc
    *
    * @todo: maybe rename the method
+   * @todo: maybe make static
    */
   public function extractConfigArrayValues(array $values, array $array_parents) {
     $values = NestedArray::getValue($values, $array_parents);

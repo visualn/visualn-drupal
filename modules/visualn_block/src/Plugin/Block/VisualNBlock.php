@@ -174,25 +174,54 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       '#weight' => '11',
     ];
 
+    $drawer_config = [];
+
     // @todo: review this check after the main issue in drupal core is resolved
     // @see https://www.drupal.org/node/2798261
     if ($form_state instanceof SubformStateInterface) {
       $visualn_style_id = $form_state->getCompleteFormState()->getValue(['settings', 'visualn_style_id']);
+      $drawer_config = $form_state->getCompleteFormState()->getValue(['settings', 'drawer_container', 'drawer_config']);
+
+      $triggering_element = $form_state->getCompleteFormState()->getTriggeringElement();
     }
     else {
       $visualn_style_id = $form_state->getValue(['settings', 'visualn_style_id']);
+      $drawer_config = $form_state->getValue(['settings', 'drawer_container', 'drawer_config']);
+
+      $triggering_element = $form_state->getTriggeringElement();
     }
+    // @todo: if $drawer_config not emtpy, extractConfigArrayValues() since config form (and thus form_state)
+    //    may contain submit buttons which are not wanted here
+
+    // If changed visualn style then don't use drawer_config from form_state because it belongs to the previous
+    // visualn style. Otherwise it is supposed that triggered an ajax element inside drawer config form.
+    // @todo: do the same thing for widgets and formatters forms
+    if (!empty($triggering_element)) {
+      $form_array_parents = $form['#array_parents'] ?: [];
+      if ($triggering_element['#array_parents'] === array_merge($form_array_parents, ['settings', 'visualn_style_id'])) {
+        $drawer_config = [];
+      }
+    }
+
+    $drawer_config = $drawer_config ?: [];
+
     $visualn_style_id = $visualn_style_id ?: $this->configuration['visualn_style_id'];
     // Attach drawer configuration form
     if($visualn_style_id) {
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
       $drawer_plugin_id = $visualn_style->getDrawerId();
-      $drawer_config = $visualn_style->get('drawer');
+      $drawer_config = $drawer_config + $visualn_style->get('drawer');
       // @todo:
       $stored_drawer_config = $this->configuration['drawer_config'];
       $drawer_config = $stored_drawer_config + $drawer_config;
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
 
+      // set new configuration. may be used by ajax calls from drawer forms
+      //$configuration = $form_state->getValue(array_merge($element['#parents'], ['drawer_container', 'drawer_config']));
+      //$configuration = !empty($configuration) ? $configuration : [];
+      //$drawer_plugin->setConfiguration($configuration);
+
+      // @todo: pass Subform:createForSubform() instead of $form_state
       // @todo: add group type of fieldset with info about overriding style drawer config
       $form['drawer_container']['drawer_config'] = [];
       $form['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_container']['drawer_config'], $form_state);
