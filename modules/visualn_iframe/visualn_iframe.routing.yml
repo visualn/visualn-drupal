@@ -1,0 +1,9 @@
+visualn_iframe.iframe_controller_build:
+  path: '/visualn-iframe/embed/{hash}'
+  defaults:
+    _controller: '\Drupal\visualn_iframe\Controller\IframeController::build'
+    _title: 'build'
+  requirements:
+    _permission: 'access content'
+  options:
+    _custom_theme: 'stable'

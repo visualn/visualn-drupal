@@ -1,0 +1,32 @@
+(function ($, Drupal) {
+  Drupal.behaviors.visualnIframeBehaviour = {
+    attach: function (context, settings) {
+      $(context).find('body').once('visualn-iframe').each(function () {
+        // @todo: hide all share boxes on a click on page outer space
+        $('.visualn-iframe-share-link a').click(function(e){
+          e.preventDefault();
+          if (typeof $(this).data('iframeShareBox') === "undefined") {
+            var link_uid = $(this).attr('rel');
+            var link_url = settings.visualn_iframe.share_iframe_links[link_uid];
+            var offset = $(this).offset();
+            // attach an overlay textarea with the share iframe code with the iframe url
+            var overlay = $('<div><textarea style="width: 400px; height: 100px;"><iframe width="1000" height="600">'+link_url+'</iframe></textarea></div>');
+            overlay.css("position", "absolute");
+            overlay.css("left", offset.left);
+            overlay.css("top", offset.top + $(this).height() + 5);
+            overlay.css("z-index", 1000);
+            // store reference for the overlay to toggle it on subsequent clicks
+            $(this).data('iframeShareBox', overlay);
+            // add share box to the bottom of the page for the absolute position to work correctly
+            // since absolute inside relative doen't work well
+            $("body").append(overlay);
+            //$(this).after(overlay);
+          }
+          else {
+            $(this).data('iframeShareBox').toggle();
+          }
+        });
+      });
+    }
+  };
+})(jQuery, Drupal);

@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
 use Drupal\Core\Form\SubformStateInterface;
+use Drupal\visualn_iframe\ShareLinkBuilder;
 
 /**
  * Provides a 'VisualNBlock' block.
@@ -100,6 +101,8 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     return [
          'resource_url' => '',
          'resource_format' => '',
+         'enable_share_link' => 0,
+         'iframe_hash' => '',
          'visualn_style_id' => '',
          'drawer_config' => [],
          'drawer_fields' => [],
@@ -121,6 +124,23 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       '#size' => 64,
       '#weight' => '1',
       '#required' => TRUE,
+    ];
+
+    // check if visualn_iframe module is enabled
+    $moduleHandler = \Drupal::service('module_handler');
+    if ($moduleHandler->moduleExists('visualn_iframe')){
+      // @todo: also maybe disable access to the iframe by url (or add some other access management mechanism)
+      $form['enable_share_link'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Enable Share link'),
+        '#default_value' => $this->configuration['enable_share_link'],
+        '#weight' => '1',
+      ];
+    }
+    // @todo: is this needed, i.e. maybe the value in $this->configuration is enough
+    $form['iframe_hash'] = [
+      '#type' => 'value',
+      '#value' => $this->configuration['iframe_hash'],  // hash is set in blockSubmit()
     ];
 
     // Get resource formats plugins list
@@ -212,7 +232,8 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       $drawer_plugin_id = $visualn_style->getDrawerId();
       $drawer_config = $drawer_config + $visualn_style->get('drawer');
       // @todo:
-      $stored_drawer_config = $this->configuration['drawer_config'];
+      // @todo: why can it be empty (not even an empty array)?
+      $stored_drawer_config = $this->configuration['drawer_config'] ?: [];
       $drawer_config = $stored_drawer_config + $drawer_config;
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
 
@@ -264,6 +285,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
     $this->configuration['resource_url'] = $form_state->getValue('resource_url');
+    $this->configuration['iframe_hash'] = $form_state->getValue('iframe_hash');
     $this->configuration['resource_format'] = $form_state->getValue('resource_format');
     $this->configuration['visualn_style_id'] = $form_state->getValue('visualn_style_id');
     $this->configuration['drawer_config'] = $form_state->getValue(['drawer_container', 'drawer_config']);
@@ -277,6 +299,29 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       }
     }
     $this->configuration['drawer_fields'] = $drawer_fields;
+
+
+    // @todo: move this block into a visualn_iframe function or a class
+    // @todo: service would be preferable to using \Drupal (assuming it's an option in current context)
+    $moduleHandler = \Drupal::service('module_handler');
+    // check if visualn_iframe module is enabled
+    if ($moduleHandler->moduleExists('visualn_iframe')){
+      $this->configuration['enable_share_link'] = $form_state->getValue(['enable_share_link']);
+      // @todo: maybe use a service
+      $share_link_builder = new ShareLinkBuilder();
+      // @todo: record should be craeted/changed first in the block Submit handler
+      $hash = $this->configuration['iframe_hash'] ?: '';
+      // the key should correspond to the key from the respective content provider service class
+      // @todo: set key in the class property
+      $hash = $share_link_builder->createIframeDbRecord('visualn_block_key', $this->configuration, $hash);
+      // for the first time the form is submitted, the hash is empty
+      if (empty($this->configuration['iframe_hash'])) {
+        $this->configuration['iframe_hash'] = $hash;
+      }
+      // @todo: since we can use not only in page regions but also in panels etc.,
+      //    we can't use block_id (also it is not accessible here) or other such info for
+      //    the link generation
+    }
   }
 
   /**
@@ -302,7 +347,10 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     // @todo: pass options as part of $manager_config (?)
     $options = [
       'style_id' => $visualn_style_id,
-      'drawer_config' => $visualn_style->get('drawer') + $this->configuration['drawer_config'],
+      // @todo: unsupported operand types error
+      // @todo: why can it be empty (not even an empty array)?
+      //'drawer_config' => $visualn_style->get('drawer') + $this->configuration['drawer_config'],
+      'drawer_config' => $visualn_style->get('drawer') + ($this->configuration['drawer_config'] ?: []),
       'drawer_fields' => $this->configuration['drawer_fields'],
       'adapter_settings' => [],
     ];
@@ -328,7 +376,24 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     // add selector for the drawing
     $html_selector = 'js-visualn-selector-block--' . substr($vuid, 0, 8);
 
-    $build['visualn_block']['#markup'] = "<div class='{$html_selector}'></div></div>";
+    $build['visualn_block']['#markup'] = "<div class='{$html_selector}'></div>";
+
+    // @todo: move this block into a visualn_iframe function or a class
+    // @todo: service would be preferable to using \Drupal (assuming it's an option in current context)
+    $moduleHandler = \Drupal::service('module_handler');
+    // check if visualn_iframe module is enabled
+    if ($moduleHandler->moduleExists('visualn_iframe') && $this->configuration['enable_share_link']){
+      // @todo: deal with render cache here (e.g. if module was enabled, disabled and then re-enabled - link won't appear/disapper because of block cache)
+      // @todo: maybe use a service
+      $share_link_builder = new ShareLinkBuilder();
+      // @todo: record should be craeted/changed first in the block Submit handler
+      $iframe_url = $share_link_builder->getIframeUrl($this->configuration['iframe_hash']);
+      // this key is used in IframeConentProvider::provideContent()
+      $build['share_iframe_link'] = $share_link_builder->buildLink($iframe_url);
+      // @todo: since we can use not only in page regions but also in panels etc.,
+      //    we can't use block_id (also it is not accessible here) or other such info for
+      //    the link generation
+    }
 
     $options['html_selector'] = $html_selector;  // where to attach drawing selector
 
@@ -339,5 +404,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
 
     return $build;
   }
+
+  // @todo: delete visualn iframe record on block delete
 
 }

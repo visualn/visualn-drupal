@@ -1,0 +1,5 @@
+services:
+  visualn_block.iframe_content_provider:
+    class: Drupal\visualn_block\IframeContent\IframeContentProvider
+    tags:
+      - { name: visualn_iframe_content_provider }

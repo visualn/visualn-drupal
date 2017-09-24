@@ -1,0 +1,61 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the visualn_iframe module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function visualn_iframe_schema() {
+  // @todo: check user_schema
+  $schema['visualn_iframes_data'] = [
+    'description' => 'Stores module data as hash/key/options records per iframe.',
+    'fields' => [
+      'hash' => [
+        'description' => 'The hash identifier of the data.',
+        'type' => 'varchar_ascii',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      // @todo: rename the column (also "key" name is reserved)
+      'handler_key' => [
+        'description' => 'The key for modules to identify their records.',
+        'type' => 'varchar_ascii',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      // @todo: maybe rename to configuration or add a column for those
+      //    and maybe the to add an option to choose whether to pass options
+      //    or configuration to IframeContentProvider::provideContent()
+      'options' => [
+        'description' => 'The serialized additional options.',
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big',
+      ],
+      // @todo: add visualization enabled/disabled key
+
+      /*
+      'serialized' => [
+        'description' => 'Whether value is serialized.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'default' => 0,
+      ],
+      */
+
+    ],
+    'primary key' => ['hash'],
+    'indexes' => [
+      'hash' => ['hash'],
+    ],
+
+  ];
+
+  return $schema;
+}
