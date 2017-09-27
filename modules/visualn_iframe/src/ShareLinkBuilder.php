@@ -4,6 +4,8 @@
 
 namespace Drupal\visualn_iframe;
 
+use Drupal\Core\Url;
+
 class ShareLinkBuilder {
 
   // @todo: check visualn_iframe.install schema. maybe add $configuration
@@ -21,11 +23,11 @@ class ShareLinkBuilder {
           'hash' => $hash,
           'handler_key' => $key,
           // @todo: wouldn't it be serialized automatically (see below too)?
-          'options' => serialize($options),
+          'data' => serialize($options),
       ))
       ->updateFields(array(
           'handler_key' => $key,
-          'options' => serialize($options),
+          'data' => serialize($options),
       ))
       ->key(array('hash' => $hash))
       ->execute();
@@ -36,10 +38,12 @@ class ShareLinkBuilder {
 
   public function getRecord($hash) {
     $iframe_record = \Drupal::database()->select('visualn_iframes_data', 'v')
-      ->fields('v', ['handler_key', 'options'])
+      ->fields('v', ['handler_key', 'data'])
       ->condition('v.hash', $hash)
       ->range(0, 1)
     ->execute()->fetchAssoc();
+
+    // @todo: unserialize() data field
 
     return $iframe_record;
   }
@@ -50,10 +54,12 @@ class ShareLinkBuilder {
     // return emcoded key and options
   }
 
+  /**
+   * Get url by hash.
+   */
   public function getIframeUrl($hash) {
-    // @todo: get url by hash, if not empty
-    //return 'some url';
-    return 'http://vzn.drupalbase.ru/visualn-iframe/embed/' . $hash;
+    $url = Url::fromRoute('visualn_iframe.iframe_controller_build', array('hash' => $hash))->setAbsolute()->toString();
+    return $url;
   }
 
   public function buildLink($iframe_url) {

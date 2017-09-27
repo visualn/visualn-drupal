@@ -49,7 +49,7 @@ class IframeController extends ControllerBase {
     $iframe_record = $share_link_builder->getRecord($hash);
     if (!empty($iframe_record)) {
       $record_key = $iframe_record['handler_key'];
-      $configuration = unserialize($iframe_record['options']);
+      $configuration = unserialize($iframe_record['data']);
 
       // collect services (via tag), get responsibe iframe content provider
       // and get content if any

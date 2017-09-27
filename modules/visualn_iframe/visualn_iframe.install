@@ -13,6 +13,7 @@ function visualn_iframe_schema() {
   $schema['visualn_iframes_data'] = [
     'description' => 'Stores module data as hash/key/options records per iframe.',
     'fields' => [
+      // @todo: rename to uid or similar
       'hash' => [
         'description' => 'The hash identifier of the data.',
         'type' => 'varchar_ascii',
@@ -31,7 +32,7 @@ function visualn_iframe_schema() {
       // @todo: maybe rename to configuration or add a column for those
       //    and maybe the to add an option to choose whether to pass options
       //    or configuration to IframeContentProvider::provideContent()
-      'options' => [
+      'data' => [
         'description' => 'The serialized additional options.',
         'type' => 'blob',
         'not null' => FALSE,
