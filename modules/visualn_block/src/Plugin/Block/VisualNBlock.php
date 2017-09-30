@@ -54,6 +54,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
    * @var \Drupal\visualn\Plugin\VisualNResourceFormatManager
    */
   protected $visualNResourceFormatManager;
+
   /**
    * {@inheritdoc}
    */
@@ -237,6 +238,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       $drawer_config = $stored_drawer_config + $drawer_config;
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
 
+      // @todo:
       // set new configuration. may be used by ajax calls from drawer forms
       //$configuration = $form_state->getValue(array_merge($element['#parents'], ['drawer_container', 'drawer_config']));
       //$configuration = !empty($configuration) ? $configuration : [];

@@ -1,5 +1,7 @@
 <?php
 
+// @todo: rename the file to VisualNFileWidget.php
+
 namespace Drupal\visualn_file\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\NestedArray;
@@ -25,6 +27,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class VisualNWidget extends FileWidget {
 
+  // @todo: implement defaultSettings() method
+
   /**
    * {@inheritdoc}
    */
@@ -38,7 +42,7 @@ class VisualNWidget extends FileWidget {
    * Restructure $form_state values for $drawer_fields.
    * @todo: rename the method
    */
-  public function validateDrawerFieldsForm(&$form, FormStateInterface $form_state) {
+  public function validateDrawerFieldsForm(&$form, FormStateInterface $form_state, $full_form) {
     // see WidgetBase::extractFormValues()
     $field_name = $this->fieldDefinition->getName();
 
@@ -50,7 +54,6 @@ class VisualNWidget extends FileWidget {
       $key_exists = NULL;
       $subform = NestedArray::getValue($form, $path, $key_exists);
       if ($key_exists) {
-        $full_form = ['subform' => $subform, '#parents' => []]; // @todo: this is a hack
         $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
 
         $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
@@ -104,7 +107,6 @@ class VisualNWidget extends FileWidget {
       /*if (is_array($drawer_config)) {
         $new_values[$key]['drawer_config'] = serialize($drawer_config);
       }*/
-      $new_values[$key]['drawer_config'] = serialize($drawer_config);
 
       $drawer_fields = [];
       // @todo: set correct #parents array for the data keys to avoid this part
@@ -114,7 +116,7 @@ class VisualNWidget extends FileWidget {
         }
         // @todo: unset()
       }
-      $new_values[$key]['drawer_fields'] = serialize($drawer_fields);
+
       $visualn_data = [
         'drawer_config' => $drawer_config,
         'drawer_fields' => $drawer_fields,
@@ -131,6 +133,11 @@ class VisualNWidget extends FileWidget {
   public static function process($element, FormStateInterface $form_state, $form) {
     // @see ImageWidget::process()
 
+    // Define services as variables to explicitly see that they are loaded here
+    // but not while object instantiation because the method is static.
+    $visualNStyleStorage = \Drupal::service('entity_type.manager')->getStorage('visualn_style');
+    $visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
+
     $item = $element['#value'];
     // @todo: check if not empty
     $item['visualn_data'] = !empty($item['visualn_data']) ? unserialize($item['visualn_data']) : [];
@@ -146,7 +153,7 @@ class VisualNWidget extends FileWidget {
     $parents = array_slice($element['#array_parents'], 0, -1);
     $field_element = NestedArray::getValue($form, $parents);
     //$ajax_wrapper_id = $field_element['#id'] . '-' . $element['#delta'] . '-drawer-config-ajax-wrapper';
-    // @todo: this is test only ajax id
+    // @todo: this is test only ajax id (because the process method is static)
     $ajax_wrapper_id = 'field-name-id' . '-' . $element['#delta'] . '-drawer-config-ajax-wrapper';
     $visualn_styles = visualn_style_options(FALSE);
     $visualn_style_id = !empty ($item['visualn_style_id']) ? $item['visualn_style_id'] : '';
@@ -177,9 +184,8 @@ class VisualNWidget extends FileWidget {
     // @todo: this is a copy-paste from VisualNFormatter, maybe move into a Trait class (actually not exactly a copy-paste)
     // Attach drawer configuration form
     if($visualn_style_id) {
+      $visualn_style = $visualNStyleStorage->load($visualn_style_id);
 
-      //$visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-      $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);  // @todo: replacement
       $drawer_plugin_id = $visualn_style->getDrawerId();
       $drawer_config = $visualn_style->get('drawer');  // @todo: rename the property for drawer config for style
       // @todo: set default option value to empty array
@@ -188,9 +194,8 @@ class VisualNWidget extends FileWidget {
       //    actually it is not correct to use formatter settings in widget settings (those should be field settings then)
       $drawer_config = $stored_drawer_config + $drawer_config;
 
-      //$drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
       // @todo: add $visualn_style->getDrawer() or getDrawerInstance()
-      $drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, $drawer_config); // @todo: replacement
+      $drawer_plugin = $visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
 
       // @todo: maybe there is no need to pass config since it is passed in createInstance
       // @todo: what if drawer form uses #process callback by itself, isn't it a problem
@@ -200,30 +205,35 @@ class VisualNWidget extends FileWidget {
       $configuration = $form_state->getValue(array_merge($element['#parents'], ['drawer_container', 'drawer_config']));
       $configuration = !empty($configuration) ? $configuration : [];
       $drawer_plugin->setConfiguration($configuration);
+      // @todo: createForSubform() works not pretty well by itself because when form
+      //  is composed, its "#parents" key may be not set at the moment
       // @todo: pass Subform:createForSubform() instead of $form_state
       $element['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($element['drawer_container']['drawer_config'], $form_state);
       // @todo: add a checkbox to choose whether to override default drawer config or not
       // or an option to reset to defaults
       // @todo: add group type of fieldset with info about overriding style drawer config
 
+      // prepare drawer fields subform
       // @todo: trim values after submitting settings
       $data_keys = $drawer_plugin->dataKeys();
       if (!empty($data_keys)) {
+        $keys_subform = [];
         // @todo: get option setting
-        $drawer_fields = $item['drawer_fields'];  // @todo: replacement
-        $element['drawer_container']['drawer_fields'] = [
+        $drawer_fields = $item['drawer_fields'];
+        $keys_subform = [
           '#type' => 'table',
           '#header' => [t('Data key'), t('Field')],
         ];
         foreach ($data_keys as $i => $data_key) {
-          $element['drawer_container']['drawer_fields'][$data_key]['label'] = [
+          $keys_subform[$data_key]['label'] = [
             '#plain_text' => $data_key,
           ];
-          $element['drawer_container']['drawer_fields'][$data_key]['field'] = [
+          $keys_subform[$data_key]['field'] = [
             '#type' => 'textfield',
             '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
           ];
         }
+        $element['drawer_container']['drawer_fields'] = $keys_subform;
       }
     }
     return parent::process($element, $form_state, $form);

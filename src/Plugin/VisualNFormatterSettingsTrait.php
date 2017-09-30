@@ -144,7 +144,7 @@ trait VisualNFormatterSettingsTrait {
    * Restructure $form_state values for $drawer_fields.
    * @todo: rename the method
    */
-  public function validateDrawerFieldsForm(&$form, FormStateInterface $form_state) {
+  public function validateDrawerFieldsForm(&$form, FormStateInterface $form_state, $full_form) {
     // set options values from table fields (i.e. remove "field" key from options path to the value)
     $field_name = $this->fieldDefinition->getItemDefinition()->getFieldDefinition()->getName();
     $element_parents =  ['fields', $field_name, 'settings_edit_form', 'settings', 'drawer_fields'];
@@ -162,7 +162,6 @@ trait VisualNFormatterSettingsTrait {
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, []);
 
       $subform = $form['drawer_config'];
-      $full_form = ['subform' => $form, '#parents' => []]; // @todo: this is a hack
       $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
       // @todo: it is not correct to call submit inside a validate method (validateDrawerFieldsForm())
       //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property

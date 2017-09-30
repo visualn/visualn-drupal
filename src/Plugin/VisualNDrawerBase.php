@@ -78,6 +78,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
    * {@inheritdoc}
    */
   public function getConfiguration() {
+    // @todo:
     return [];
   }
 
