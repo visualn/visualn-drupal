@@ -37,6 +37,9 @@ class FileGenericDefaultAdapter extends VisualNAdapterBase {
         case 'text/csv' :
           $file_type = 'csv';
           break;
+        case 'application/json' :
+          $file_type = 'json';
+          break;
       }
     }
 
