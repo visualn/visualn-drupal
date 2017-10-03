@@ -73,6 +73,7 @@ class VisualNWidget extends FileWidget {
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
 
+    // @todo: what if style doesn't exist?
     $element['#element_validate'][] = [$this, 'validateDrawerFieldsForm'];
 
     return $element;
@@ -118,6 +119,7 @@ class VisualNWidget extends FileWidget {
       }
 
       $visualn_data = [
+        'resource_format' => $new_value['resource_format'],
         'drawer_config' => $drawer_config,
         'drawer_fields' => $drawer_fields,
       ];
@@ -141,6 +143,7 @@ class VisualNWidget extends FileWidget {
     $item = $element['#value'];
     // @todo: check if not empty
     $item['visualn_data'] = !empty($item['visualn_data']) ? unserialize($item['visualn_data']) : [];
+    $item['resource_format'] = !empty($item['visualn_data']['resource_format']) ? $item['visualn_data']['resource_format'] : '';
     $item['drawer_config'] = !empty($item['visualn_data']['drawer_config']) ? $item['visualn_data']['drawer_config'] : [];
     $item['drawer_fields'] = !empty($item['visualn_data']['drawer_fields']) ? $item['visualn_data']['drawer_fields'] : [];
 
@@ -148,6 +151,22 @@ class VisualNWidget extends FileWidget {
       return parent::process($element, $form_state, $form);
     }
     // @todo: attach style_id form only if file is uploaded
+
+    // @todo: move into a function (since resource format selection is used in many places)
+    $definitions = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinitions();
+    // @todo: there should be some default behaviour for the 'None' choice (actually, this refers to formatter)
+    $resource_formats = ['' => t('- None -')];
+    foreach ($definitions as $definition) {
+      $resource_formats[$definition['id']] = $definition['label'];
+    }
+
+    $element['resource_format'] = [
+      '#type' => 'select',
+      '#title' => t('Resource format'),
+      '#description' => t('The format of the data source'),
+      '#default_value' => $item['resource_format'],
+      '#options' => $resource_formats,
+    ];
 
     // @todo: show this if override is allowed
     $parents = array_slice($element['#array_parents'], 0, -1);
@@ -204,6 +223,8 @@ class VisualNWidget extends FileWidget {
       // set new configuration. may be used by ajax calls from drawer forms
       $configuration = $form_state->getValue(array_merge($element['#parents'], ['drawer_container', 'drawer_config']));
       $configuration = !empty($configuration) ? $configuration : [];
+      // @todo: is that the right order? won't it override form_state values, that changed on ajax call?
+      $configuration = $drawer_config + $configuration;
       $drawer_plugin->setConfiguration($configuration);
       // @todo: createForSubform() works not pretty well by itself because when form
       //  is composed, its "#parents" key may be not set at the moment

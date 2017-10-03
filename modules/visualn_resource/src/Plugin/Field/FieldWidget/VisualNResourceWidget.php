@@ -142,6 +142,11 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
     if($visualn_style_id) {
 
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
+      // if VisualN Style does not exist, e.g. was deleted, return
+      // @todo: copy to the other widgets and config forms (e.g. VisualN Block)
+      if (empty($visualn_style)) {
+        return $element;
+      }
       $drawer_plugin_id = $visualn_style->getDrawerId();
       $drawer_config = $visualn_style->get('drawer');  // @todo: rename the property for drawer config for style
       // @todo: set default option value to empty array
@@ -197,9 +202,10 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
         }
         $element['drawer_container']['drawer_fields'] = $keys_subform;
       }
+
+      $element['#element_validate'][] = [$this, 'validateDrawerFieldsForm'];
     }
 
-    $element['#element_validate'][] = [$this, 'validateDrawerFieldsForm'];
 
     return $element;
   }

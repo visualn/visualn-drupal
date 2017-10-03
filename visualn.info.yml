@@ -3,3 +3,4 @@ type: module
 description: Data visualization api
 core: 8.x
 package: VisualN
+configure: entity.visualn_style.collection

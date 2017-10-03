@@ -242,6 +242,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       // set new configuration. may be used by ajax calls from drawer forms
       //$configuration = $form_state->getValue(array_merge($element['#parents'], ['drawer_container', 'drawer_config']));
       //$configuration = !empty($configuration) ? $configuration : [];
+      //$configuration = $drawer_config + $configuration;
       //$drawer_plugin->setConfiguration($configuration);
 
       // @todo: pass Subform:createForSubform() instead of $form_state
@@ -351,8 +352,8 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       'style_id' => $visualn_style_id,
       // @todo: unsupported operand types error
       // @todo: why can it be empty (not even an empty array)?
-      //'drawer_config' => $visualn_style->get('drawer') + $this->configuration['drawer_config'],
-      'drawer_config' => $visualn_style->get('drawer') + ($this->configuration['drawer_config'] ?: []),
+      //'drawer_config' =>  $this->configuration['drawer_config'] + $visualn_style->get('drawer'),
+      'drawer_config' => ($this->configuration['drawer_config'] ?: []) + $visualn_style->get('drawer'),
       'drawer_fields' => $this->configuration['drawer_fields'],
       'adapter_settings' => [],
     ];

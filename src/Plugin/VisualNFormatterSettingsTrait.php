@@ -293,7 +293,7 @@ trait VisualNFormatterSettingsTrait {
       $html_selector = 'js-visualn-selector-file--' . $delta . '--' . substr($vuid, 0, 8);
       //$elements[$delta]['#attributes']['class'][] = $html_selector;
       $elements[$delta]['#suffix'] = isset($elements[$delta]['#suffix']) ? $elements[$delta]['#suffix'] : '';
-      $elements[$delta]['#suffix'] .= "<div class='{$html_selector}'></div></div>";
+      $elements[$delta]['#suffix'] .= "<div class='{$html_selector}'></div>";
       $options['html_selector'] = $html_selector;  // where to attach drawing selector
 
       // @todo: for different drawers there can be different managers
@@ -314,6 +314,11 @@ trait VisualNFormatterSettingsTrait {
     $url = $file->url();
     $options['adapter_settings']['file_url'] = $url;
     $options['adapter_settings']['file_mimetype'] = $file->getMimeType();
+    $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
+    if (!empty($visualn_data['resource_format'])) {
+      $resource_format_plugin_id = $visualn_data['resource_format'];
+      $options['output_type'] = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinition($resource_format_plugin_id)['output'];
+    }
 
     return $options;
   }

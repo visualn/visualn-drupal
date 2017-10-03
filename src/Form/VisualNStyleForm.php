@@ -100,8 +100,10 @@ class VisualNStyleForm extends EntityForm {
       $drawer_config = $this->entity->get('drawer');
       $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
 
+      // set new configuration. may be used by ajax calls from drawer forms
       $configuration = $form_state->getValues();
       $configuration = !empty($configuration) ? $configuration : [];
+      $configuration = $drawer_config + $configuration;
       $drawer_plugin->setConfiguration($configuration);
 
       $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $form_state);
