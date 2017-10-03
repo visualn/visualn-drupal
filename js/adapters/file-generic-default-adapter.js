@@ -1,5 +1,5 @@
 // @todo: maybe rename the file (to comply library name) or the library itself
-(function ($, Drupal, d3) {
+(function ($, Drupal, d3, xml2json) {
   Drupal.visualnData.adapters.visualnFileGenericDefaultAdapter = function(drawings, vuid, managerCallback) {
     var fileType = drawings[vuid].adapter.fileType;
 
@@ -25,6 +25,19 @@
             managerCallback(data);
           });
           break;
+        // @todo: currently this adapter should always load xml2json library
+        //    even if it is not used (e.g. when csv is processed)
+        case 'xml' :
+          //mimeType = 'text/xml';
+          var sourceD3 = d3.xml(drawings[vuid].adapter.fileUrl, function(error, data) {
+            // xml parsing returns an xml object
+            var jsonData = xml2json(data, "");
+            jsonData = JSON.parse(jsonData);
+            // @todo: wrapper can be other than "element". maybe make adapter configurable
+            data = jsonData['root']['element'];
+            // pass data to manager callback when request successfully finished
+            managerCallback(data);
+          });
         case 'json' :
           //mimeType = 'application/json';
           var sourceD3 = d3.json(drawings[vuid].adapter.fileUrl, function(error, data) {
@@ -48,5 +61,6 @@
     // @todo: return result code or some other usefull info
     //return sourceD3;
   };
-})(jQuery, Drupal, d3);
+
+})(jQuery, Drupal, d3, xml2json);
 

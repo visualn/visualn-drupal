@@ -1,5 +1,13 @@
-# @todo: add jquery dependency where needed
+xml2json:
+  remote: http://goessner.net/download/prj/jsonxml/
+  version: v0.9
+  license:
+    name: LGPL
+    url: http://creativecommons.org/licenses/LGPL/2.1
+  js:
+    js/libs/xml2json.js: {}
 
+# @todo: add jquery dependency where needed
 d3:
   remote: https://github.com/d3/d3
   version: v4.7.0
@@ -24,11 +32,14 @@ adapter-html-views-default:
   dependencies:
     - visualn/d3
 
+# @todo: currently this adapter should always load xml2json library
+#    even if it is not used (e.g. when csv is processed)
 adapter-file-generic-default:
   js:
     js/adapters/file-generic-default-adapter.js: {}
   dependencies:
     - visualn/d3
+    - visualn/xml2json
 
 default-mapper:
   js:
