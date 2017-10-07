@@ -10,7 +10,7 @@
             var link_url = settings.visualn_iframe.share_iframe_links[link_uid];
             var offset = $(this).offset();
             // attach an overlay textarea with the share iframe code with the iframe url
-            var overlay = $('<div><textarea style="width: 400px; height: 100px;"><iframe width="1000" height="600">'+link_url+'</iframe></textarea></div>');
+            var overlay = $('<div><textarea style="width: 400px; height: 100px;"><iframe width="1000" height="600" src="'+link_url+'"></iframe></textarea></div>');
             overlay.css("position", "absolute");
             overlay.css("left", offset.left);
             overlay.css("top", offset.top + $(this).height() + 5);
