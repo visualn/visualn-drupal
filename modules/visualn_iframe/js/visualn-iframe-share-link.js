@@ -9,8 +9,10 @@
             var link_uid = $(this).attr('rel');
             var link_url = settings.visualn_iframe.share_iframe_links[link_uid];
             var offset = $(this).offset();
+            // @todo: provide an option to select between <embed> and <iframe> tags
             // attach an overlay textarea with the share iframe code with the iframe url
-            var overlay = $('<div><textarea style="width: 400px; height: 100px;"><iframe width="1000" height="600" src="'+link_url+'"></iframe></textarea></div>');
+            var overlay = $('<div><textarea style="width: 400px; height: 100px;"><embed width="1000" height="600" src="'+link_url+'"></embed></textarea></div>');
+            //var overlay = $('<div><textarea style="width: 400px; height: 100px;"><iframe width="1000" height="600" src="'+link_url+'"></iframe></textarea></div>');
             overlay.css("position", "absolute");
             overlay.css("left", offset.left);
             overlay.css("top", offset.top + $(this).height() + 5);

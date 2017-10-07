@@ -10,4 +10,8 @@ services:
     tags:
       # @todo: why not service_id_collector?
       - { name: service_collector, tag: visualn_iframe_content_provider, call: addIframeContentProvider }
+  visualn_iframe.set_x_frame_options:
+    class: Drupal\visualn_iframe\EventSubscriber\SetXFrameOptionsSubscriber
+    tags:
+      - { name: event_subscriber }
 
