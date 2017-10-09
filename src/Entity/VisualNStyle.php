@@ -28,7 +28,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "label" = "label",
  *     "uuid" = "uuid",
  *     "drawer_id" = "drawer_id",
- *     "drawer" = "drawer"
+ *     "drawer_config" = "drawer_config"
  *   },
  *   links = {
  *     "canonical" = "/admin/config/media/visualn-styles/manage/{visualn_style}",
@@ -67,7 +67,7 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
    *
    * @var array
    */
-  protected $drawer = [];
+  protected $drawer_config = [];
 
   /**
    * The VisualN style drawer plugin.
@@ -104,7 +104,7 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
    * {@inheritdoc}
    */
   public function getDrawerConfig() {
-    return $this->drawer;
+    return $this->drawer_config;
   }
 
   /**

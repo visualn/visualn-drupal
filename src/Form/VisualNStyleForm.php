@@ -165,7 +165,7 @@ class VisualNStyleForm extends EntityForm {
     $this->entity->set('drawer_id', $drawer_plugin_id);
     $drawer_plugin->submitConfigurationForm($form, $form_state);
     $drawer_config_values = $form_state->getValues();
-    $this->entity->set('drawer', $drawer_config_values);
+    $this->entity->set('drawer_config', $drawer_config_values);
   }
 
 }
