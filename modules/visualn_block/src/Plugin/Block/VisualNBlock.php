@@ -230,13 +230,13 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     // Attach drawer configuration form
     if($visualn_style_id) {
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-      $drawer_plugin_id = $visualn_style->getDrawerId();
-      $drawer_config = $drawer_config + $visualn_style->get('drawer');
+      $drawer_plugin = $visualn_style->getDrawerPlugin();
+      $drawer_config = $drawer_config + $drawer_plugin->getConfiguration();
       // @todo:
       // @todo: why can it be empty (not even an empty array)?
       $stored_drawer_config = $this->configuration['drawer_config'] ?: [];
       $drawer_config = $stored_drawer_config + $drawer_config;
-      $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
+      $drawer_plugin->setConfiguration($drawer_config);
 
       // @todo:
       // set new configuration. may be used by ajax calls from drawer forms
@@ -341,7 +341,8 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
 
     // load style and get drawer manager from plugin definition
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin_id = $visualn_style->getDrawerId();
+    $drawer_plugin = $visualn_style->getDrawerPlugin();
+    $drawer_plugin_id = $drawer_plugin->getPluginId();
     $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
 
     // @todo: check if config is needed
@@ -353,7 +354,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       // @todo: unsupported operand types error
       // @todo: why can it be empty (not even an empty array)?
       //'drawer_config' =>  $this->configuration['drawer_config'] + $visualn_style->get('drawer'),
-      'drawer_config' => ($this->configuration['drawer_config'] ?: []) + $visualn_style->get('drawer'),
+      'drawer_config' => ($this->configuration['drawer_config'] ?: []) + $drawer_plugin->getConfiguration(),
       'drawer_fields' => $this->configuration['drawer_fields'],
       'adapter_settings' => [],
     ];

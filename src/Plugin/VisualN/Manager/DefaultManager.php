@@ -111,7 +111,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     // @todo: there may be different input_options required for different adapters (and other plugin types)
     // @todo: do we have chain_plugins_configs here? i.e. in case chain is built for the first time
     //    is chain stored anywhere (in config settings)?
-    $drawer = $this->visualNDrawerManager->createInstance($visualn_style->getDrawerId(), $options['drawer_config']);
+    $drawer = $visualn_style->getDrawerPlugin()->setConfiguration($options['drawer_config']);
 
     //$chain = $this->composePluginsChain($drawer, $input_type, $input_data);
     $chain = $this->composePluginsChain($drawer, $options['output_type'], []); // $drawer, $input_type, $input_options

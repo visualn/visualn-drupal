@@ -188,12 +188,14 @@ class Visualization extends StylePluginBase {
     $visualn_style_id = isset($form_state->getUserInput()['style_options']['visualn_style']) ? $form_state->getUserInput()['style_options']['visualn_style'] : $this->options['visualn_style'];
     if ($visualn_style_id) {
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-      $drawer_plugin_id = $visualn_style->getDrawerId();
-      $drawer_config = $visualn_style->get('drawer');
+      $drawer_plugin = $visualn_style->getDrawerPlugin();
+      $drawer_config = $drawer_plugin->getConfiguration();
+
       if ($visualn_style_id == $this->options['visualn_style']) {
         $drawer_config = $this->options['drawer_config'] + $drawer_config;
       }
-      $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
+      $drawer_plugin->setConfiguration($drawer_config);
+
       // @todo: add a checkbox to choose whether to override default drawer config or not
       //    or an option to reset to defaults
       // @todo: add group type of fieldset with info about overriding style drawer config
@@ -243,8 +245,7 @@ class Visualization extends StylePluginBase {
     $visualn_style_id  = $form_state->getValue(['style_options', 'visualn_style']);
     // @todo: add check if visual_style_id is selected
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin_id = $visualn_style->getDrawerId();
-    $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, []);
+    $drawer_plugin = $visualn_style->getDrawerPlugin();
 
     // submit drawer config form values (allow plugin to extract and restructure form values)
     // we need to getValue(['style_options', 'drawer_config']) and to set it there in submitConfigurationForm()
@@ -275,7 +276,7 @@ class Visualization extends StylePluginBase {
     }
     // load style and get drawer manager from plugin definition
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin_id = $visualn_style->getDrawerId();
+    $drawer_plugin_id = $visualn_style->getDrawerPlugin()->getPluginId();
     $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
     // @todo: pass options as part of $manager_config (?)
     $vuid = $this->getVuid();

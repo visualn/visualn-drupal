@@ -62,10 +62,34 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
   protected $drawer = [];
 
   /**
+   * The VisualN style drawer plugin.
+   *
+   * @var \Drupal\visualn\Plugin\VisualNDrawerInterface
+   */
+  protected $drawer_plugin;
+
+  /**
    * {@inheritdoc}
    */
   public function getDrawerId() {
     return $this->drawer['id'] ?: '';
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @todo: add to the interface
+   */
+  public function getDrawerPlugin() {
+    if (!isset($this->drawer_plugin)) {
+      $drawer_plugin_id = $this->getDrawerId();
+      if (!empty($drawer_plugin_id)) {
+        $drawer_config = $this->getDrawerConfig();
+        // @todo: load manager at object instantiation
+        $this->drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, $drawer_config);
+      }
+    }
+    return $this->drawer_plugin;
   }
 
   /**

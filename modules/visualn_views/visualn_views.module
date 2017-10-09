@@ -59,8 +59,7 @@ function visualn_views_form_alter(&$form, $form_state, $form_id) {
       $visualn_style_id = $options['visualn_style'];
       if ($visualn_style_id) {
         $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
-        $drawer_plugin_id = $visualn_style->getDrawerId();
-        $drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, []);
+        $drawer_plugin = $visualn_style->getDrawerPlugin();
         $data_keys = $drawer_plugin->dataKeys();
         if (!empty($data_keys)) {
           // @todo: form key should be unique to avoid conflicts with exposed handlers keys

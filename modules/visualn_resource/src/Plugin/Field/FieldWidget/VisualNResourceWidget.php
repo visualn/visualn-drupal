@@ -88,6 +88,7 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
     // @todo: when style is changed (in ajax) and it doesn't correspond to the one in visualn_data,
     //    drawer_config and drawer_fields should be also be reseted
 
+    // @todo: move into a function (since resource format selection is used in many places)
     $definitions = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinitions();
     // @todo: there should be some default behaviour for the 'None' choice (actually, this refers to formatter)
     $resource_formats = ['' => $this->t('- None -')];
@@ -147,16 +148,13 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
       if (empty($visualn_style)) {
         return $element;
       }
-      $drawer_plugin_id = $visualn_style->getDrawerId();
-      $drawer_config = $visualn_style->get('drawer');  // @todo: rename the property for drawer config for style
-      // @todo: set default option value to empty array
-      $stored_drawer_config = $visualn_data['drawer_config'];
+      $drawer_plugin = $visualn_style->getDrawerPlugin();
+
+      // prepare drawer config; use per-field config and drawer config from visualn style
       // @todo: also get formatter config if any because this causes misunderstanding (?)
       //    actually it is not correct to use formatter settings in widget settings (those should be field settings then)
-      $drawer_config = $stored_drawer_config + $drawer_config;
+      $drawer_config = $visualn_data['drawer_config'] + $drawer_plugin->getConfiguration();
 
-      // @todo: add $visualn_style->getDrawer() or getDrawerInstance()
-      $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
 
       // @todo: maybe there is no need to pass config since it is passed in createInstance
       // @todo: what if drawer form uses #process callback by itself, isn't it a problem
@@ -229,8 +227,7 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
         $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
 
         $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
-        $drawer_plugin_id = $visualn_style->getDrawerId();
-        $drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, []);
+        $drawer_plugin = $visualn_style->getDrawerPlugin();
 
         // @todo: it is not correct to call submit inside a validate method (validateDrawerFieldsForm())
         //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property

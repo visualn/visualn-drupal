@@ -83,12 +83,10 @@ trait VisualNFormatterSettingsTrait {
     // Attach drawer configuration form
     if($visualn_style_id) {
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-      $drawer_plugin_id = $visualn_style->getDrawerId();
-      $drawer_config = $visualn_style->get('drawer');
-      $stored_drawer_config = $this->getSetting('drawer_config');
-      $drawer_config = $stored_drawer_config + $drawer_config;
+      $drawer_plugin = $visualn_style->getDrawerPlugin();
+      $drawer_config = $this->getSetting('drawer_config') + $drawer_plugin->getConfiguration();
+      $drawer_plugin->setConfiguration($drawer_config);
 
-      $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
       $field_name = $this->fieldDefinition->getItemDefinition()->getFieldDefinition()->getName();
       // @todo: add a checkbox to choose whether to override default drawer config or not
       // or an option to reset to defaults
@@ -158,8 +156,7 @@ trait VisualNFormatterSettingsTrait {
     $visualn_style_id = $form_state->getValue(['fields', $field_name, 'settings_edit_form', 'settings', 'visualn_style']);
     if($visualn_style_id) {
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-      $drawer_plugin_id = $visualn_style->getDrawerId();
-      $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, []);
+      $drawer_plugin = $visualn_style->getDrawerPlugin();
 
       $subform = $form['drawer_config'];
       $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
@@ -223,7 +220,9 @@ trait VisualNFormatterSettingsTrait {
 
     // load style and get drawer manager from plugin definition
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin_id = $visualn_style->getDrawerId();
+    // @todo: add a getDrupalPluginDefinition() method to not load the whole plugin when not needed
+    $drawer_plugin = $visualn_style->getDrawerPlugin();
+    $drawer_plugin_id = $drawer_plugin->getPluginId();
     $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
 
     // @todo: check if config is needed
@@ -231,9 +230,8 @@ trait VisualNFormatterSettingsTrait {
     $manager_plugin = $this->visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
     // @todo: pass options as part of $manager_config (?)
     $options = [
-      //'style_id' => $this->getSetting('visualn_style'),
       'style_id' => $visualn_style_id,
-      'drawer_config' => $visualn_style->get('drawer') + $this->getSetting('drawer_config'),
+      'drawer_config' => $drawer_plugin->getConfiguration() + $this->getSetting('drawer_config'),
       // @todo: use another name for adapter group
       // delimiter separated values file
       /*'output_type' => 'file_dsv',  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)*/
@@ -257,7 +255,8 @@ trait VisualNFormatterSettingsTrait {
       if ($items[$delta]->visualn_style_id) {
         $visualn_style_id = $items[$delta]->visualn_style_id;
         $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-        $drawer_plugin_id = $visualn_style->getDrawerId();
+        $drawer_plugin = $visualn_style->getDrawerPlugin();
+
         $visualn_data = !empty($items[$delta]->visualn_data) ? unserialize($items[$delta]->visualn_data) : [];
         $drawer_config = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
 
@@ -266,7 +265,7 @@ trait VisualNFormatterSettingsTrait {
           $drawer_config += $this->getSetting('drawer_config');
         }
         // @todo: here we need just to get drawer manager (as in code above); also check comment for the manager below
-        $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
+        $drawer_plugin->setConfiguration($drawer_config);
         $options = [
           //'style_id' => $this->getSetting('visualn_style'),
           'style_id' => $visualn_style_id,

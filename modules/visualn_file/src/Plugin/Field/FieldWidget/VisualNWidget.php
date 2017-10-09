@@ -27,7 +27,14 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class VisualNWidget extends FileWidget {
 
-  // @todo: implement defaultSettings() method
+  /**
+   * {@inheritdoc}
+   */
+  public static function defaultSettings() {
+    return array(
+      'drawer_config' => [],
+    ) + parent::defaultSettings();
+  }
 
   /**
    * {@inheritdoc}
@@ -57,8 +64,7 @@ class VisualNWidget extends FileWidget {
         $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
 
         $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
-        $drawer_plugin_id = $visualn_style->getDrawerId();
-        $drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, []);
+        $drawer_plugin = $visualn_style->getDrawerPlugin();
 
         // @todo: it is not correct to call submit inside a validate method (validateDrawerFieldsForm())
         //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
@@ -97,8 +103,7 @@ class VisualNWidget extends FileWidget {
       $visualn_style_id = $new_value['visualn_style_id'];
       if($visualn_style_id) {
         $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
-        $drawer_plugin_id = $visualn_style->getDrawerId();
-        $drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, []);
+        $drawer_plugin = $visualn_style->getDrawerPlugin();
         // @todo: submitConfigurationForm() should be used here instead of extractConfigArrayValues()
         //     also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
         $extracted_values = $drawer_plugin->extractConfigArrayValues($new_value, ['drawer_container', 'drawer_config']);
@@ -138,7 +143,7 @@ class VisualNWidget extends FileWidget {
     // Define services as variables to explicitly see that they are loaded here
     // but not while object instantiation because the method is static.
     $visualNStyleStorage = \Drupal::service('entity_type.manager')->getStorage('visualn_style');
-    $visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
+    //$visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
 
     $item = $element['#value'];
     // @todo: check if not empty
@@ -204,17 +209,13 @@ class VisualNWidget extends FileWidget {
     // Attach drawer configuration form
     if($visualn_style_id) {
       $visualn_style = $visualNStyleStorage->load($visualn_style_id);
+      $drawer_plugin = $visualn_style->getDrawerPlugin();
 
-      $drawer_plugin_id = $visualn_style->getDrawerId();
-      $drawer_config = $visualn_style->get('drawer');  // @todo: rename the property for drawer config for style
-      // @todo: set default option value to empty array
-      $stored_drawer_config = $item['drawer_config'];  // @todo: replacement
+      // prepare drawer config; use per-field config and drawer config from visualn style
       // @todo: also get formatter config if any because this causes misunderstanding (?)
       //    actually it is not correct to use formatter settings in widget settings (those should be field settings then)
-      $drawer_config = $stored_drawer_config + $drawer_config;
+      $drawer_config = $item['drawer_config'] + $drawer_plugin->getConfiguration();
 
-      // @todo: add $visualn_style->getDrawer() or getDrawerInstance()
-      $drawer_plugin = $visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
 
       // @todo: maybe there is no need to pass config since it is passed in createInstance
       // @todo: what if drawer form uses #process callback by itself, isn't it a problem
