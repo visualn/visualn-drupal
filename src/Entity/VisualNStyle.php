@@ -27,6 +27,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id" = "id",
  *     "label" = "label",
  *     "uuid" = "uuid",
+ *     "drawer_id" = "drawer_id",
  *     "drawer" = "drawer"
  *   },
  *   links = {
@@ -55,6 +56,13 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
   protected $label;
 
   /**
+   * The VisualN style drawer ID.
+   *
+   * @var string
+   */
+  protected $drawer_id;
+
+  /**
    * The VisualN style drawer config.
    *
    * @var array
@@ -72,7 +80,7 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
    * {@inheritdoc}
    */
   public function getDrawerId() {
-    return $this->drawer['id'] ?: '';
+    return $this->drawer_id ?: '';
   }
 
   /**

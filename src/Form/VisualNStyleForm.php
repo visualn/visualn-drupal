@@ -158,12 +158,13 @@ class VisualNStyleForm extends EntityForm {
     $drawer_plugin_id = $form_state->getValue('drawer_id');
     $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, []);
 
+    // @todo: here drawer_id and label can be misused if there is a key with the same name in drawer config form
+
     // Extract config values from drawer config form for saving in VisualNStyle config entity
     // and add drawer plugin id for the visualn style.
-    $drawer_config_values['id'] = $drawer_plugin_id;
-    // @todo: here id can be misused if there is a key with the same name in drawer config form
+    $this->entity->set('drawer_id', $drawer_plugin_id);
     $drawer_plugin->submitConfigurationForm($form, $form_state);
-    $drawer_config_values += $form_state->getValues();
+    $drawer_config_values = $form_state->getValues();
     $this->entity->set('drawer', $drawer_config_values);
   }
 

@@ -12,5 +12,8 @@ visualn.visualn_style.*:
       label: 'Label'
     uuid:
       type: string
+    drawer_id:
+      type: string
+      label: 'Drawer ID'
     drawer:
       type: serial
