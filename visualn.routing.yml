@@ -1,0 +1,7 @@
+visualn.admin_config_visualn:
+  path: '/admin/config/media/visualn'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Visualization'
+  requirements:
+    _permission: 'access administration pages'

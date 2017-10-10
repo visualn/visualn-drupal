@@ -10,6 +10,16 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface VisualNStyleInterface extends ConfigEntityInterface {
 
   /**
+   * Base Drawer prefix.
+   */
+  const BASE_DRAWER_PREFIX = 'base';
+
+  /**
+   * User-defined (subdrawer) prefix.
+   */
+  const SUB_DRAWER_PREFIX = 'sub';
+
+  /**
    * Get VisualN style drawer Id.
    *
    * @return string $drawer_id
@@ -31,5 +41,21 @@ interface VisualNStyleInterface extends ConfigEntityInterface {
    * @return $this
    */
   public function setDrawerConfig($drawer_config);
+
+  /**
+   * Get VisualN style specific drawer plugin instance.
+   *
+   * @return \Drupal\visualn\Plugin\VisualNDrawerInterface
+   */
+  public function getDrawerPlugin();
+
+  /**
+   * Get VisualN style specific drawer type. Can be base drawer or a subdrawer.
+   *
+   * Base drawers are generic Drawer plugins.
+   * Subdrawers are configuration VisualNDrawer entities. Subdrawers are based on
+   * base drawers.
+   */
+  public function getDrawerType();
 
 }

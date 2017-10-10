@@ -7,6 +7,7 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\visualn\Entity\VisualNStyle;
+use Drupal\visualn\Entity\VisualNDrawer;
 use Drupal\Core\Template\Attribute;
 use Drupal\views\ViewExecutable;
 
@@ -36,6 +37,22 @@ function visualn_help($route_name, RouteMatchInterface $route_match) {
  */
 function visualn_style_options($include_empty = TRUE) {
   $styles = VisualNStyle::loadMultiple();
+  $options = array();
+  if ($include_empty && !empty($styles)) {
+    $options[''] = t('- None -');
+  }
+  foreach ($styles as $name => $style) {
+    $options[$name] = $style->label();
+  }
+
+  if (empty($options)) {
+    $options[''] = t('No defined styles');
+  }
+  return $options;
+}
+
+function visualn_subdrawer_options($include_empty = TRUE) {
+  $styles = VisualNDrawer::loadMultiple();
   $options = array();
   if ($include_empty && !empty($styles)) {
     $options[''] = t('- None -');

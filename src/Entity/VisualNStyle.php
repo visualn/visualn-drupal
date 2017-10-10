@@ -28,14 +28,15 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "label" = "label",
  *     "uuid" = "uuid",
  *     "drawer_id" = "drawer_id",
+ *     "drawer_type" = "drawer_type",
  *     "drawer_config" = "drawer_config"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn-styles/manage/{visualn_style}",
- *     "add-form" = "/admin/config/media/visualn-styles/add",
- *     "edit-form" = "/admin/config/media/visualn-styles/manage/{visualn_style}/edit",
- *     "delete-form" = "/admin/config/media/visualn-styles/manage/{visualn_style}/delete",
- *     "collection" = "/admin/config/media/visualn-styles"
+ *     "canonical" = "/admin/config/media/visualn/styles/manage/{visualn_style}",
+ *     "add-form" = "/admin/config/media/visualn/styles/add",
+ *     "edit-form" = "/admin/config/media/visualn/styles/manage/{visualn_style}/edit",
+ *     "delete-form" = "/admin/config/media/visualn/styles/manage/{visualn_style}/delete",
+ *     "collection" = "/admin/config/media/visualn/styles"
  *   }
  * )
  */
@@ -63,6 +64,13 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
   protected $drawer_id;
 
   /**
+   * The VisualN drawer type (base|subdrawer).
+   *
+   * @var string
+   */
+  protected $drawer_type;
+
+  /**
    * The VisualN style drawer config.
    *
    * @var array
@@ -70,7 +78,7 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
   protected $drawer_config = [];
 
   /**
-   * The VisualN style drawer plugin.
+   * The VisualN style specific drawer plugin.
    *
    * @var \Drupal\visualn\Plugin\VisualNDrawerInterface
    */
@@ -85,19 +93,38 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
 
   /**
    * {@inheritdoc}
-   *
-   * @todo: add to the interface
    */
   public function getDrawerPlugin() {
+
     if (!isset($this->drawer_plugin)) {
-      $drawer_plugin_id = $this->getDrawerId();
-      if (!empty($drawer_plugin_id)) {
-        $drawer_config = $this->getDrawerConfig();
+      $common_drawer_id = $this->getDrawerId();
+      if (!empty($common_drawer_id)) {
+        $drawer_type = $this->getDrawerType();
+        if ($drawer_type == VisualNStyleInterface::SUB_DRAWER_PREFIX) {
+          $visualn_drawer_id = $common_drawer_id;
+          $visualn_drawer = \Drupal::service('entity_type.manager')->getStorage('visualn_drawer')->load($visualn_drawer_id);
+
+          $base_drawer_id = $visualn_drawer->getBaseDrawerId();
+          $drawer_config = $visualn_drawer->getDrawerConfig();
+        }
+        else {
+          $base_drawer_id = $common_drawer_id;
+          $drawer_config = [];
+        }
+        $drawer_config = $this->getDrawerConfig() + $drawer_config;
         // @todo: load manager at object instantiation
-        $this->drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($drawer_plugin_id, $drawer_config);
+        $this->drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($base_drawer_id, $drawer_config);
       }
     }
+
     return $this->drawer_plugin;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDrawerType() {
+    return $this->drawer_type;
   }
 
   /**

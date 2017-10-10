@@ -4,3 +4,9 @@ entity.visualn_style.add_form:
   appears_on:
     - entity.visualn_style.collection
 
+entity.visualn_drawer.add_form:
+  route_name: entity.visualn_drawer.add_form
+  title: 'Add VisualN Drawer'
+  appears_on:
+    - entity.visualn_drawer.collection
+
