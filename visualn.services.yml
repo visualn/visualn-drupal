@@ -14,3 +14,6 @@ services:
   plugin.manager.visualn.resource_format:
     class: Drupal\visualn\Plugin\VisualNResourceFormatManager
     parent: default_plugin_manager
+  plugin.manager.visualn.drawer_modifier:
+    class: Drupal\visualn\Plugin\VisualNDrawerModifierManager
+    parent: default_plugin_manager
