@@ -29,6 +29,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "uuid" = "uuid",
  *     "drawer_id" = "drawer_id",
  *     "drawer_type" = "drawer_type",
+ *     "drawer_type_prefix" = "drawer_type_prefix",
  *     "drawer_config" = "drawer_config"
  *   },
  *   links = {
@@ -64,11 +65,20 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
   protected $drawer_id;
 
   /**
-   * The VisualN drawer type (base|subdrawer).
+   * The VisualN drawer type (base|sub).
    *
    * @var string
    */
   protected $drawer_type;
+
+  /**
+   * The VisualN drawer type prefix (base|sub).
+   *
+   * The property is added for consistency (see visualn_style.schema.yml)
+   *
+   * @var string
+   */
+  protected $drawer_type_prefix;
 
   /**
    * The VisualN style drawer config.

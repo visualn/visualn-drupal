@@ -184,7 +184,7 @@ class VisualNStyleForm extends EntityForm {
     $common_drawer_id_prefixed = $form_state->getValue('drawer_id');
 
     $drawer_id_components = $this->explodeDrawerIdIntoComponents($common_drawer_id_prefixed);
-    // @todo: rename to drawer_type_prefix
+    // @todo: maybe rename to drawer_type_prefix (see the property in visualn_style.schema.yml)
     $drawer_type = $drawer_id_components['drawer_type'];
     $common_drawer_id = $drawer_id_components['drawer_id'];
 
@@ -208,6 +208,7 @@ class VisualNStyleForm extends EntityForm {
     // and add drawer plugin id for the visualn style.
     $this->entity->set('drawer_id', $common_drawer_id);
     $this->entity->set('drawer_type', $drawer_type);
+    $this->entity->set('drawer_type_prefix', $drawer_type);
     $drawer_plugin->submitConfigurationForm($form, $form_state);
     $drawer_config_values = $form_state->getValues();
     $this->entity->set('drawer_config', $drawer_config_values);

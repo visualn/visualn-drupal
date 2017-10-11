@@ -18,5 +18,10 @@ visualn.visualn_style.*:
     drawer_type:
       type: string
       label: 'Drawer type'
+    # @todo: this property is added for consistency, later may replace drawer_type
+    #   one of the should be deleted
+    drawer_type_prefix:
+      type: string
+      label: 'Drawer type prefix'
     drawer_config:
       type: serial
