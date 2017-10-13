@@ -12,7 +12,7 @@ use Drupal\visualn\Plugin\VisualNDrawerModifierBase;
 /**
  * Provides a 'Set Basic Property' VisualN drawer modifier.
  *
- * @VisualNDrawer(
+ * @VisualNDrawerModifier(
  *  id = "visualn_set_basic_property",
  *  label = @Translation("Set Basic Property"),
  * )

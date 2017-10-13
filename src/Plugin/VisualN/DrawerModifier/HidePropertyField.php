@@ -12,7 +12,7 @@ use Drupal\visualn\Plugin\VisualNDrawerModifierBase;
 /**
  * Provides a 'Hide Property Field' VisualN drawer modifier.
  *
- * @VisualNDrawer(
+ * @VisualNDrawerModifier(
  *  id = "visualn_hide_property_field",
  *  label = @Translation("Hide Property Field"),
  * )

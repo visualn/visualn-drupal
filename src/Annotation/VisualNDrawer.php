@@ -53,4 +53,27 @@ class VisualNDrawer extends Plugin {
    */
   public $output = '';
 
+  /**
+   * The role type of the plugin.
+   *
+   * "drawer" is a common case and used for most plugins (base drawers)
+   * "wrapper" is used for plugins that serve as wrappers for base drawers in case of sudrawers
+   *    wrappers are never used as base drawers and never shown in base drawers
+   *    select lists (e.g. in VisualN styles UI)
+   *
+   * @var string
+   */
+  public $role = 'drawer';
+
+  /**
+   * The default wrapper to use for the drawer when used in subdrawers.
+   *
+   * @var string
+   */
+  public $wrapper_drawer_id = 'visualn_default_drawer_wrapper';
+
+  // @todo: add "wrappable" key or use "wrapper_drawer_id" to show that drawer can't be wrapped
+  //    e.g. used as a base for subdrawer (e.g. set "wrapper_drawer_id" to blank value
+  //    in the drawer class annotation). most drawers should be wrappable
+
 }

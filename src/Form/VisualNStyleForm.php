@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\visualn\Entity\VisualNStyleInterface;
+use Drupal\visualn\Entity\VisualNStyle;
 
 /**
  * Class VisualNStyleForm.
@@ -76,6 +77,9 @@ class VisualNStyleForm extends EntityForm {
     // Get drawer plugins list
     $definitions = $this->visualNDrawerManager->getDefinitions();
     foreach ($definitions as $definition) {
+      if ($definition['role'] == 'wrapper') {
+        continue;
+      }
       $drawers_list[VisualNStyleInterface::BASE_DRAWER_PREFIX . "|" . $definition['id']] = $definition['label'];
     }
     // Get drawer entities list
@@ -112,12 +116,17 @@ class VisualNStyleForm extends EntityForm {
       // If drawer is a subdrawer get its base drawer plugin id and the drawer config for it provided by the subdrawer.
       // In this case drawer config is actually prepared by the subdrawer form the plugin config and subdrawers settings.
       // The mechanics of how it is done depends on each specific subdrawer.
+      // @todo: consider the case when drawer is a subdrawer but it doesn't use a wrapper (see VisualNStyle for changes)
+      //    add a method to check if uses a wrapper (e.g. usesWrapper())
       if ($drawer_type == VisualNStyleInterface::SUB_DRAWER_PREFIX) {
+        // @todo: this part is all the same as in VisualNStyle::getDrawerPlugin()
+        //    move into a method
         $visualn_drawer_id = $common_drawer_id;
-        $visualn_drawer = \Drupal::service('entity_type.manager')->getStorage('visualn_drawer')->load($visualn_drawer_id);
 
-        $base_drawer_id = $visualn_drawer->getBaseDrawerId();
-        $drawer_config = $visualn_drawer->getDrawerConfig();
+        // @todo: this is a copy-paste from VisualNStyle::getDrawerPlugin()
+        $wrapper_plugin_components = VisualNStyle::getSubDrawerWrapperPluginArguments($visualn_drawer_id);
+        $base_drawer_id = $wrapper_plugin_components['wrapper_drawer_id'];
+        $drawer_config = $wrapper_plugin_components['wrapper_drawer_config'];
       }
       else {
         $base_drawer_id = $common_drawer_id;
@@ -125,6 +134,11 @@ class VisualNStyleForm extends EntityForm {
       }
       $drawer_config = $this->entity->getDrawerConfig() + $drawer_config;
       $drawer_plugin = $this->visualNDrawerManager->createInstance($base_drawer_id, $drawer_config);
+
+      // here we need to get base drawer config (in case of subdrawers)
+      // since in other places getDrawerPlugin() is used directly, we don't mess
+      // with different drawer configs
+      $drawer_config = $drawer_plugin->getConfiguration();
 
       // set new configuration. may be used by ajax calls from drawer forms
       $configuration = $form_state->getValues();
@@ -190,17 +204,21 @@ class VisualNStyleForm extends EntityForm {
 
     if ($drawer_type == VisualNStyleInterface::SUB_DRAWER_PREFIX) {
       $visualn_drawer_id = $common_drawer_id;
-      $visualn_drawer = \Drupal::service('entity_type.manager')->getStorage('visualn_drawer')->load($visualn_drawer_id);
 
-      $base_drawer_id = $visualn_drawer->getBaseDrawerId();
-      //$drawer_config = $visualn_drawer->getDrawerConfig();
+      $wrapper_plugin_components = VisualNStyle::getSubDrawerWrapperPluginArguments($visualn_drawer_id);
+      $base_drawer_id = $wrapper_plugin_components['wrapper_drawer_id'];
+      $drawer_config = $wrapper_plugin_components['wrapper_drawer_config'];
     }
     else {
       $base_drawer_id = $common_drawer_id;
-      //$drawer_config = [];
+      // @todo: get drawer config for consistency
+      $drawer_config = [];
     }
 
-    $drawer_plugin = $this->visualNDrawerManager->createInstance($base_drawer_id, []);
+    // @todo: drawer_config is also needed here, at least in case of wrapped subdrawers,
+    //    otherwise base drawer won't be loaded (since its id is set as part of wrapper_drawer_config)
+    //$drawer_plugin = $this->visualNDrawerManager->createInstance($base_drawer_id, []);
+    $drawer_plugin = $this->visualNDrawerManager->createInstance($base_drawer_id, $drawer_config);
 
     // @todo: here drawer_id and label can be misused if there is a key with the same name in drawer config form
 

@@ -44,6 +44,8 @@ class VisualNDrawerForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
+    // here original base drawer form is rendered (drawer wrappers are not used here, obvious)
+
     // do not mix this drawer and the drawer in drawer_plugin (which is for Base Drawer)
     $visualn_drawer = $this->entity;
     $form['label'] = [
@@ -71,6 +73,9 @@ class VisualNDrawerForm extends EntityForm {
     $drawers_list = [];
     //$drawers_list = ['' => $this->t('- Select -')];
     foreach ($definitions as $definition) {
+      if ($definition['role'] == 'wrapper') {
+        continue;
+      }
       $drawers_list[$definition['id']] = $definition['label'];
     }
     $default_drawer = $visualn_drawer->isNew() ? '' : $visualn_drawer->getBaseDrawerId();

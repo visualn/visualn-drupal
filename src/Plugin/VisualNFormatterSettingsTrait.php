@@ -220,7 +220,6 @@ trait VisualNFormatterSettingsTrait {
 
     // load style and get drawer manager from plugin definition
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    // @todo: add a getDrupalPluginDefinition() method to not load the whole plugin when not needed
     $drawer_plugin = $visualn_style->getDrawerPlugin();
     $drawer_plugin_id = $drawer_plugin->getPluginId();
     $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];

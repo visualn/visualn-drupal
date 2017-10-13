@@ -103,6 +103,40 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo: add to interface
+   * @todo: maybe rename the method
+   */
+  public static function getSubDrawerWrapperPluginArguments($visualn_drawer_id) {
+    $visualn_drawer = \Drupal::service('entity_type.manager')->getStorage('visualn_drawer')->load($visualn_drawer_id);
+
+    $base_drawer_id = $visualn_drawer->getBaseDrawerId();
+    $drawer_config = $visualn_drawer->getDrawerConfig();
+
+    // @todo: get drawer wrapper id form drawer or its manager annotation
+    //$wrapper_drawer_id = 'visualn_default_drawer_wrapper';
+    $wrapper_drawer_id = \Drupal::service('plugin.manager.visualn.drawer')->getDefinition($base_drawer_id)['wrapper_drawer_id'];
+
+    // @todo: here should go all other subdrawer info such as modifiers info, maybe subdrawer id etc.
+    //    also consider that subdrawers not always really need a wrapper (e.g. when there are no modifiers attach)
+    //    or even when they have modifiers that don't really need wrapping (some modifiers could change drawers behaiour at
+    //    config level via drawer_config, the so-called config modifiers/generators)
+    // @todo: Modifiers could have a special method, that allows the to register themselves
+    //    for the wrapper. If there is no registered modifiers, then wrapper isn't needed.
+    $wrapper_drawer_config = ['base_drawer_id' => $base_drawer_id, 'base_drawer_config' => $drawer_config];
+
+    // So we really will instanciate the wrapper drawer which has original base_drawer_id and drawer_config in its config.
+    // The base drawer itself will be loaded seamlessly inside the wrapper drawer __construct(), added to the internal
+    // reference property and used only internally (to it will be delegated method calls inside the wrapper).
+    // @todo: these two lines are not needed
+    $base_drawer_id = $wrapper_drawer_id;
+    $drawer_config = $wrapper_drawer_config;
+
+    return ['wrapper_drawer_id' => $wrapper_drawer_id, 'wrapper_drawer_config' => $wrapper_drawer_config];
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function getDrawerPlugin() {
 
@@ -112,10 +146,10 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
         $drawer_type = $this->getDrawerType();
         if ($drawer_type == VisualNStyleInterface::SUB_DRAWER_PREFIX) {
           $visualn_drawer_id = $common_drawer_id;
-          $visualn_drawer = \Drupal::service('entity_type.manager')->getStorage('visualn_drawer')->load($visualn_drawer_id);
 
-          $base_drawer_id = $visualn_drawer->getBaseDrawerId();
-          $drawer_config = $visualn_drawer->getDrawerConfig();
+          $wrapper_plugin_components = static::getSubDrawerWrapperPluginArguments($visualn_drawer_id);
+          $base_drawer_id = $wrapper_plugin_components['wrapper_drawer_id'];
+          $drawer_config = $wrapper_plugin_components['wrapper_drawer_config'];
         }
         else {
           $base_drawer_id = $common_drawer_id;
@@ -124,6 +158,17 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
         $drawer_config = $this->getDrawerConfig() + $drawer_config;
         // @todo: load manager at object instantiation
         $this->drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($base_drawer_id, $drawer_config);
+
+        //    Actually we are talking about subdrawing framework here. Also some modifiers
+        //    could apply to some wrappable drawers and not apply to others.
+
+        // @todo: Wrapper drawers have "role" key equal to "wrapper" in their annotation.
+        //    By defualt drawers role is set to "drawer" so they can be used when creating styles or subdrawers.
+
+        // @todo: Prepare a wrapper API description (i.e. the functions from the API, to which modifiers should be applied,
+        //     must not be used by base drawers internally, inside other methods, because when used internally inside other
+        //     methods their output/input can't be modified. E.g. buildConfigurationForm() must not be used inside any other
+        //     drawer methods).
       }
     }
 
