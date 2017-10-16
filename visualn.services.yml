@@ -17,3 +17,6 @@ services:
   plugin.manager.visualn.drawer_modifier:
     class: Drupal\visualn\Plugin\VisualNDrawerModifierManager
     parent: default_plugin_manager
+  plugin.manager.visualn.setup_baker:
+    class: Drupal\visualn\Plugin\VisualNSetupBakerManager
+    parent: default_plugin_manager
