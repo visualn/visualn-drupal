@@ -1,3 +1,9 @@
+admin:
+  version: VERSION
+  css:
+    theme:
+      css/visualn.admin.css: {}
+
 xml2json:
   remote: http://goessner.net/download/prj/jsonxml/
   version: v0.9

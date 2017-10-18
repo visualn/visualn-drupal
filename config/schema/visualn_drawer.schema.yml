@@ -15,3 +15,17 @@ visualn.visualn_drawer.*:
       label: 'Base Drawer ID'
     drawer_config:
       type: serial
+    modifiers:
+      type: sequence
+      sequence:
+        type: mapping
+        mapping:
+          id:
+            type: string
+          # @todo: see image.effect schema
+          #data:
+            #type: drawer.modifier.[%parent.id]
+          weight:
+            type: integer
+          uuid:
+            type: string

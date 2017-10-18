@@ -8,9 +8,9 @@ use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class VisualNDrawerForm.
+ * Class VisualNDrawerFormBase.
  */
-class VisualNDrawerForm extends EntityForm {
+class VisualNDrawerFormBase extends EntityForm {
 
   /**
    * The visualn drawer manager service.
@@ -20,7 +20,7 @@ class VisualNDrawerForm extends EntityForm {
   protected $visualNDrawerManager;
 
   /**
-   * Constructs an VisualNDrawerEditForm object.
+   * Constructs an VisualNDrawerFormBase object
    *
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
@@ -154,7 +154,7 @@ class VisualNDrawerForm extends EntityForm {
           '%label' => $visualn_drawer->label(),
         ]));
     }
-    $form_state->setRedirectUrl($visualn_drawer->toUrl('collection'));
+    $form_state->setRedirectUrl($visualn_drawer->toUrl('edit-form'));
   }
 
   /**

@@ -7,7 +7,9 @@
 
 namespace Drupal\visualn\Plugin\VisualN\DrawerModifier;
 
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\Plugin\VisualNDrawerModifierBase;
+use Drupal\visualn\ConfigurableDrawerModifierBase;
 
 /**
  * Provides a 'Set Basic Property' VisualN drawer modifier.
@@ -17,8 +19,14 @@ use Drupal\visualn\Plugin\VisualNDrawerModifierBase;
  *  label = @Translation("Set Basic Property"),
  * )
  */
-class SetBasicProperty extends VisualNDrawerModifierBase {
+class SetBasicProperty extends ConfigurableDrawerModifierBase {
 
-  // @todo: this is a placeholder
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form['test_textfield'] = [
+      '#type' => 'textfield',
+      '#title' => 'Test textfield',
+    ];
+    return $form;
+  }
 
 }
