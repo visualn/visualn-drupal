@@ -21,6 +21,10 @@ use Drupal\visualn\ConfigurableDrawerModifierBase;
  */
 class SetBasicProperty extends ConfigurableDrawerModifierBase {
 
+  public function defaultConfiguration() {
+    return [];
+  }
+
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form['test_textfield'] = [
       '#type' => 'textfield',

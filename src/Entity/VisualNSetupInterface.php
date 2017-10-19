@@ -9,5 +9,34 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface VisualNSetupInterface extends ConfigEntityInterface {
 
-  // Add get/set methods for your configuration properties here.
+  /**
+   * Get VisualN setup baker Id.
+   *
+   * @return string $baker_id
+   */
+  public function getBakerId();
+
+  /**
+   * Get the instance of the VisualNSetup entity baker plugin.
+   *
+   * @return \Drupal\visualn\Plugin\VisualNSetupBakerBase
+   */
+  public function getSetupBakerPlugin();
+
+  /**
+   * Get VisualN setup baker configuration.
+   *
+   * @return array $baker_config
+   */
+  public function getBakerConfig();
+
+  /**
+   * Set baker plugin configuration for VisualN setup.
+   *
+   * @param array $baker_config
+   *
+   * @return $this
+   */
+  public function setBakerConfig($baker_config);
+
 }

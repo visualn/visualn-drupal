@@ -96,7 +96,6 @@ class VisualNDrawerFormBase extends EntityForm {
 
     // Attach drawer configuration form
     $drawer_plugin_id = !empty($form_state->getValues()) ? $form_state->getValue('drawer_id') : $default_drawer;
-    $config_form = [];
 
     // @todo: potentially config values can override style values e.g. "label" (see "name" attribute, it should be
     //    contained inside a container)
@@ -164,6 +163,7 @@ class VisualNDrawerFormBase extends EntityForm {
     parent::submitForm($form, $form_state);
 
     $drawer_plugin_id = $form_state->getValue('drawer_id');
+    // @todo: maybe use config (?)
     $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, []);
 
     // Extract config values from drawer config form for saving in VisualNStyle config entity

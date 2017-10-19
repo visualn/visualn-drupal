@@ -2,8 +2,6 @@
 
 namespace Drupal\visualn\Plugin;
 
-use Drupal\visualn\Entity\VisualNStyleInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 

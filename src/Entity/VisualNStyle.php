@@ -9,7 +9,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *
  * @ConfigEntityType(
  *   id = "visualn_style",
- *   label = @Translation("VisualN style"),
+ *   label = @Translation("VisualN Style"),
  *   handlers = {
  *     "list_builder" = "Drupal\visualn\VisualNStyleListBuilder",
  *     "form" = {

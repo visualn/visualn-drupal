@@ -8,6 +8,7 @@
 namespace Drupal\visualn\Plugin\VisualN\SetupBaker;
 
 use Drupal\visualn\Plugin\VisualNSetupBakerBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a 'JSON Generic Setup Baker' VisualN drawer setup baker.
@@ -19,6 +20,25 @@ use Drupal\visualn\Plugin\VisualNSetupBakerBase;
  */
 class JSONGenericSetupBaker extends VisualNSetupBakerBase {
 
-  // @todo: this is a placeholder
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form['json_setup'] = [
+      '#type' => 'textarea',
+      '#title' => t('JSON Setup'),
+      // @todo: where to use getConfiguration and where $this->configuration (?)
+      //    the same question for other plugin types
+      '#default_value' => $this->configuration['json_setup'],
+    ];
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function bakeSetup() {
+    return json_decode($this->getConfiguration()['json_setup']);
+  }
 
 }

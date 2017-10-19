@@ -27,7 +27,9 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
- *     "uuid" = "uuid"
+ *     "uuid" = "uuid",
+ *     "baker_id" = "baker_id",
+ *     "baker_config" = "baker_config"
  *   },
  *   links = {
  *     "canonical" = "/admin/config/media/visualn/setups/manage/{visualn_setup}",
@@ -53,5 +55,65 @@ class VisualNSetup extends ConfigEntityBase implements VisualNSetupInterface {
    * @var string
    */
   protected $label;
+
+  /**
+   * The VisualN setup baker ID.
+   *
+   * @var string
+   */
+  protected $baker_id;
+
+  /**
+   * The VisualN setup baker config.
+   *
+   * @var array
+   */
+  protected $baker_config = [];
+
+  /**
+   * The VisualN setup specific baker plugin.
+   *
+   * @var \Drupal\visualn\Plugin\VisualNSetupBakerInterface
+   */
+  protected $baker_plugin;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBakerId() {
+    return $this->baker_id ?: '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSetupBakerPlugin() {
+    if (!isset($this->baker_plugin)) {
+      $baker_id = $this->getBakerId();
+      if (!empty($baker_id)) {
+        $baker_config = [];
+        $baker_config = $this->getBakerConfig() + $baker_config;
+        // @todo: load manager at object instantiation
+        $this->baker_plugin = \Drupal::service('plugin.manager.visualn.setup_baker')->createInstance($baker_id, $baker_config);
+      }
+    }
+
+    return $this->baker_plugin;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBakerConfig() {
+    return $this->baker_config;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setBakerConfig($baker_config) {
+    $this->baker = $baker_config;
+    return $this;
+  }
 
 }

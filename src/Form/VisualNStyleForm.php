@@ -25,7 +25,7 @@ class VisualNStyleForm extends EntityForm {
   protected $visualNDrawerManager;
 
   /**
-   * Constructs an VisualNStyleEditForm object.
+   * Constructs a VisualNStyleEditForm object.
    *
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.

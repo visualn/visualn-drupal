@@ -8,6 +8,7 @@
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\visualn\Entity\VisualNStyle;
 use Drupal\visualn\Entity\VisualNDrawer;
+use Drupal\visualn\Entity\VisualNSetup;
 use Drupal\Core\Template\Attribute;
 use Drupal\views\ViewExecutable;
 
@@ -52,17 +53,33 @@ function visualn_style_options($include_empty = TRUE) {
 }
 
 function visualn_subdrawer_options($include_empty = TRUE) {
-  $styles = VisualNDrawer::loadMultiple();
+  $subdrawers = VisualNDrawer::loadMultiple();
   $options = array();
-  if ($include_empty && !empty($styles)) {
+  if ($include_empty && !empty($subdrawers)) {
     $options[''] = t('- None -');
   }
-  foreach ($styles as $name => $style) {
-    $options[$name] = $style->label();
+  foreach ($subdrawers as $name => $subdrawer) {
+    $options[$name] = $subdrawer->label();
   }
 
   if (empty($options)) {
-    $options[''] = t('No defined styles');
+    $options[''] = t('No defined subdrawers');
+  }
+  return $options;
+}
+
+function visualn_setup_options($include_empty = TRUE) {
+  $setups = VisualNSetup::loadMultiple();
+  $options = array();
+  if ($include_empty && !empty($setups)) {
+    $options[''] = t('- None -');
+  }
+  foreach ($setups as $name => $setup) {
+    $options[$name] = $setup->label();
+  }
+
+  if (empty($options)) {
+    $options[''] = t('No defined setups');
   }
   return $options;
 }

@@ -25,3 +25,4 @@ visualn.visualn_style.*:
       label: 'Drawer type prefix'
     drawer_config:
       type: serial
+      label: 'Drawer config'

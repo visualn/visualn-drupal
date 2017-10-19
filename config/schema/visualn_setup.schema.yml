@@ -10,3 +10,9 @@ visualn.visualn_setup.*:
       label: 'Label'
     uuid:
       type: string
+    baker_id:
+      type: string
+      label: 'Baker ID'
+    baker_config:
+      type: serial
+      label: 'Baker config'
