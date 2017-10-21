@@ -18,7 +18,7 @@ interface VisualNDrawerInterface extends VisualNPluginInterface, PluginFormInter
    *
    * @param array $drawer_config
    */
-  public function prepareJSCofig(array &$drawer_config);
+  public function prepareJSConfig(array &$drawer_config);
 
   /**
    * Extract configuration array values to map into VisualNStyle entity config.

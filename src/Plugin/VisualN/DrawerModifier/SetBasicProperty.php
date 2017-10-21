@@ -37,7 +37,7 @@ class SetBasicProperty extends ConfigurableDrawerModifierBase {
       // modify configuration values, set user values for new elements
       'getConfiguration' => ['after' => 'modifyGetConfiguration'],
       // modify configuration values for the js script
-      'prepareJSCofig' => ['after' => 'modifyPrepareJSCofig'],
+      'prepareJSConfig' => ['after' => 'modifyPrepareJSCofig'],
     ];
     return $substitutions;
   }

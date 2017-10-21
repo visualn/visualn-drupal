@@ -62,7 +62,7 @@ class HighchartsBarDrawer extends HighchartsDrawer {
   /**
    * @inheritdoc
    */
-  public function prepareJSCofig(array &$drawer_config) {
+  public function prepareJSConfig(array &$drawer_config) {
     //$drawer_config['highcharts_setup'] = json_decode($drawer_config['highcharts_setup'], TRUE);
 
     $default_config = [

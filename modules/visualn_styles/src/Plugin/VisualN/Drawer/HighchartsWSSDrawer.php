@@ -50,7 +50,7 @@ class HighchartsWSSDrawer extends HighchartsDrawer {
   /**
    * @inheritdoc
    */
-  public function prepareJSCofig(array &$drawer_config) {
+  public function prepareJSConfig(array &$drawer_config) {
 
     // @todo: this can be a added to the DrawerBase class to be used across all WSS drawers (or to a trait)
     $visualn_setup_id = $drawer_config['drawer_setup_id'];

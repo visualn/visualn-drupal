@@ -73,23 +73,22 @@ class DefaultDrawerWrapper extends VisualNDrawerWrapperBase {
     $drawer_config =  $this->subdrawer_base_drawer->configuration + $this->subdrawer_base_drawer->defaultConfiguration();
 
     // @todo: we can't override prepareConfig directly since it is used internally inside the prepareBuild() method
-    $this->prepareJSCofig($drawer_config);
+    $this->prepareJSConfig($drawer_config);
 
 
-    //$this->subdrawer_base_drawer->prepareJSCofig($drawer_config);
+    //$this->subdrawer_base_drawer->prepareJSConfig($drawer_config);
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['config'] = $drawer_config;
   }
 
   /**
    * {@inheritdoc}
    */
-  // @todo: there is a typo in prepareJSConfig method name
-  public function prepareJSCofig(array &$drawer_config) {
+  public function prepareJSConfig(array &$drawer_config) {
     $original_drawer_config = $drawer_config;
-    $this->subdrawer_base_drawer->prepareJSCofig($drawer_config);
+    $this->subdrawer_base_drawer->prepareJSConfig($drawer_config);
 
-    if (!empty($this->methods_modifiers_substitutions['prepareJSCofig']['after'])) {
-      foreach ($this->methods_modifiers_substitutions['prepareJSCofig']['after'] as $uuid => $substitution_name) {
+    if (!empty($this->methods_modifiers_substitutions['prepareJSConfig']['after'])) {
+      foreach ($this->methods_modifiers_substitutions['prepareJSConfig']['after'] as $uuid => $substitution_name) {
         //dsm($uuid . ' => ' . $substitution_name);
         $this->modifiers[$uuid]->{$substitution_name}($drawer_config, $original_drawer_config);
       }

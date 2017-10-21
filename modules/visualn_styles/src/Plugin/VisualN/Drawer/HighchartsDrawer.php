@@ -71,7 +71,7 @@ class HighchartsDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareJSCofig(array &$drawer_config) {
+  public function prepareJSConfig(array &$drawer_config) {
     $drawer_config['highcharts_setup'] = json_decode($drawer_config['highcharts_setup'], TRUE);
 
     // @see https://www.highcharts.com/docs/getting-started/your-first-chart

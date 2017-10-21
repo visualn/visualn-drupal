@@ -45,7 +45,7 @@ class LineChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareJSCofig(array &$drawer_config) {
+  public function prepareJSConfig(array &$drawer_config) {
     if (!empty($drawer_config['y_label'])) {
       $drawer_config['y_label'] = t($drawer_config['y_label']);
     }
