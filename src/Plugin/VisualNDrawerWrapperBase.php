@@ -21,13 +21,41 @@ abstract class VisualNDrawerWrapperBase extends PluginBase implements VisualNDra
   // Contains a reference to the base drawer object.
   public $subdrawer_base_drawer;
 
+  // Contains a reference to the modifiers array.
+  public $modifiers;
+
+  // Contains modifiers methods substitutions for drawer and modifier methods.
+  public $methods_modifiers_substitutions;
+
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $subdrawer_base_drawer_id = $configuration['base_drawer_id'];
     $subdrawer_base_drawer_config = $configuration['base_drawer_config'];
+
+    // @todo: add to subdrawers documentation: always provide a native wrapper as a good practice>
+    // native wrappers may call parent::methodName() and wrap it with smth
+    // like $wrapperHelper->doBefore('methodName', ars) and $wrapperHelper->doAfter('methodName', ars).
+    // the wrapperHelper itself does something similar that does generic/default drawer wrapper class
+
+    // @todo: we can set default configuration replacements here since we can't override it directly
+    //    of course this is more a hack than a good practice
+    // @todo: maybe use some kind of instantiateDrawer callback in substitutions
     $this->subdrawer_base_drawer = \Drupal::service('plugin.manager.visualn.drawer')
                                   ->createInstance($subdrawer_base_drawer_id, $subdrawer_base_drawer_config);
+    $this->modifiers = $configuration['modifiers'];
+
+
+    // first register modifier methods that correspond to the drawer methods to modify
+    //    also modifiers can be applied before and after drawer methods
+    foreach ($this->modifiers as $uuid => $modifier) {
+      $methods_substitutions = $modifier->methodsSubstitutionsInfo();
+      foreach ($methods_substitutions as $drawer_method_name => $methods_substitution) {
+        foreach ($methods_substitution as $before_after => $substitution_name) {
+          $this->methods_modifiers_substitutions[$drawer_method_name][$before_after][$uuid] = $substitution_name;
+        }
+      }
+    }
   }
 
   /**
@@ -94,6 +122,8 @@ abstract class VisualNDrawerWrapperBase extends PluginBase implements VisualNDra
    * @inheritdoc
    */
   public function defaultConfiguration() {
+    // @todo: we can't override defaultConfiguration() directly because it is used internally in the drawer.
+    //    in most cases it is used in, it is ok just to set drawer configuration to override default config values
     return $this->subdrawer_base_drawer->defaultConfiguration();
   }
 

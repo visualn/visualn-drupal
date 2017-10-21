@@ -4,6 +4,7 @@ namespace Drupal\visualn\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -113,10 +114,15 @@ class VisualNDrawerFormBase extends EntityForm {
       $configuration = $drawer_config + $configuration;
       $drawer_plugin->setConfiguration($configuration);
 
-      $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $form_state);
+      // @todo: do the same thing for VisualNStyle and VisualNSetup, also see submitConfigurationForm() in the submitForm()
+      //    (pass subform and sub_form_state there to the function)
+      //    also set the '#tree' key to TRUE (see below)
+      $subform_state = SubformState::createForSubform($form['drawer_config'], $form, $form_state);
+      $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $subform_state);
     }
 
     $form['drawer_config'] += [
+      '#tree' => TRUE,
       '#prefix' => '<div id="drawer-config-form-ajax">',
       '#suffix' => '</div>',
     ];
@@ -169,8 +175,11 @@ class VisualNDrawerFormBase extends EntityForm {
     // Extract config values from drawer config form for saving in VisualNStyle config entity
     // and add drawer plugin id for the visualn style.
     $this->entity->set('base_drawer_id', $drawer_plugin_id);
-    $drawer_plugin->submitConfigurationForm($form, $form_state);
-    $drawer_config_values = $form_state->getValues();
+
+    $subform_state = SubformState::createForSubform($form['drawer_config'], $form, $form_state);
+    $drawer_plugin->submitConfigurationForm($form['drawer_config'], $subform_state);
+    $drawer_config_values = $form_state->getValue('drawer_config') ?: [];
+
     $this->entity->set('drawer_config', $drawer_config_values);
   }
 

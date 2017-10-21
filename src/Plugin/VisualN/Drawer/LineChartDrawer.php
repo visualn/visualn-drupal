@@ -78,7 +78,6 @@ class LineChartDrawer extends VisualNDrawerBase {
    */
   public function extractConfigArrayValues(array $values, array $element_parents) {
     $values = parent::extractConfigArrayValues($values, $element_parents);
-    $default_config = $this->defaultConfiguration();
     $drawer_config_values = [
       'color' => trim($values['color']),
       'y_label' => trim($values['y_label']),

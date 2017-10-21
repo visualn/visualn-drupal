@@ -38,7 +38,7 @@ class JSONGenericSetupBaker extends VisualNSetupBakerBase {
    * {@inheritdoc}
    */
   public function bakeSetup() {
-    return json_decode($this->getConfiguration()['json_setup']);
+    return json_decode($this->getConfiguration()['json_setup'], TRUE);
   }
 
 }

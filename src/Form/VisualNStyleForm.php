@@ -126,13 +126,17 @@ class VisualNStyleForm extends EntityForm {
         // @todo: this is a copy-paste from VisualNStyle::getDrawerPlugin()
         $wrapper_plugin_components = VisualNStyle::getSubDrawerWrapperPluginArguments($visualn_drawer_id);
         $base_drawer_id = $wrapper_plugin_components['wrapper_drawer_id'];
+        // @todo: the config here is just for drawer wrapper to instantiate original drawer in its constructor
+        // @todo: here $drawer_config already contains loaded modifiers classes, is that ok?
         $drawer_config = $wrapper_plugin_components['wrapper_drawer_config'];
+        $drawer_config['base_drawer_config'] = $this->entity->getDrawerConfig() + $drawer_config['base_drawer_config'];
       }
       else {
         $base_drawer_id = $common_drawer_id;
         $drawer_config = [];
+        $drawer_config = $this->entity->getDrawerConfig() + $drawer_config;
       }
-      $drawer_config = $this->entity->getDrawerConfig() + $drawer_config;
+      // In case of wrapper it is basically not a drawer config
       $drawer_plugin = $this->visualNDrawerManager->createInstance($base_drawer_id, $drawer_config);
 
       // here we need to get base drawer config (in case of subdrawers)

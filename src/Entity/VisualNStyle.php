@@ -117,6 +117,14 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
     //$wrapper_drawer_id = 'visualn_default_drawer_wrapper';
     $wrapper_drawer_id = \Drupal::service('plugin.manager.visualn.drawer')->getDefinition($base_drawer_id)['wrapper_drawer_id'];
 
+    // @todo: is that ok (from performance point of view) to get modifiers that way
+    //    and pass so to the $wrapper_drawer_config?
+    //    also this method can be called multiple times
+    $modifiers = [];
+    foreach ($visualn_drawer->getModifiers() as $modifier) {
+      $modifiers[$modifier->getUuid()] = $modifier;
+    }
+
     // @todo: here should go all other subdrawer info such as modifiers info, maybe subdrawer id etc.
     //    also consider that subdrawers not always really need a wrapper (e.g. when there are no modifiers attach)
     //    or even when they have modifiers that don't really need wrapping (some modifiers could change drawers behaiour at
@@ -124,6 +132,7 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
     // @todo: Modifiers could have a special method, that allows the to register themselves
     //    for the wrapper. If there is no registered modifiers, then wrapper isn't needed.
     $wrapper_drawer_config = ['base_drawer_id' => $base_drawer_id, 'base_drawer_config' => $drawer_config];
+    $wrapper_drawer_config['modifiers'] = $modifiers;
 
     // So we really will instanciate the wrapper drawer which has original base_drawer_id and drawer_config in its config.
     // The base drawer itself will be loaded seamlessly inside the wrapper drawer __construct(), added to the internal
@@ -156,6 +165,9 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
           $drawer_config = [];
         }
         $drawer_config = $this->getDrawerConfig() + $drawer_config;
+        // @todo: rename base_drawer_id variable to drawer_plugin_id to resemble that it can be a wrapper
+        //    which can hardly be considered as a base drawer though technically is (a better choice would be to call
+        //    such drawers just wrapper drawers but it should be mentioned somewhere in terminology dictionary)
         // @todo: load manager at object instantiation
         $this->drawer_plugin = \Drupal::service('plugin.manager.visualn.drawer')->createInstance($base_drawer_id, $drawer_config);
 

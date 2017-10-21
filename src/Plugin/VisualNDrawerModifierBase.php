@@ -124,6 +124,14 @@ abstract class VisualNDrawerModifierBase extends PluginBase implements VisualNDr
     return [];
   }
 
+  /**
+   * @todo: add to the base class and interface
+   * @todo: maybe rename the method
+   */
+  public function methodsSubstitutionsInfo() {
+    return [];
+  }
+
 /*
   public function applyModifier($method, $args) {
     // @todo: get all args
