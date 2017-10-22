@@ -159,12 +159,13 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
           $wrapper_plugin_components = static::getSubDrawerWrapperPluginArguments($visualn_drawer_id);
           $base_drawer_id = $wrapper_plugin_components['wrapper_drawer_id'];
           $drawer_config = $wrapper_plugin_components['wrapper_drawer_config'];
+          $drawer_config['base_drawer_config'] = $this->getDrawerConfig() + $drawer_config['base_drawer_config'];
         }
         else {
           $base_drawer_id = $common_drawer_id;
           $drawer_config = [];
+          $drawer_config = $this->getDrawerConfig() + $drawer_config;
         }
-        $drawer_config = $this->getDrawerConfig() + $drawer_config;
         // @todo: rename base_drawer_id variable to drawer_plugin_id to resemble that it can be a wrapper
         //    which can hardly be considered as a base drawer though technically is (a better choice would be to call
         //    such drawers just wrapper drawers but it should be mentioned somewhere in terminology dictionary)

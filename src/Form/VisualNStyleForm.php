@@ -215,6 +215,7 @@ class VisualNStyleForm extends EntityForm {
       $wrapper_plugin_components = VisualNStyle::getSubDrawerWrapperPluginArguments($visualn_drawer_id);
       $base_drawer_id = $wrapper_plugin_components['wrapper_drawer_id'];
       $drawer_config = $wrapper_plugin_components['wrapper_drawer_config'];
+      // @todo: also add base drawer config to $drawer_config['base_drawer_config'] (see above in form())
     }
     else {
       $base_drawer_id = $common_drawer_id;
