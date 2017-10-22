@@ -114,9 +114,6 @@ class VisualNDrawerFormBase extends EntityForm {
       $configuration = $drawer_config + $configuration;
       $drawer_plugin->setConfiguration($configuration);
 
-      // @todo: do the same thing for VisualNStyle and VisualNSetup, also see submitConfigurationForm() in the submitForm()
-      //    (pass subform and sub_form_state there to the function)
-      //    also set the '#tree' key to TRUE (see below)
       $subform_state = SubformState::createForSubform($form['drawer_config'], $form, $form_state);
       $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $subform_state);
     }

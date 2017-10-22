@@ -4,6 +4,7 @@ namespace Drupal\visualn\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\visualn\Entity\VisualNStyleInterface;
@@ -150,10 +151,12 @@ class VisualNStyleForm extends EntityForm {
       $configuration = $drawer_config + $configuration;
       $drawer_plugin->setConfiguration($configuration);
 
-      $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $form_state);
+      $subform_state = SubformState::createForSubform($form['drawer_config'], $form, $form_state);
+      $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $subform_state);
     }
 
     $form['drawer_config'] += [
+      '#tree' => TRUE,
       '#prefix' => '<div id="drawer-config-form-ajax">',
       '#suffix' => '</div>',
     ];
@@ -224,15 +227,16 @@ class VisualNStyleForm extends EntityForm {
     //$drawer_plugin = $this->visualNDrawerManager->createInstance($base_drawer_id, []);
     $drawer_plugin = $this->visualNDrawerManager->createInstance($base_drawer_id, $drawer_config);
 
-    // @todo: here drawer_id and label can be misused if there is a key with the same name in drawer config form
-
     // Extract config values from drawer config form for saving in VisualNStyle config entity
     // and add drawer plugin id for the visualn style.
     $this->entity->set('drawer_id', $common_drawer_id);
     $this->entity->set('drawer_type', $drawer_type);
     $this->entity->set('drawer_type_prefix', $drawer_type);
-    $drawer_plugin->submitConfigurationForm($form, $form_state);
-    $drawer_config_values = $form_state->getValues();
+
+    $subform_state = SubformState::createForSubform($form['drawer_config'], $form, $form_state);
+    $drawer_plugin->submitConfigurationForm($form['drawer_config'], $subform_state);
+    $drawer_config_values = $form_state->getValue('drawer_config') ?: [];
+
     $this->entity->set('drawer_config', $drawer_config_values);
   }
 

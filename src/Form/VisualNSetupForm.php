@@ -4,6 +4,7 @@ namespace Drupal\visualn\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\visualn\Plugin\VisualNSetupBakerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -113,10 +114,12 @@ class VisualNSetupForm extends EntityForm {
       $drawer_plugin->setConfiguration($configuration);
 */
 
-      $form['baker_config'] = $baker_plugin->buildConfigurationForm($form['baker_config'], $form_state);
+      $subform_state = SubformState::createForSubform($form['baker_config'], $form, $form_state);
+      $form['baker_config'] = $baker_plugin->buildConfigurationForm($form['baker_config'], $subform_state);
     }
 
     $form['baker_config'] += [
+      '#tree' => TRUE,
       '#prefix' => '<div id="baker-config-form-ajax">',
       '#suffix' => '</div>',
     ];
@@ -175,8 +178,11 @@ class VisualNSetupForm extends EntityForm {
     $this->entity->set('baker_id', $baker_plugin_id);
     // give baker a chance to act on config values before saving (e.g. extract and transform config values)
     // and maybe perform other actions
-    $baker_plugin->submitConfigurationForm($form, $form_state);
-    $baker_config_values = $form_state->getValues();
+
+    $subform_state = SubformState::createForSubform($form['baker_config'], $form, $form_state);
+    $baker_plugin->submitConfigurationForm($form['baker_config'], $subform_state);
+    $baker_config_values = $form_state->getValue('baker_config') ?: [];
+
     $this->entity->set('baker_config', $baker_config_values);
   }
 
