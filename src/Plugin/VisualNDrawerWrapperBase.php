@@ -19,13 +19,13 @@ use Drupal\Component\Plugin\PluginBase;
 abstract class VisualNDrawerWrapperBase extends PluginBase implements VisualNDrawerInterface {
 
   // Contains a reference to the base drawer object.
-  public $subdrawer_base_drawer;
+  protected $subdrawer_base_drawer;
 
   // Contains a reference to the modifiers array.
-  public $modifiers;
+  protected $modifiers;
 
   // Contains modifiers methods substitutions for drawer and modifier methods.
-  public $methods_modifiers_substitutions;
+  protected $methods_modifiers_substitutions;
 
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);

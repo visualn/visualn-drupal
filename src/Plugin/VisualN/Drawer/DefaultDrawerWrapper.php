@@ -30,13 +30,15 @@ class DefaultDrawerWrapper extends VisualNDrawerWrapperBase {
    */
   public function defaultConfiguration() {
     $default_values = $this->subdrawer_base_drawer->defaultConfiguration();
+    // @todo: which one should we use here?
+    $configuration = $this->subdrawer_base_drawer->getConfiguration();
 
     // Modify drawer default configuration
 
     if (!empty($this->methods_modifiers_substitutions['defaultConfiguration']['after'])) {
       foreach ($this->methods_modifiers_substitutions['defaultConfiguration']['after'] as $uuid => $substitution_name) {
         //dsm($uuid . ' => ' . $substitution_name);
-        $default_values = $this->modifiers[$uuid]->{$substitution_name}($default_values);
+        $default_values = $this->modifiers[$uuid]->{$substitution_name}($default_values, $configuration);
       }
     }
 
@@ -99,9 +101,15 @@ class DefaultDrawerWrapper extends VisualNDrawerWrapperBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    // @todo: since modifiers may modify getConfiguration(), which one should be here?
-    $drawer_config = $this->subdrawer_base_drawer->getConfiguration();
     $form = $this->subdrawer_base_drawer->buildConfigurationForm($form, $form_state);
+
+    // @todo: since modifiers may modify getConfiguration(), which one should be here?
+    //$drawer_config = $this->subdrawer_base_drawer->getConfiguration();
+    // the logic is as follows: modifier for buildConfiguration() already needs modified default configuration
+    //    also it would need modified getConfiguration() but since getConfiguration() may be also used internally,
+    //    we don't use it here, though original getConfiguration() should return what we need any way
+    //    because in most cases submitConfigurationForm() just saves form_state values which are then used by configuration
+    $drawer_config = $this->subdrawer_base_drawer->getConfiguration() + $this->defaultConfiguration();
 
     // Modify drawer configuration form
 
@@ -110,6 +118,8 @@ class DefaultDrawerWrapper extends VisualNDrawerWrapperBase {
         // @todo: maybe set a reference in drawer modifier to the original base_drawer (base drawer ?)
         //    to not pass drawer_config every time into arguments
         //    though there are security concerns in case of using third-party modifiers
+        //    ! that is not possible though for native wrappers because there is no reference to the base drawer -
+        //      native drawer is base drawer itself (it extends base drawer class)
         //dsm($uuid . ' => ' . $substitution_name);
         $form = $this->modifiers[$uuid]->{$substitution_name}($form, $form_state, $drawer_config);
       }

@@ -16,6 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @VisualNDrawer(
  *  id = "visualn_highcharts_wss",
  *  label = @Translation("Highcharts With Setup Select"),
+ *  wrapper_drawer_id = "visualn_highcharts_wss_wrapper",
  * )
  */
 class HighchartsWSSDrawer extends HighchartsDrawer {

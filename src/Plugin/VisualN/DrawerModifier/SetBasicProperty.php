@@ -76,10 +76,15 @@ class SetBasicProperty extends ConfigurableDrawerModifierBase {
     NestedArray::setValue($drawer_config, $array_parents, $value);
   }
 
-  public function modifyDefaultConfiguration($originial_default_values) {
+  public function modifyDefaultConfiguration($originial_default_values, $drawer_config) {
     // @todo: we can't override defaultConfiguration() directly because it is used internally in the drawer.
     //    in most cases it is used in, it is ok just to set drawer configuration to override default config values
     $default_values = $originial_default_values;
+
+    $element_key = trim($this->configuration['element_key']);
+    $element_default_value = trim($this->configuration['element_default_value']);
+    $default_values[$element_key] = $element_default_value;
+
     return $default_values;
   }
 
@@ -110,6 +115,7 @@ class SetBasicProperty extends ConfigurableDrawerModifierBase {
       'element_title' => '',
       'element_required' => '',
       'element_type' => '',
+      'element_default_value' => '',
       'property_path' => '',
     ];
   }
@@ -152,6 +158,12 @@ class SetBasicProperty extends ConfigurableDrawerModifierBase {
       '#options' => $element_types,
       '#required' => TRUE,
     ];
+    $form['element_default_value'] = [
+      '#type' => 'textfield',
+      '#title' => t('Element default value'),
+      '#default_value' => $this->configuration['element_default_value'],
+      '#required' => TRUE,
+    ];
     $form['property_path'] = [
       '#type' => 'textarea',
       '#title' => t('Propery path to set value for'),
@@ -179,6 +191,7 @@ class SetBasicProperty extends ConfigurableDrawerModifierBase {
     $this->configuration['element_title'] = $form_state->getValue('element_title');
     $this->configuration['element_required'] = $form_state->getValue('element_required');
     $this->configuration['element_type'] = $form_state->getValue('element_type');
+    $this->configuration['element_default_value'] = $form_state->getValue('element_default_value');
     $this->configuration['property_path'] = $form_state->getValue('property_path');
   }
 

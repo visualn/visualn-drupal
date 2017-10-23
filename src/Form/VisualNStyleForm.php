@@ -85,7 +85,7 @@ class VisualNStyleForm extends EntityForm {
     }
     // Get drawer entities list
     foreach (visualn_subdrawer_options(FALSE) as $id => $label) {
-      $drawers_list[VisualNStyleInterface::SUB_DRAWER_PREFIX . "|" . $id] = $label;
+      $drawers_list[VisualNStyleInterface::SUB_DRAWER_PREFIX . "|" . $id] = $label . ' [' . $this->t('user-defined') . ']';
     }
 
     $default_drawer = $visualn_style->isNew() ? "" : $visualn_style->getDrawerType() . "|" . $visualn_style->getDrawerId();
