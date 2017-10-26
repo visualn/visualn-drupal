@@ -79,3 +79,24 @@ highcharts:
     js/drawers/highcharts.js: {}
   dependencies:
     - visualn_styles/highcharts-lib
+
+slick-lib:
+  remote: http://kenwheeler.github.io/slick/
+  version: 1.x
+  license:
+    name: MIT
+    url: https://github.com/kenwheeler/slick/blob/master/LICENSE
+    gpl-compatible: true
+  js:
+    /libraries/slick/slick/slick.min.js: { weight: -3, minified: true }
+  css:
+    base:
+      /libraries/slick/slick/slick.css: {}
+  dependencies:
+    - core/jquery
+
+slick:
+  js:
+    js/drawers/slick.js: {}
+  dependencies:
+    - visualn_styles/slick-lib
