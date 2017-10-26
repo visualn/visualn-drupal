@@ -2,40 +2,40 @@
 
 /**
  * @file
- * Conatins SlickGalleryDrawer based for Slick.js library
+ * Conatins DrawerGenericBoilerplate class
  */
 
-namespace Drupal\visualn_styles\Plugin\VisualN\Drawer;
+namespace Drupal\visualn\DrawerBoilerplate;
 
 use Drupal\visualn\Plugin\VisualNDrawerBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a 'SlickGalleryDrawer' VisualN drawer.
+ * Boilerplate class for VisualN Drawer plugins.
  *
- * @VisualNDrawer(
- *  id = "visualn_slick_gallery",
- *  label = @Translation("Slick Gallery"),
- * )
+ * @see \Drupal\visualn\Plugin\VisualNDrawerBase
+ * @see \Drupal\visualn\Plugin\VisualNDrawerInterface
  */
-class SlickGalleryDrawer extends VisualNDrawerBase {
+abstract class DrawerGenericBoilerplate extends VisualNDrawerBase {
 
   /**
    * @inheritdoc
    */
+/*
   public function prepareBuild(array &$build, $vuid, array $options = []) {
     // Attach drawer config to js settings
     parent::prepareBuild($build, $vuid, $options);
     // Attach visualn style libraries
-    $build['#attached']['library'][] = 'visualn_styles/slick-gallery';
+    $build['#attached']['library'][] = 'module_name/drawer-library';
   }
+*/
 
   /**
    * @inheritdoc
    */
   public function defaultConfiguration() {
     $default_config = [
-      'drawer_setup' => '', // slick config in json format
+      'drawer_setup' => '',
       'data_keys' => '',
     ];
     return $default_config;
@@ -49,13 +49,14 @@ class SlickGalleryDrawer extends VisualNDrawerBase {
     $form = [];
     $form['drawer_setup'] = [
       '#type' => 'textarea',
-      '#title' => t('Slick setup'),
+      '#title' => t('Drawer setup'),
       '#default_value' => $configuration['drawer_setup'],
+      '#description' => t('Drawer setup in JSON format'),
     ];
     // @todo: this will need ajax to update drawer fields subform without reopening
     $form['data_keys'] = [
       '#type' => 'textfield',
-      '#title' => t('Slick data keys'),
+      '#title' => t('Drawer data keys'),
       '#default_value' => $configuration['data_keys'],
     ];
     return $form;
@@ -64,24 +65,26 @@ class SlickGalleryDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
+/*
   public function jsId() {
-    return 'visualnSlickGalleryDrawer';
+    return 'module_nameClassName';
   }
+*/
 
   /**
    * @inheritdoc
    */
   public function prepareJSConfig(array &$drawer_config) {
-    $drawer_config['slick_setup'] = json_decode($drawer_config['drawer_setup'], TRUE);
+    $drawer_config['drawer_setup'] = json_decode($drawer_config['drawer_setup'], TRUE);
   }
 
   /**
    * @inheritdoc
    */
   public function dataKeys() {
-    $slick_keys = trim($this->configuration['data_keys']);
-    if (!empty($slick_keys)) {
-      $data_keys = explode(',', $slick_keys);
+    $data_keys_str = trim($this->configuration['data_keys']);
+    if (!empty($data_keys_str)) {
+      $data_keys = explode(',', $data_keys_str);
       // @todo: trim every key string
     }
     else {
