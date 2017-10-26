@@ -95,8 +95,8 @@ slick-lib:
   dependencies:
     - core/jquery
 
-slick:
+slick-gallery:
   js:
-    js/drawers/slick.js: {}
+    js/drawers/slick-gallery.js: {}
   dependencies:
     - visualn_styles/slick-lib

@@ -1,5 +1,5 @@
 (function ($, Drupal) {
-  Drupal.visualnData.drawers.visualnSlickDrawer = function(drawings, vuid) {
+  Drupal.visualnData.drawers.visualnSlickGalleryDrawer = function(drawings, vuid) {
     var drawing = drawings[vuid];
     var data = drawing.adapter.responseData;
     var html_selector = drawing.html_selector;

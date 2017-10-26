@@ -11,14 +11,14 @@ use Drupal\visualn\Plugin\VisualNDrawerBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a 'SlickDrawer' VisualN drawer.
+ * Provides a 'SlickGalleryDrawer' VisualN drawer.
  *
  * @VisualNDrawer(
- *  id = "visualn_slick",
- *  label = @Translation("Slick"),
+ *  id = "visualn_slick_gallery",
+ *  label = @Translation("Slick Gallery"),
  * )
  */
-class SlickDrawer extends VisualNDrawerBase {
+class SlickGalleryDrawer extends VisualNDrawerBase {
 
   /**
    * @inheritdoc
@@ -27,7 +27,7 @@ class SlickDrawer extends VisualNDrawerBase {
     // Attach drawer config to js settings
     parent::prepareBuild($build, $vuid, $options);
     // Attach visualn style libraries
-    $build['#attached']['library'][] = 'visualn_styles/slick';
+    $build['#attached']['library'][] = 'visualn_styles/slick-gallery';
   }
 
   /**
@@ -66,7 +66,7 @@ class SlickDrawer extends VisualNDrawerBase {
    * @inheritdoc
    */
   public function jsId() {
-    return 'visualnSlickDrawer';
+    return 'visualnSlickGalleryDrawer';
   }
 
   /**
