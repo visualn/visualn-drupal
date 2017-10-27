@@ -98,5 +98,8 @@ slick-lib:
 slick-gallery:
   js:
     js/drawers/slick-gallery.js: {}
+  css:
+    base:
+      /libraries/slick/slick/slick-theme.css: {}
   dependencies:
     - visualn_styles/slick-lib
