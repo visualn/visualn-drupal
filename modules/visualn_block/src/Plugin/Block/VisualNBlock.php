@@ -191,8 +191,10 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $form['drawer_container'] = [
       '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
       '#suffix' => '</div>',
-      '#type' => 'container',
       '#weight' => '11',
+      '#type' => 'details',
+      '#title' => t('Style configuration'),
+      '#open' => $form_state->getTriggeringElement(),
     ];
 
     $drawer_config = [];
