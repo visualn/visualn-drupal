@@ -85,6 +85,10 @@ class VisualNStyleForm extends EntityForm {
     }
     // Get drawer entities list
     foreach (visualn_subdrawer_options(FALSE) as $id => $label) {
+      // exclude 'No defined subdrawers' option
+      if (empty($id)) {
+        continue;
+      }
       $drawers_list[VisualNStyleInterface::SUB_DRAWER_PREFIX . "|" . $id] = $label . ' [' . $this->t('user-defined') . ']';
     }
 
