@@ -199,11 +199,7 @@ class VisualNWidget extends FileWidget {
     $element['drawer_container'] = [
       '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
       '#suffix' => '</div>',
-      '#type' => 'details',
-      '#title' => t('Style configuration'),
-      // @todo: actually we should change which exactly element was triggered, because as it is done now
-      //    it will open all 'details' (but it's not a problem here since it will be visible only on ajax replace)
-      '#open' => $form_state->getTriggeringElement(),
+      '#type' => 'container',
     ];
     // field_visualn_file_multiple[0][visualn_style_id]
     // @todo: if value is set, get it from from_state (see VisualNFormatter)
@@ -261,6 +257,14 @@ class VisualNWidget extends FileWidget {
         }
         $element['drawer_container']['drawer_fields'] = $keys_subform;
       }
+
+      $element['drawer_container'] = [
+        '#type' => 'details',
+        '#title' => t('Style configuration'),
+        // @todo: actually we should change which exactly element was triggered, because as it is done now
+        //    it will open all 'details' (but it's not a problem here since it will be visible only on ajax replace)
+        '#open' => $form_state->getTriggeringElement(),
+      ] + $element['drawer_container'];
     }
     return parent::process($element, $form_state, $form);
   }

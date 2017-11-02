@@ -125,11 +125,7 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
       '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
       '#suffix' => '</div>',
       '#weight' => '3',
-      '#type' => 'details',
-      '#title' => t('Style configuration'),
-      // @todo: actually we should change which exactly element was triggered, because as it is done now
-      //    it will open all 'details' (but it's not a problem here since it will be visible only on ajax replace)
-      '#open' => $form_state->getTriggeringElement(),
+      '#type' => 'container',
     ];
     // @todo: on first ajax call (on select change) this code is called twice
     // dsm('test ajax');
@@ -206,6 +202,14 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
       }
 
       $element['#element_validate'][] = [$this, 'validateDrawerFieldsForm'];
+
+      $element['drawer_container'] = [
+        '#type' => 'details',
+        '#title' => t('Style configuration'),
+        // @todo: actually we should change which exactly element was triggered, because as it is done now
+        //    it will open all 'details' (but it's not a problem here since it will be visible only on ajax replace)
+        '#open' => $form_state->getTriggeringElement(),
+      ] + $element['drawer_container'];
     }
 
 

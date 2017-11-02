@@ -192,9 +192,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
       '#suffix' => '</div>',
       '#weight' => '11',
-      '#type' => 'details',
-      '#title' => t('Style configuration'),
-      '#open' => $form_state->getTriggeringElement(),
+      '#type' => 'container',
     ];
 
     $drawer_config = [];
@@ -228,7 +226,9 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
 
     $drawer_config = $drawer_config ?: [];
 
-    $visualn_style_id = $visualn_style_id ?: $this->configuration['visualn_style_id'];
+    // When the form isn't submitted, form_state values is empty for it, thus values are NULL
+    // but if changed to "None", submit is triggered and the value is set though an empty string.
+    $visualn_style_id = isset($visualn_style_id) ? $visualn_style_id : $this->configuration['visualn_style_id'];
     // Attach drawer configuration form
     if($visualn_style_id) {
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
@@ -273,6 +273,12 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
           ];
         }
       }
+
+      $form['drawer_container'] = [
+        '#type' => 'details',
+        '#title' => t('Style configuration'),
+        '#open' => $form_state->getTriggeringElement(),
+      ] + $form['drawer_container'];
     }
     return $form;
   }
