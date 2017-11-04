@@ -1,0 +1,4 @@
+services:
+  plugin.manager.visualn.drawing_fetcher:
+    class: Drupal\visualn_drawings_library\Plugin\DrawingFetcherManager
+    parent: default_plugin_manager
