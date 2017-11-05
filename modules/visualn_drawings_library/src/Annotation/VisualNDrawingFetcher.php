@@ -5,14 +5,14 @@ namespace Drupal\visualn_drawings_library\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a Drawing Fetcher item annotation object.
+ * Defines a VisualN Drawing Fetcher item annotation object.
  *
- * @see \Drupal\visualn_drawings_library\Plugin\DrawingFetcherManager
+ * @see \Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherManager
  * @see plugin_api
  *
  * @Annotation
  */
-class DrawingFetcher extends Plugin {
+class VisualNDrawingFetcher extends Plugin {
 
 
   /**

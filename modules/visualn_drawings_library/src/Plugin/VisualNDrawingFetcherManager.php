@@ -7,13 +7,13 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * Provides the Drawing Fetcher plugin manager.
+ * Provides the VisualN Drawing Fetcher plugin manager.
  */
-class DrawingFetcherManager extends DefaultPluginManager {
+class VisualNDrawingFetcherManager extends DefaultPluginManager {
 
 
   /**
-   * Constructs a new DrawingFetcherManager object.
+   * Constructs a new VisualNDrawingFetcherManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -24,7 +24,7 @@ class DrawingFetcherManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/DrawingFetcher', $namespaces, $module_handler, 'Drupal\visualn_drawings_library\Plugin\DrawingFetcherInterface', 'Drupal\visualn_drawings_library\Annotation\DrawingFetcher');
+    parent::__construct('Plugin/VisualN/DrawingFetcher', $namespaces, $module_handler, 'Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherInterface', 'Drupal\visualn_drawings_library\Annotation\VisualNDrawingFetcher');
 
     $this->alterInfo('visualn_drawing_fetcher_info');
     $this->setCacheBackend($cache_backend, 'visualn_drawing_fetcher_plugins');
