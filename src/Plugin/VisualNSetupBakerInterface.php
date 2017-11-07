@@ -4,11 +4,12 @@ namespace Drupal\visualn\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Defines an interface for VisualN Setup Baker plugins.
  */
-interface VisualNSetupBakerInterface extends PluginInspectionInterface, ConfigurablePluginInterface {
+interface VisualNSetupBakerInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
 
   /**
    * Get ready setup for drawer to use.

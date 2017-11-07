@@ -256,4 +256,38 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
     return $fields;
   }
 
+  /**
+   * {@inheritdoc}
+   *
+   * @todo: add to interface
+   */
+  public function buildDrawing() {
+    // @todo: there are multiple ways to get bundle entity type<
+    //    see https://www.drupal.org/docs/8/api/entity-api/working-with-the-entity-api
+    $bundle_entity_type = $this->getEntityType()->getBundleEntityType();
+    $bundle = $this->bundle();
+
+    // get config entity for the bundle
+    $bundle_config_entity = \Drupal::entityTypeManager()->getStorage($bundle_entity_type)->load($bundle);
+
+    // get drawing fetcher field
+    $drawing_fetcher_field = $bundle_config_entity->getDrawingFetcherField();
+    if (!empty($drawing_fetcher_field)) {
+      if (!$this->get($drawing_fetcher_field)->isEmpty()) {
+        // fetcher field load the corresponding drawing fetcher plugin to build drawing markup
+        // @todo: what if fetcher field has multiple items (can we also configure delta)?
+        $drawing_markup = $this->get($drawing_fetcher_field)->first()->buildDrawing();
+        //$drawing_markup = $this->get($drawing_fetcher_field)->get(0)->buildDrawing();
+      }
+      else {
+        $drawing_markup = ['#markup' => ''];
+      }
+    }
+    else {
+      $drawing_markup = ['#markup' => ''];
+    }
+
+    return $drawing_markup;
+  }
+
 }

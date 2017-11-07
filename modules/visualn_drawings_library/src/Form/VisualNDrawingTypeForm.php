@@ -35,7 +35,36 @@ class VisualNDrawingTypeForm extends EntityForm {
       '#disabled' => !$visualn_drawing_type->isNew(),
     ];
 
-    /* You will need additional form elements for your custom properties. */
+    $options = ['' => t('- Select drawing fetcher field -')];
+    if (!$visualn_drawing_type->isNew()) {
+      // @todo: instantiate on create
+      $entityManager = \Drupal::service('entity_field.manager');
+      // @todo: get type from entity properties
+      $entity_type = 'visualn_drawing';
+      $bundle = $visualn_drawing_type->id();
+      $bundle_fields = $entityManager->getFieldDefinitions($entity_type, $bundle);
+
+      foreach ($bundle_fields as $field_name => $field_definition) {
+        // filter out base fields
+        if ($field_definition->getFieldStorageDefinition()->isBaseField() == TRUE) {
+          continue;
+        }
+
+        // @todo: move field type into constant
+        if ($field_definition->getType() == 'visualn_fetcher') {
+          $options[$field_name] = $field_definition->getLabel();
+        }
+      }
+    }
+
+
+    $form['drawing_fetcher_field'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Drawing fetcher field'),
+      '#options' => $options,
+      '#default_value' => $this->entity->getDrawingFetcherField(),
+      '#disabled' => $visualn_drawing_type->isNew(),
+    ];
 
     return $form;
   }
@@ -60,6 +89,16 @@ class VisualNDrawingTypeForm extends EntityForm {
         ]));
     }
     $form_state->setRedirectUrl($visualn_drawing_type->toUrl('collection'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    parent::submitForm($form, $form_state);
+
+    $drawing_fetcher_field = $form_state->getValue('drawing_fetcher_field') ?: '';
+    $this->entity->set('drawing_fetcher_field', $drawing_fetcher_field);
   }
 
 }

@@ -28,7 +28,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
- *     "uuid" = "uuid"
+ *     "uuid" = "uuid",
+ *     "drawing_fetcher_field" = "drawing_fetcher_field"
  *   },
  *   links = {
  *     "canonical" = "/admin/config/media/visualn/drawing-types/{visualn_drawing_type}",
@@ -54,5 +55,19 @@ class VisualNDrawingType extends ConfigEntityBundleBase implements VisualNDrawin
    * @var string
    */
   protected $label;
+
+  /**
+   * The VisualN Drawing Fetcher field ID.
+   *
+   * @var string
+   */
+  protected $drawing_fetcher_field;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDrawingFetcherField() {
+    return $this->drawing_fetcher_field;
+  }
 
 }

@@ -29,6 +29,8 @@ class VisualNResourceItem extends LinkItem {
    */
   public static function defaultFieldSettings() {
     // @todo: check
+    // the default settings are used when attaching a field to an entity bundle
+    // here only override_style_id seems to have sense
     return array(
       'override_style_id' => 0,
       'drawer_config' => [],

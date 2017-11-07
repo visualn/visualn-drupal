@@ -9,5 +9,11 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface VisualNDrawingTypeInterface extends ConfigEntityInterface {
 
-  // Add get/set methods for your configuration properties here.
+  /**
+   * Get drawing fetcher field machine name default value for the entity type
+   *
+   * @todo: maybe rename the method
+   */
+  public function getDrawingFetcherField();
+
 }
