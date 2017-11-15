@@ -31,4 +31,15 @@ class VisualNDrawingFetcher extends Plugin {
    */
   public $label;
 
+  /**
+   * Shows whether the plugin needs a reference to an entity.
+   *
+   * It is usen by fetchers that use entity fields as data sources.
+   *
+   * @todo: remove when not needed
+   *
+   * @var boolean
+   */
+  public $needs_entity_info = TRUE;
+
 }

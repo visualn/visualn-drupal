@@ -48,9 +48,11 @@ class IframeContentProvider implements ContentProviderInterface {
   public function provideContent($record_key, $options) {
     // @todo: keep in mind that this configuration for the block, not drawer
     $configuration = $options;
+    $block_id = $configuration['id'];
     $block_manager = \Drupal::service('plugin.manager.block');
     // @todo: get block config
-    $plugin_block = $block_manager->createInstance('visualn_block', $configuration);
+    //$plugin_block = $block_manager->createInstance('visualn_block', $configuration);
+    $plugin_block = $block_manager->createInstance($block_id, $configuration);
     // Some blocks might implement access check.
     $access_result = $plugin_block->access(\Drupal::currentUser());
     // Return empty render array if user doesn't have access.

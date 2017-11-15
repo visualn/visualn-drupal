@@ -9,19 +9,17 @@ use Drupal\Core\Form\FormStateInterface;
  * Provides a 'VisualN File field drawing fetcher' VisualN drawing fetcher.
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_file_field_drawing_fetcher",
+ *  id = "visualn_file_field",
  *  label = @Translation("VisualN File field drawing fetcher"),
  * )
  */
-class VisualNFileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
+class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
 
   /**
    * {@inheritdoc}
    */
   public function fetchDrawing() {
-    $drawing_markup = [
-      '#markup' => 'no markup for the drawing',
-    ];
+    $drawing_markup = parent::fetchDrawing();
 
     $visualn_file_field = $this->configuration['visualn_file_field'];
     if (empty($visualn_file_field) || !$this->drawing_entity->hasField($visualn_file_field)) {
