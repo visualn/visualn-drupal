@@ -18,6 +18,16 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration() {
+    return [
+      'visualn_file_field' => '',
+    ] + parent::defaultConfiguration();
+
+ }
+
+  /**
+   * {@inheritdoc}
+   */
   public function fetchDrawing() {
     $drawing_markup = parent::fetchDrawing();
 

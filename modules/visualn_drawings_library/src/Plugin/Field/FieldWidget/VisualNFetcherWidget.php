@@ -6,7 +6,9 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Render\Element;
 
 /**
  * Plugin implementation of the 'visualn_fetcher' widget.
@@ -80,9 +82,20 @@ class VisualNFetcherWidget extends WidgetBase {
       $fetchers_list[$definition['id']] = $definition['label'];
     }
 
-    // @todo: why not also considered fetcher_id from form_state here (even if doesn't affect the code after it since it is redefined below)?
-    $fetcher_id = $item->fetcher_id ?: '';
+
+    // @todo: is this ok to get parents this way?
+    //    if used in #process though, #parents key is already set
     $field_name = $this->fieldDefinition->getName();
+    $parents = array_merge($element['#field_parents'], [$field_name, $delta]);
+    $fetcher_id = $form_state->getValue(array_merge($parents, ['fetcher_id']));
+
+    // @todo: how to check if the form is fresh
+    // is null basically means that the form is fresh (maybe check the whole $form_state->getValues() to be sure?)
+    // $fetcher_id can be empty string (in case of default choice) or NULL in case of fresh form
+    if (is_null($fetcher_id)) {
+      $fetcher_id = $item->fetcher_id ?: '';
+    }
+
     $ajax_wrapper_id = $field_name . '-' . $delta . '-fetcher-config-ajax-wrapper';
 
     // select drawing fetcher plugin
@@ -92,7 +105,8 @@ class VisualNFetcherWidget extends WidgetBase {
       '#options' => $fetchers_list,
       '#default_value' => $fetcher_id,
       '#ajax' => [
-        'callback' => [get_called_class(), 'ajaxCallback'],
+        //'callback' => [get_called_class(), 'ajaxCallback'],
+        'callback' => [$this, 'ajaxCallback'],
         'wrapper' => $ajax_wrapper_id,
       ],
       '#empty_value' => '',
@@ -103,18 +117,11 @@ class VisualNFetcherWidget extends WidgetBase {
       '#type' => 'container',
     ];
 
-    // @todo: is this ok to get parents this way?
-    //    if used in #process though, #parents key is already set
-    $parents = array_merge($element['#field_parents'], [$field_name, $delta]);
-    // user may change fetcher to 'Default' keyed by "", which is not null
-    if ($form_state->getValue(array_merge($parents, ['fetcher_id'])) !== NULL) {
-      $fetcher_id = $form_state->getValue(array_merge($parents, ['fetcher_id']));
-      $fetcher_config = $form_state->getValue(array_merge($parents, ['fetcher_container', 'fetcher_config']), []);
-    }
-
     if ($fetcher_id) {
-      $fetcher_plugin = \Drupal::service('plugin.manager.visualn.drawing_fetcher')
-                          ->createInstance($fetcher_id, $fetcher_config);
+      $element['fetcher_container']['fetcher_config'] = ['#process' => [[$this, 'processFetcherConfigurationSubform']]];
+      // @todo: $item is needed in the #process callback to access fetcher_config from field configuration,
+      //    maybe there is a better way
+      $element['fetcher_container']['fetcher_config']['#item'] = $item;
 
       // @todo: Set entity type and bundle for the fetcher_plugin since it may need the list of all its fields.
 
@@ -123,25 +130,83 @@ class VisualNFetcherWidget extends WidgetBase {
       $entity_type = $this->fieldDefinition->get('entity_type');
       $bundle = $this->fieldDefinition->get('bundle');
 
+      // @todo: maybe we can get this data in the #process callback directly from the $item object
+      $element['fetcher_container']['fetcher_config']['#entity_type'] = $entity_type;
+      $element['fetcher_container']['fetcher_config']['#bundle'] = $bundle;
+    }
+
+    return $element;
+  }
+
+  public function processFetcherConfigurationSubform(array $element, FormStateInterface $form_state, $form) {
+    $item = $element['#item'];
+    $entity_type = $element['#entity_type'];
+    $bundle = $element['#bundle'];
+
+    $configuration = [
+      'fetcher_id' => $item->fetcher_id,
+      'fetcher_config' => !empty($item->fetcher_config) ? unserialize($item->fetcher_config) : [],
+    ];
+
+    $fetcher_element_parents = array_slice($element['#parents'], 0, -2);
+    $fetcher_id = $form_state->getValue(array_merge($fetcher_element_parents, ['fetcher_id']));
+    // Whether fetcher_id is an empty string (which means changed to the Default option) or NULL (which means
+    // that the form is fresh) there is nothing to attach for fetcher_config subform.
+    if (!$fetcher_id) {
+      return $element;
+    }
+
+    if ($fetcher_id == $configuration['fetcher_id']) {
+      // @note: plugins are instantiated with default configuration to know about it
+      //    but at configuration form rendering always the form_state values are (should be) used
+      $fetcher_config = $configuration['fetcher_config'];
+    }
+    else {
+      $fetcher_config = [];
+    }
+
+    // Basically this check is not needed
+    if ($fetcher_id) {
+      // fetcher plugin buildConfigurationForm() needs Subform:createForSubform() form_state
+      $subform_state = SubformState::createForSubform($element, $form, $form_state);
+
+      // instantiate fetcher plugin
+      $visualNDrawingFetcherManager = \Drupal::service('plugin.manager.visualn.drawing_fetcher');
+      //$fetcher_plugin = $this->visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
+      $fetcher_plugin = $visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
+
       // @todo: maybe set as part of config?
       $fetcher_plugin->setEntityInfo($entity_type, $bundle);
 
-      $fetcher_config = $fetcher_config + $fetcher_plugin->getConfiguration();
+      // attach fetcher configuration form
+      // @todo: also fetcher_config_key may be added here as it is done for ResourceGenericDraweringFethcher
+      //    and drawer_container_key.
+      $element = $fetcher_plugin->buildConfigurationForm($element, $subform_state);
 
-      // @todo: use #process callback
-      $element['fetcher_container']['fetcher_config'] = [];
+      // change fetcher configuration form container to fieldset if not empty
+      if (Element::children($element)) {
+        $element['#type'] = 'fieldset';
+        $element['#title'] = t('Drawing fetcher settings');
+      }
 
-
-      // @todo: get config (consider also ajax calls from fetcher forms, see notice in VisualNResourceWidget)
-      // set new configuration. may be used by ajax calls from fetcher forms
-      $configuration = $form_state->getValue(array_merge($parents, ['fetcher_container', 'fetcher_config']));
-      $configuration = !empty($configuration) ? $configuration : [];
-      $configuration = $fetcher_config + $configuration;
-      $fetcher_plugin->setConfiguration($configuration);
-
-
-      // @todo: pass Subform:createForSubform() instead of $form_state
-      $element['fetcher_container']['fetcher_config'] = $fetcher_plugin->buildConfigurationForm($element['fetcher_container']['fetcher_config'], $form_state);
+      // @todo: a $fetcher_container_key could be use here to avoid the case when two fetcher plugins
+      //    have configuration forms with the same keys and one overrides another on changing selected
+      //    fetcher in the fetcher select box. See ResourceGenericDrawerFetcher for how it is done
+      //    for visualn_style_id and drawer config form select.
+/*
+      $element['fetcher_config'] = [];
+      $element['fetcher_config'] += [
+        '#parents' => array_merge($element['#parents'], ['fetcher_config']),
+        '#array_parents' => array_merge($element['#array_parents'], ['fetcher_config']),
+      ];
+*/
+/*
+      $element[$drawer_container_key]['drawer_config'] = [];
+      $element[$drawer_container_key]['drawer_config'] += [
+        '#parents' => array_merge($element['#parents'], [$drawer_container_key, 'drawer_config']),
+        '#array_parents' => array_merge($element['#array_parents'], [$drawer_container_key, 'drawer_config']),
+      ];
+*/
     }
 
     return $element;

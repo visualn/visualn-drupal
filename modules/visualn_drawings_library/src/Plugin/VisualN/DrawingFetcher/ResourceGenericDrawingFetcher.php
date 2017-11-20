@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Form\SubformStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 
 /**
  * Provides a 'VisualN Resource generic drawing fetcher' VisualN drawing fetcher.
@@ -28,6 +29,12 @@ use Drupal\Core\Render\Element;
  * )
  */
 class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements ContainerFactoryPluginInterface {
+
+  // @todo: this is to avoid the error: "LogicException: The database connection is not serializable.
+  // This probably means you are serializing an object that has an indirect reference to the database connection.
+  // Adjust your code so that is not necessary. Alternatively, look at DependencySerializationTrait
+  // as a temporary solution." when using from inside VisualNFetcherWidget
+  use DependencySerializationTrait;
 
   /**
    * The image style entity storage.
@@ -350,9 +357,10 @@ class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements
       // since drawer and fields onfiguration forms may be empty, do a check (then it souldn't be of details type)
       if (Element::children($element[$drawer_container_key]['drawer_config'])
            || Element::children($element[$drawer_container_key]['drawer_fields'])) {
+        $style_element_array_parents = array_slice($element['#array_parents'], 0, -1);
         // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
         $triggering_element = $form_state->getTriggeringElement();
-        $details_open = $triggering_element['#array_parents'] === array_merge($style_element_parents, ['visualn_style_id']);
+        $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, ['visualn_style_id']);
         $element[$drawer_container_key] = [
           '#type' => 'details',
           '#title' => t('Style configuration'),
