@@ -73,13 +73,14 @@ class VisualNFetcherWidget extends WidgetBase {
 
     $fetchers_list = ['' => t('- Select drawing fetcher -')];
 
-    // Get drawing fetcheres plugins list
+    // Get drawing fetchers plugins list
     // @todo: instantiate at class creation
     $definitions = \Drupal::service('plugin.manager.visualn.drawing_fetcher')->getDefinitions();
     foreach ($definitions as $definition) {
       $fetchers_list[$definition['id']] = $definition['label'];
     }
 
+    // @todo: why not also considered fetcher_id from form_state here (even if doesn't affect the code after it since it is redefined below)?
     $fetcher_id = $item->fetcher_id ?: '';
     $field_name = $this->fieldDefinition->getName();
     $ajax_wrapper_id = $field_name . '-' . $delta . '-fetcher-config-ajax-wrapper';
@@ -104,10 +105,11 @@ class VisualNFetcherWidget extends WidgetBase {
 
     // @todo: is this ok to get parents this way?
     //    if used in #process though, #parents key is already set
-    $parents = [$field_name, $delta];
+    $parents = array_merge($element['#field_parents'], [$field_name, $delta]);
     // user may change fetcher to 'Default' keyed by "", which is not null
     if ($form_state->getValue(array_merge($parents, ['fetcher_id'])) !== NULL) {
       $fetcher_id = $form_state->getValue(array_merge($parents, ['fetcher_id']));
+      $fetcher_config = $form_state->getValue(array_merge($parents, ['fetcher_container', 'fetcher_config']), []);
     }
 
     if ($fetcher_id) {
@@ -126,6 +128,7 @@ class VisualNFetcherWidget extends WidgetBase {
 
       $fetcher_config = $fetcher_config + $fetcher_plugin->getConfiguration();
 
+      // @todo: use #process callback
       $element['fetcher_container']['fetcher_config'] = [];
 
 

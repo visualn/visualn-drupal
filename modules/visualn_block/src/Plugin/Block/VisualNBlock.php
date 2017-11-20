@@ -4,15 +4,18 @@ namespace Drupal\visualn_block\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Url;
+use Drupal\Core\Form\SubformState;
+//use Drupal\Core\Link;
+//use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNManagerManager;
-use Drupal\visualn\Plugin\VisualNResourceFormatManager;
+//use Drupal\Core\Entity\EntityStorageInterface;
+//use Drupal\visualn\Plugin\VisualNDrawerManager;
+//use Drupal\visualn\Plugin\VisualNManagerManager;
+//use Drupal\visualn\Plugin\VisualNResourceFormatManager;
+use Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\Element;
 
 use Drupal\Core\Form\SubformStateInterface;
 use Drupal\visualn_iframe\ShareLinkBuilder;
@@ -28,45 +31,21 @@ use Drupal\visualn_iframe\ShareLinkBuilder;
 class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The image style entity storage.
+   * The visualn drawing fetcher manager service.
    *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
+   * @var \Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherManager
    */
-  protected $visualNStyleStorage;
-
-  /**
-   * The visualn drawer manager service.
-   *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
-   */
-  protected $visualNDrawerManager;
-
-  /**
-   * The visualn manager manager service.
-   *
-   * @var \Drupal\visualn\Plugin\VisualNManagerManager
-   */
-  protected $visualNManagerManager;
-
-  /**
-   * The visualn resource format manager service.
-   *
-   * @var \Drupal\visualn\Plugin\VisualNResourceFormatManager
-   */
-  protected $visualNResourceFormatManager;
+  protected $visualNDrawingFetcherManager;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-    $configuration,
-    $plugin_id,
-    $plugin_definition,
-    $container->get('entity_type.manager')->getStorage('visualn_style'),
-    $container->get('plugin.manager.visualn.drawer'),
-    $container->get('plugin.manager.visualn.manager'),
-    $container->get('plugin.manager.visualn.resource_format')
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('plugin.manager.visualn.drawing_fetcher')
     );
   }
 
@@ -82,50 +61,101 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition
-   * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
-   *   The visualn drawer manager service.
+   * @param \Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherManager $visualn_drawing_fetcher_manager
+   *   The visualn drawing fetcher manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceFormatManager $visualn_resource_format_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, VisualNDrawingFetcherManager $visualn_drawing_fetcher_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    $this->visualNStyleStorage = $visualn_style_storage;
-    $this->visualNDrawerManager = $visualn_drawer_manager;
-    $this->visualNManagerManager = $visualn_manager_manager;
-    $this->visualNResourceFormatManager = $visualn_resource_format_manager;
+    $this->visualNDrawingFetcherManager = $visualn_drawing_fetcher_manager;
   }
-
 
   /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
     return [
-         'resource_url' => '',
-         'resource_format' => '',
+         'fetcher_id' => '',
+         'fetcher_config' => [],
          'enable_share_link' => 0,
          'iframe_hash' => '',
-         'visualn_style_id' => '',
-         'drawer_config' => [],
-         'drawer_fields' => [],
         ] + parent::defaultConfiguration();
-
- }
+  }
 
   /**
    * {@inheritdoc}
    */
   public function blockForm($form, FormStateInterface $form_state) {
-    // @todo: validate the url
-    $form['resource_url'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Resource Url'),
-      '#description' => $this->t('Resource URL to use as data source for the drawing'),
-      '#default_value' => $this->configuration['resource_url'],
-      '#maxlength' => 256,
-      '#size' => 64,
-      '#weight' => '1',
-      '#required' => TRUE,
+    // Get fetcher plugins list for the drawing fetcher select.
+    $fetchers_list = [];
+    $definitions = $this->visualNDrawingFetcherManager->getDefinitions();
+    foreach ($definitions as $definition) {
+      // @todo: this is a temporary measure. see note on tags
+      if ($definition['needs_entity_info']) {
+        continue;
+      }
+      $fetchers_list[$definition['id']] = $definition['label'];
+      // @todo: maybe check for fetcher tags (when introduced) since there is no need to include fetchers
+      //    that need an entity reference (e.g. field fetchers)
+      //    and causes errors when selecting such fetchers in the block configuration form
+    }
+
+    // @todo: review this check after the main issue in drupal core is resolved
+    // @see https://www.drupal.org/node/2798261
+    if ($form_state instanceof SubformStateInterface) {
+      $fetcher_id = $form_state->getCompleteFormState()->getValue(['settings', 'fetcher_id']);
+    }
+    else {
+      $fetcher_id = $form_state->getValue(['settings', 'fetcher_id']);
+    }
+
+
+    // If form is new and form_state is null for the fetcher_id, get fetcher_id from the block configuration.
+    // Also we destinguish empty string and null because user may change fetcher
+    // to '- Select drawing fetcher -' keyed by "", which is not null.
+    if (is_null($fetcher_id)) {
+      $fetcher_id = $this->configuration['fetcher_id'];
+    }
+
+
+    // select drawing fetcher plugin
+    //$ajax_wrapper_id = 'visualn-block-fetcher-config-ajax-wrapper';
+    $form_array_parents = isset($form['#array_parents']) ? $form['#array_parents'] : [];
+    $ajax_wrapper_id = implode('-', array_merge($form_array_parents, ['fetcher_id'])) . '-visualn-block-ajax-wrapper';
+    $form['fetcher_id'] = [
+      '#type' => 'select',
+      '#title' => t('Drawer fetcher plugin'),
+      '#options' => $fetchers_list,
+      '#default_value' => $fetcher_id,
+      '#ajax' => [
+        'callback' => [get_called_class(), 'ajaxCallback'],
+        'wrapper' => $ajax_wrapper_id,
+      ],
+      '#empty_value' => '',
+      '#empty_option' => t('- Select drawing fetcher -'),
     ];
+    $form['fetcher_container'] = [
+      '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
+      '#suffix' => '</div>',
+      '#type' => 'container',
+      '#weight' => '1',
+      // add process at fetcher_container level since fetcher_id input should be already mapped (prepopulated)
+      // for further processing (see FormBuilder::processForm())
+      //'#process' => [[get_called_class(), 'processFetcherConfigurationSubform']],
+
+      //'#process' => [[$this, 'processFetcherConfigurationSubform']],
+    ];
+
+
+    if ($fetcher_id) {
+      // Use #process callback for building the fetcher configuration form itself because it
+      // may need #array_parents key to be already filled up (see PluginFormInterface::buildConfigurationForm()
+      // method comments on https://api.drupal.org).
+      // @todo: all how it is done for ResourceGenericDrawingFethcer #process callback
+      //$form['fetcher_container']['fetcher_config'] = ['#process' => [[get_called_class(), 'processFetcherConfigurationSubform']]];
+      $form['fetcher_container']['fetcher_config'] = ['#process' => [[$this, 'processFetcherConfigurationSubform']]];
+    }
+
 
     // check if visualn_iframe module is enabled
     $moduleHandler = \Drupal::service('module_handler');
@@ -144,172 +174,106 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       '#value' => $this->configuration['iframe_hash'],  // hash is set in blockSubmit()
     ];
 
-    // Get resource formats plugins list
-    $definitions = $this->visualNResourceFormatManager->getDefinitions();
-    // @todo: there should be some default behaviour for the 'None' choice
-    $resource_formats = ['' => $this->t('- None -')];
-    foreach ($definitions as $definition) {
-      $resource_formats[$definition['id']] = $definition['label'];
-    }
 
-    $form['resource_format'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Resource format'),
-      '#description' => $this->t('The format of the data source'),
-      '#default_value' => $this->configuration['resource_format'],
-      '#options' => $resource_formats,
-      '#weight' => '2',
-    ];
 
-    //$visualn_styles = visualn_style_options(FALSE);
-    $visualn_styles = visualn_style_options();
-    $description_link = Link::fromTextAndUrl(
-      $this->t('Configure VisualN Styles'),
-      Url::fromRoute('entity.visualn_style.collection')
-    );
-    // @todo: choose a better selector name
-    $ajax_wrapper_id = 'visualn-block-config-ajax-wrapper';
-    // @todo: maybe rename to visualn_style (the same note for visualn_file)
-    $form['visualn_style_id'] = [
-      '#type' => 'select',
-      '#title' => $this->t('VisualN style'),
-      '#options' => $visualn_styles,
-      '#default_value' => $this->configuration['visualn_style_id'] ?: '',
-      '#description' => $this->t('Default style for the data to render.'),
-      // @todo: add permission check for current user
-      '#description' => $description_link->toRenderable() + [
-        //'#access' => $this->currentUser->hasPermission('administer visualn styles')
-        '#access' => TRUE
-      ],
-      '#ajax' => [
-        'callback' => [get_called_class(), 'ajaxCallback'],
-        'wrapper' => $ajax_wrapper_id,
-      ],
-      '#required' => TRUE,
-      '#weight' => '10',
-    ];
-    $form['drawer_container'] = [
-      '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
-      '#suffix' => '</div>',
-      '#weight' => '11',
-      '#type' => 'container',
-    ];
 
-    $drawer_config = [];
-
-    // @todo: review this check after the main issue in drupal core is resolved
-    // @see https://www.drupal.org/node/2798261
-    if ($form_state instanceof SubformStateInterface) {
-      $visualn_style_id = $form_state->getCompleteFormState()->getValue(['settings', 'visualn_style_id']);
-      $drawer_config = $form_state->getCompleteFormState()->getValue(['settings', 'drawer_container', 'drawer_config']);
-
-      $triggering_element = $form_state->getCompleteFormState()->getTriggeringElement();
-    }
-    else {
-      $visualn_style_id = $form_state->getValue(['settings', 'visualn_style_id']);
-      $drawer_config = $form_state->getValue(['settings', 'drawer_container', 'drawer_config']);
-
-      $triggering_element = $form_state->getTriggeringElement();
-    }
-    // @todo: if $drawer_config not emtpy, extractConfigArrayValues() since config form (and thus form_state)
-    //    may contain submit buttons which are not wanted here
-
-    // If changed visualn style then don't use drawer_config from form_state because it belongs to the previous
-    // visualn style. Otherwise it is supposed that triggered an ajax element inside drawer config form.
-    // @todo: do the same thing for widgets and formatters forms
-    if (!empty($triggering_element)) {
-      $form_array_parents = $form['#array_parents'] ?: [];
-      if ($triggering_element['#array_parents'] === array_merge($form_array_parents, ['settings', 'visualn_style_id'])) {
-        $drawer_config = [];
-      }
-    }
-
-    $drawer_config = $drawer_config ?: [];
-
-    // When the form isn't submitted, form_state values is empty for it, thus values are NULL
-    // but if changed to "None", submit is triggered and the value is set though an empty string.
-    $visualn_style_id = isset($visualn_style_id) ? $visualn_style_id : $this->configuration['visualn_style_id'];
-    // Attach drawer configuration form
-    if($visualn_style_id) {
-      $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-      $drawer_plugin = $visualn_style->getDrawerPlugin();
-      $drawer_config = $drawer_config + $drawer_plugin->getConfiguration();
-      // @todo:
-      // @todo: why can it be empty (not even an empty array)?
-      $stored_drawer_config = $this->configuration['drawer_config'] ?: [];
-      $drawer_config = $stored_drawer_config + $drawer_config;
-      $drawer_plugin->setConfiguration($drawer_config);
-
-      // @todo:
-      // set new configuration. may be used by ajax calls from drawer forms
-      //$configuration = $form_state->getValue(array_merge($element['#parents'], ['drawer_container', 'drawer_config']));
-      //$configuration = !empty($configuration) ? $configuration : [];
-      //$configuration = $drawer_config + $configuration;
-      //$drawer_plugin->setConfiguration($configuration);
-
-      // @todo: pass Subform:createForSubform() instead of $form_state
-      // @todo: add group type of fieldset with info about overriding style drawer config
-      $form['drawer_container']['drawer_config'] = [];
-      $form['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_container']['drawer_config'], $form_state);
-
-      // @todo: trim values after submitting settings
-      $data_keys = $drawer_plugin->dataKeys();
-      // @todo: convert textfields into a table in a #process callback
-      //    maybe even inside Mapper config form method
-      if (!empty($data_keys)) {
-        // @todo: get option setting
-        $drawer_fields = $this->configuration['drawer_fields'];
-        $form['drawer_container']['drawer_fields'] = [
-          '#type' => 'table',
-          '#header' => [t('Data key'), t('Field')],
-        ];
-        foreach ($data_keys as $i => $data_key) {
-          $form['drawer_container']['drawer_fields'][$data_key]['label'] = [
-            '#plain_text' => $data_key,
-          ];
-          $form['drawer_container']['drawer_fields'][$data_key]['field'] = [
-            '#type' => 'textfield',
-            '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
-          ];
-        }
-      }
-
-      $form['drawer_container'] = [
-        '#type' => 'details',
-        '#title' => t('Style configuration'),
-        '#open' => $form_state->getTriggeringElement(),
-      ] + $form['drawer_container'];
-    }
     return $form;
   }
 
   /**
-   * Return drawerConfigForm via ajax at style change
-   * @todo: Rename method if needed
+   * Return fetcher configuration form via ajax request at fetcher change
    */
   public static function ajaxCallback(array $form, FormStateInterface $form_state, Request $request) {
-    return $form['settings']['drawer_container'];
+    return $form['settings']['fetcher_container'];
+  }
+
+  /**
+   * Process fetcher configuration subform
+   *
+   * Here we use process callback, cinse fetcher_plugin::buildConfigurationForm() may need
+   * element #array_parents keys (e.g. to define triggering element at ajax calls).
+   */
+  //public static function processFetcherConfigurationSubform(array $element, FormStateInterface $form_state, $form) {
+  public function processFetcherConfigurationSubform(array $element, FormStateInterface $form_state, $form) {
+    $fetcher_element_parents = array_slice($element['#parents'], 0, -2);
+    $fetcher_id = $form_state->getValue(array_merge($fetcher_element_parents, ['fetcher_id']));
+    // Whether fetcher_id is an empty string (which means changed to the Default option) or NULL (which means
+    // that the form is fresh) there is nothing to attach for fetcher_config subform.
+    //if (empty($fetcher_id)) {
+    if (!$fetcher_id) {
+      return $element;
+    }
+
+    //if (!is_null($fetcher_id) && $fetcher_id == $this->configuration['fetcher_id']) {
+    if ($fetcher_id == $this->configuration['fetcher_id']) {
+      // @note: plugins are instantiated with default configuration to know about it
+      //    but at configuration form rendering always the form_state values are (should be) used
+      $fetcher_config = $this->configuration['fetcher_config'];
+    }
+    else {
+      $fetcher_config = [];
+    }
+
+    // Basically this check is not needed
+    if ($fetcher_id) {
+      // fetcher plugin buildConfigurationForm() needs Subform:createForSubform() form_state
+      $subform_state = SubformState::createForSubform($element, $form, $form_state);
+
+      // instantiate fetcher plugin
+      $fetcher_plugin = $this->visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
+      // attach fetcher configuration form
+      // @todo: also fetcher_config_key may be added here as it is done for ResourceGenericDraweringFethcher
+      //    and drawer_container_key.
+      $element = $fetcher_plugin->buildConfigurationForm($element, $subform_state);
+
+      // change fetcher configuration form container to fieldset if not empty
+      if (Element::children($element)) {
+        $element['#type'] = 'fieldset';
+        $element['#title'] = t('Drawing fetcher settings');
+      }
+/*
+      $element['fetcher_config'] = [];
+      $element['fetcher_config'] += [
+        '#parents' => array_merge($element['#parents'], ['fetcher_config']),
+        '#array_parents' => array_merge($element['#array_parents'], ['fetcher_config']),
+      ];
+*/
+/*
+      $element[$drawer_container_key]['drawer_config'] = [];
+      $element[$drawer_container_key]['drawer_config'] += [
+        '#parents' => array_merge($element['#parents'], [$drawer_container_key, 'drawer_config']),
+        '#array_parents' => array_merge($element['#array_parents'], [$drawer_container_key, 'drawer_config']),
+      ];
+*/
+    }
+
+    return $element;
   }
 
   /**
    * {@inheritdoc}
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
-    $this->configuration['resource_url'] = $form_state->getValue('resource_url');
+    $this->configuration['fetcher_id'] = $form_state->getValue('fetcher_id');
+    // @todo: also keep in mind that fetcher_container will be removed from form_state values after restructuring
+    $this->configuration['fetcher_config'] = $form_state->getValue(['fetcher_container', 'fetcher_config'], []);
     $this->configuration['iframe_hash'] = $form_state->getValue('iframe_hash');
-    $this->configuration['resource_format'] = $form_state->getValue('resource_format');
-    $this->configuration['visualn_style_id'] = $form_state->getValue('visualn_style_id');
-    $this->configuration['drawer_config'] = $form_state->getValue(['drawer_container', 'drawer_config']);
-    $drawer_fields = $form_state->getValue(['drawer_container', 'drawer_fields']);
-    foreach ($drawer_fields as $k => $drawer_field) {
-      if (!trim($drawer_field['field'])) {
-        unset($drawer_fields[$k]);
-      }
-      else {
-        $drawer_fields[$k] = $drawer_field['field'];
-      }
-    }
-    $this->configuration['drawer_fields'] = $drawer_fields;
+
+    // @todo: extracting and restructuring values, if needed, would better be done on the element level,
+    //    as it is done inside ResourceGenericDrawingFetcher for drawer_container with drawer_config and drawer_fields.
+
+    $fetcher_id = $this->configuration['fetcher_id'];
+    $fetcher_config = $this->configuration['fetcher_config'];
+    $fetcher_plugin = $this->visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
+
+    // @todo: maybe move fetcher_plugin::submitConfigurationForm() to #element_submit when introduced into core,
+    //    currently can be also in #element_validate which is not correct strictly speaking
+    $full_form = $form_state->getCompleteForm();
+    $subform = $form['settings']['fetcher_container']['fetcher_config'];
+    $subform_state = SubformState::createForSubform($subform, $full_form, $form_state->getCompleteFormState());
+    $fetcher_plugin->submitConfigurationForm($subform, $subform_state);
+
+
 
 
     // @todo: move this block into a visualn_iframe function or a class
@@ -335,60 +299,23 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     }
   }
 
+
   /**
    * {@inheritdoc}
    */
   public function build() {
-    $build = [];
+    $fetcher_id = $this->configuration['fetcher_id'];
 
-    $url = $this->configuration['resource_url'];
-    $visualn_style_id = $this->configuration['visualn_style_id'];
-    if (empty($visualn_style_id)) {
-      return $build;
+    if (empty($fetcher_id)) {
+      return ['#markup' => ''];
     }
 
-    // load style and get drawer manager from plugin definition
-    $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin = $visualn_style->getDrawerPlugin();
-    $drawer_plugin_id = $drawer_plugin->getPluginId();
-    $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
+    // create fetcher plugin instance
+    $fetcher_config = $this->configuration['fetcher_config'];
+    $fetcher_plugin = $this->visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
 
-    // @todo: check if config is needed
-    $manager_config = [];
-    $manager_plugin = $this->visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
-    // @todo: pass options as part of $manager_config (?)
-    $options = [
-      'style_id' => $visualn_style_id,
-      // @todo: unsupported operand types error
-      // @todo: why can it be empty (not even an empty array)?
-      //'drawer_config' =>  $this->configuration['drawer_config'] + $visualn_style->get('drawer'),
-      'drawer_config' => ($this->configuration['drawer_config'] ?: []) + $drawer_plugin->getConfiguration(),
-      'drawer_fields' => $this->configuration['drawer_fields'],
-      'adapter_settings' => [],
-    ];
-
-    if (!empty($this->configuration['resource_format'])) {
-      $resource_format_plugin_id = $this->configuration['resource_format'];
-      $options['output_type'] = $this->visualNResourceFormatManager->getDefinition($resource_format_plugin_id)['output'];
-    }
-    else {
-      // @todo: By default use DSV Generic Resource Format
-      // @todo: load resource format plugin and get resource form by plugin id
-      // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
-      $options['output_type'] = 'file_dsv';
-
-      // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
-      $options['adapter_settings']['file_mimetype'] = 'text/tab-separated-values';
-    }
-
-    $options['adapter_settings']['file_url'] = $this->configuration['resource_url'];
-
-    // @todo: generate and set unique visualization (picture/canvas) id
-    $vuid = \Drupal::service('uuid')->generate();
-    // add selector for the drawing
-    $html_selector = 'js-visualn-selector-block--' . substr($vuid, 0, 8);
-
-    $build['visualn_block']['#markup'] = "<div class='{$html_selector}'></div>";
+    // get markup from the drawing fetcher
+    $build['visualn_block'] = $fetcher_plugin->fetchDrawing();
 
     // @todo: move this block into a visualn_iframe function or a class
     // @todo: service would be preferable to using \Drupal (assuming it's an option in current context)
@@ -407,16 +334,8 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       //    the link generation
     }
 
-    $options['html_selector'] = $html_selector;  // where to attach drawing selector
-
-    // @todo: for different drawers there can be different managers
-    $manager_plugin->prepareBuild($build, $vuid, $options);
-
-    // @todo: attach drawer
-
     return $build;
   }
 
-  // @todo: delete visualn iframe record on block delete
-
 }
+

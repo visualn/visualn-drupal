@@ -51,6 +51,7 @@ default-mapper:
   js:
     js/mappers/default-mapper.js: {}
   dependencies:
+    - visualn/d3
     - core/jquery
 
 basic-tree-mapper:
