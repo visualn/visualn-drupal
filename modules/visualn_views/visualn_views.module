@@ -56,7 +56,7 @@ function visualn_views_form_alter(&$form, $form_state, $form_id) {
     $options = $style_plugin->options;
     if (isset($options['expose_keys_mapping']) && $options['expose_keys_mapping'] == 1) {
       // get visualn style drawer keys and prepare mappings form
-      $visualn_style_id = $options['visualn_style'];
+      $visualn_style_id = $options['visualn_style_id'];
       if ($visualn_style_id) {
         $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
         $drawer_plugin = $visualn_style->getDrawerPlugin();

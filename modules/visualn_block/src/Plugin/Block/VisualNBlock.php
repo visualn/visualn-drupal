@@ -145,16 +145,14 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
 
       //'#process' => [[$this, 'processFetcherConfigurationSubform']],
     ];
+    // Use #process callback for building the fetcher configuration form itself because it
+    // may need #array_parents key to be already filled up (see PluginFormInterface::buildConfigurationForm()
+    // method comments on https://api.drupal.org).
+    $form['fetcher_container']['fetcher_config'] = [
+      '#type' => 'container',
+      '#process' => [[$this, 'processFetcherConfigurationSubform']],
+    ];
 
-
-    if ($fetcher_id) {
-      // Use #process callback for building the fetcher configuration form itself because it
-      // may need #array_parents key to be already filled up (see PluginFormInterface::buildConfigurationForm()
-      // method comments on https://api.drupal.org).
-      // @todo: all how it is done for ResourceGenericDrawingFethcer #process callback
-      //$form['fetcher_container']['fetcher_config'] = ['#process' => [[get_called_class(), 'processFetcherConfigurationSubform']]];
-      $form['fetcher_container']['fetcher_config'] = ['#process' => [[$this, 'processFetcherConfigurationSubform']]];
-    }
 
 
     // check if visualn_iframe module is enabled

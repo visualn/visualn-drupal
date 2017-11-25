@@ -14,6 +14,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\Element;
+use Drupal\visualn\Helpers\VisualNFormsHelper;
 
 /**
  * Plugin implementation of the 'visualn_resource' widget.
@@ -83,10 +85,6 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
     $item = $items[$delta];
     $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
     $visualn_data['resource_format'] = !empty($visualn_data['resource_format']) ? $visualn_data['resource_format'] : '';
-    $visualn_data['drawer_config'] = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
-    $visualn_data['drawer_fields'] = !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [];
-    // @todo: when style is changed (in ajax) and it doesn't correspond to the one in visualn_data,
-    //    drawer_config and drawer_fields should be also be reseted
 
     // @todo: move into a function (since resource format selection is used in many places)
     $definitions = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinitions();
@@ -126,152 +124,66 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
       '#suffix' => '</div>',
       '#weight' => '3',
       '#type' => 'container',
+      '#process' => [[$this, 'processDrawerContainerSubform']],
     ];
-    // @todo: on first ajax call (on select change) this code is called twice
-    // dsm('test ajax');
-
-    // @todo: is this ok to get parents this way?
-    //    if used in #process though, #parents key is already set
-    $parents = [$field_name, $delta];
-    // user may change visualn style to 'Default' keyed by "", which is not null
-    if ($form_state->getValue(array_merge($parents, ['visualn_style_id'])) !== NULL) {
-      $visualn_style_id = $form_state->getValue(array_merge($parents, ['visualn_style_id']));
-    }
-
-    // @todo: this is a copy-paste from VisualNFormatter, maybe move into a Trait class (actually not exactly a copy-paste)
-    // Attach drawer configuration form
-    if($visualn_style_id) {
-
-      $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-      // if VisualN Style does not exist, e.g. was deleted, return
-      // @todo: copy to the other widgets and config forms (e.g. VisualN Block)
-      if (empty($visualn_style)) {
-        return $element;
-      }
-      $drawer_plugin = $visualn_style->getDrawerPlugin();
-
-      // prepare drawer config; use per-field config and drawer config from visualn style
-      // @todo: also get formatter config if any because this causes misunderstanding (?)
-      //    actually it is not correct to use formatter settings in widget settings (those should be field settings then)
-      $drawer_config = $visualn_data['drawer_config'] + $drawer_plugin->getConfiguration();
-
-
-      // @todo: maybe there is no need to pass config since it is passed in createInstance
-      // @todo: what if drawer form uses #process callback by itself, isn't it a problem
-      //    since the current one is already a #process callback?
-      $element['drawer_container']['drawer_config'] = [];
-      // set new configuration. may be used by ajax calls from drawer forms
-      $configuration = $form_state->getValue(array_merge($parents, ['drawer_container', 'drawer_config']));
-      $configuration = !empty($configuration) ? $configuration : [];
-      $configuration = $drawer_config + $configuration;
-      $drawer_plugin->setConfiguration($configuration);
-
-      //$subform = $element['drawer_container']['drawer_config'];
-      //$sub_form_state = SubformState::createForSubform($subform, $form, $form_state);
-
-
-      // @todo: createForSubform() works not pretty well by itself because when form
-      //  is composed, its "#parents" key may be not set at the moment
-      // @todo: pass Subform:createForSubform() instead of $form_state
-      $element['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($element['drawer_container']['drawer_config'], $form_state);
-      // @todo: add a checkbox to choose whether to override default drawer config or not
-      // or an option to reset to defaults
-      // @todo: add group type of fieldset with info about overriding style drawer config
-
-      // prepare drawer fields subform
-      // @todo: trim values after submitting settings
-      $data_keys = $drawer_plugin->dataKeys();
-      if (!empty($data_keys)) {
-        $keys_subform = [];
-        // @todo: get option setting
-        $drawer_fields = $visualn_data['drawer_fields'];
-        $keys_subform = [
-          '#type' => 'table',
-          '#header' => [t('Data key'), t('Field')],
-        ];
-        foreach ($data_keys as $i => $data_key) {
-          $keys_subform[$data_key]['label'] = [
-            '#plain_text' => $data_key,
-          ];
-          $keys_subform[$data_key]['field'] = [
-            '#type' => 'textfield',
-            '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
-          ];
-        }
-        $element['drawer_container']['drawer_fields'] = $keys_subform;
-      }
-
-      $element['#element_validate'][] = [$this, 'validateDrawerFieldsForm'];
-
-      $element['drawer_container'] = [
-        '#type' => 'details',
-        '#title' => t('Style configuration'),
-        // @todo: actually we should change which exactly element was triggered, because as it is done now
-        //    it will open all 'details' (but it's not a problem here since it will be visible only on ajax replace)
-        '#open' => $form_state->getTriggeringElement(),
-      ] + $element['drawer_container'];
-    }
-
+    // @todo: $item is needed in the #process callback to access drawer_config from field configuration,
+    //    maybe there is a better way
+    $element['drawer_container']['#item'] = $item;
 
     return $element;
   }
 
-  /**
-   * Restructure $form_state values for $drawer_fields.
-   * @todo: rename the method
-   */
-  public function validateDrawerFieldsForm(&$form, FormStateInterface $form_state, $full_form) {
-    // see WidgetBase::extractFormValues()
-    $field_name = $this->fieldDefinition->getName();
 
-    $path = array_merge($form['#parents'], ['visualn_style_id']);
-    $key_exists = NULL;
-    $visualn_style_id = NestedArray::getValue($form_state->getValues(), $path, $key_exists);
-    if($visualn_style_id) {
-      $path = ['drawer_container', 'drawer_config'];
-      $key_exists = NULL;
-      $subform = NestedArray::getValue($form, $path, $key_exists);
-      if ($key_exists) {
-        $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
+  // @todo: this should be static since may not work on field settings form (see fetcher field widget for example)
+  public function processDrawerContainerSubform(array $element, FormStateInterface $form_state, $form) {
+    $item = $element['#item'];
+    $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
+    // @todo: resource_format isn't used in further building process
+    $visualn_data['resource_format'] = !empty($visualn_data['resource_format']) ? $visualn_data['resource_format'] : '';
+    $visualn_data['drawer_config'] = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
+    $visualn_data['drawer_fields'] = !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [];
 
-        $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
-        $drawer_plugin = $visualn_style->getDrawerPlugin();
+    $configuration = $visualn_data;
+    $configuration['visualn_style_id'] = $item->visualn_style_id ?: '';
+    // @todo: add visualn_style_id = "" to widget default config (check) to avoid "?:" check
 
-        // @todo: it is not correct to call submit inside a validate method (validateDrawerFieldsForm())
-        //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
-        $drawer_plugin->submitConfigurationForm($subform, $sub_form_state);
-      }
-    }
+    $element = VisualNFormsHelper::processDrawerContainerSubform($element, $form_state, $form, $configuration);
+
+    return $element;
   }
+
 
   /**
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+    // @todo: maybe also call parent::massageFormValues()
+    // @todo: this method is called twice on submit, is that ok?
     foreach ($values as &$value) {
       $value['uri'] = static::getUserEnteredStringAsUri($value['uri']);
       $drawer_config = [];
-      if (!empty($value['drawer_container']['drawer_config'])) {
-        foreach ($value['drawer_container']['drawer_config'] as $drawer_config_key => $drawer_config_item) {
+      if (!empty($value['drawer_config'])) {
+        foreach ($value['drawer_config'] as $drawer_config_key => $drawer_config_item) {
           $drawer_config[$drawer_config_key] = $drawer_config_item;
         }
-        // @todo: unset()
       }
 
-      $drawer_fields = [];
-      // @todo: set correct #parents array for the data keys to avoid this part
-      if (!empty($value['drawer_container']['drawer_fields'])) {
-        foreach ($value['drawer_container']['drawer_fields'] as $drawer_field_key => $drawer_field) {
-          $drawer_fields[$drawer_field_key] = $drawer_field['field'];
-        }
-        // @todo: unset()
-      }
+      $drawer_fields = !empty($value['drawer_fields']) ? $value['drawer_fields'] : [];
+
+
       $visualn_data = [
         'resource_format' => $value['resource_format'],
         'drawer_config' => $drawer_config,
         'drawer_fields' => $drawer_fields,
       ];
+
+      // unset the values
+      unset($value['drawer_config']);
+      unset($value['drawer_fields']);
+      unset($value['resource_format']);
+
       $value['visualn_data'] = serialize($visualn_data);
+      // @todo: add comment
       $value += ['options' => []];
     }
     return $values;

@@ -9,6 +9,7 @@ namespace Drupal\visualn_views\Plugin\views\style;
 
 use Drupal\core\form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
+use Drupal\Core\Form\SubformStateInterface;
 use Drupal\views\Plugin\views\style\StylePluginBase;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -16,6 +17,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Render\Element;
 
 /**
  * Style plugin to render listing.
@@ -115,7 +117,7 @@ class Visualization extends StylePluginBase {
   protected function defineOptions() {
     $options = parent::defineOptions();
 
-    $options['visualn_style'] = array('default' => '');
+    $options['visualn_style_id'] = array('default' => '');
     $options['drawer_config'] = array('default' => []);
     $options['expose_keys_mapping'] = 0;
 
@@ -146,7 +148,6 @@ class Visualization extends StylePluginBase {
         }
       }
     }
-    //dsm($this->options);
 
     return $this->options;
   }
@@ -165,11 +166,11 @@ class Visualization extends StylePluginBase {
     );
     // @see ImageFormatter::settingsForm()
     // @todo: onChange execute an ajax callback to show mappings form for the drawer
-    $form['visualn_style'] = array(
+    $form['visualn_style_id'] = array(
       '#type' => 'select',
       '#title' => $this->t('VisualN style'),
       '#description' => $this->t('Default style for the data to render.'),
-      '#default_value' => $this->options['visualn_style'],
+      '#default_value' => $this->options['visualn_style_id'],
       '#options' => $visualn_styles,
       // @todo: add permission check for current user
       '#description' => $description_link->toRenderable() + [
@@ -179,49 +180,21 @@ class Visualization extends StylePluginBase {
       '#ajax' => [
         'url' => views_ui_build_form_url($form_state),
       ],
-      '#submit' => array(array($this, 'submitTemporaryForm')),
       //'#executes_submit_callback' => TRUE,
       '#required' => TRUE,
     );
+    $form['drawer_container'] = [
+      '#type' => 'container',
+      '#process' => [[$this, 'processDrawerContainerSubform']],
+    ];
 
-    // Attach drawer configuration form
-    $visualn_style_id = isset($form_state->getUserInput()['style_options']['visualn_style']) ? $form_state->getUserInput()['style_options']['visualn_style'] : $this->options['visualn_style'];
-    if ($visualn_style_id) {
-      $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-      $drawer_plugin = $visualn_style->getDrawerPlugin();
-      $drawer_config = $drawer_plugin->getConfiguration();
+    // @todo: add a checkbox to choose whether to override default drawer config or not
+    //    or an option to reset to defaults
+    // @todo: add group type of fieldset with info about overriding style drawer config
 
-      if ($visualn_style_id == $this->options['visualn_style']) {
-        $drawer_config = $this->options['drawer_config'] + $drawer_config;
-      }
-      $drawer_plugin->setConfiguration($drawer_config);
 
-      // @todo: add a checkbox to choose whether to override default drawer config or not
-      //    or an option to reset to defaults
-      // @todo: add group type of fieldset with info about overriding style drawer config
-      $form['drawer_config'] = [];
-      // @todo: check for #ajax key in the form tree and add 'url' key (or look for a better solution)
-      $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $form_state);
+    // @todo: check for #ajax key in the drawer config form tree and add 'url' key (or look for a better solution)
 
-      $data_keys = $drawer_plugin->dataKeys();
-      if (!empty($data_keys)) {
-        $form['drawer_fields'] = [
-          '#type' => 'table',
-          '#header' => [$this->t('Data key'), $this->t('Field')],
-        ];
-        $field_names = $this->displayHandler->getFieldLabels();
-        foreach ($data_keys as $data_key) {
-          $form['drawer_fields'][$data_key]['label'] = [
-            '#plain_text' => $data_key,
-          ];
-          $form['drawer_fields'][$data_key]['field'] = [
-            '#type' => 'select',
-            '#options' => $field_names,
-            '#default_value' => isset($this->options['drawer_fields'][$data_key]) ? $this->options['drawer_fields'][$data_key] : '',
-          ];
-        }
-      }
-    }
 
     $form['expose_keys_mapping'] = [
       '#type' => 'checkbox',
@@ -230,33 +203,178 @@ class Visualization extends StylePluginBase {
     ];
   }
 
+  public function processDrawerContainerSubform(array $element, FormStateInterface $form_state, $form) {
+    // @todo: it seems that that most code here could be moved outside into a method since it is used multiple times
+    //    in other places (see ResourceGenericDrawingFetcher::processDrawerContainerSubform() for example)
+
+    $element_parents = $element['#parents'];
+
+    // Here form_state corresponds to the current display style handler though is not instanceof SubformStateInterface.
+    $style_element_parents = array_slice($element['#parents'], 0, -1);
+    // since the function if called as a #process callback and the visualn_style_id select was already processed
+    // and the values were mapped then it is enough to get form_state value for it and no need to check
+    // configuration value (see FormBuilder::processForm() and FormBuilder::doBuildForm())
+    // and no need in "is_null($visualn_style_id) then set value from config"
+    $visualn_style_id = $form_state->getValue(array_merge($style_element_parents, ['visualn_style_id']));
+
+    // If it is a fresh form (is_null($visualn_style_id)) or an empty option selected ($visualn_style_id == ""),
+    // there is nothing to attach for drawer config.
+    if (!$visualn_style_id) {
+      return $element;
+    }
+
+
+    // Here the drawer plugin is initialized (inside getDrawerPlugin()) with the config stored in the style.
+    $drawer_plugin = $this->visualNStyleStorage->load($visualn_style_id)->getDrawerPlugin();
+
+    // We use drawer config from configuration only if it corresponds to the selected style. Also
+    // we don't get form_state values for the drawer config here since they are handled by
+    // drawer buildConfigurationForm() method itself and also even in buildConfigurationForm()
+    // drawer should have access to the $this->configuration['drawer_config'] values.
+    if ($visualn_style_id == $this->options['visualn_style_id']) {
+      // Set initial configuration for the plugin according to the configuration stored in fetcher config.
+      $drawer_config = $this->options['drawer_config'];
+      $drawer_plugin->setConfiguration($drawer_config);
+
+      // @todo: uncomment when the issue with handling drawer fields form_state values is resolved.
+      //$drawer_fields = $this->options['drawer_fields'];
+
+      // @todo: Until some generic way to hande drawer_fields form is introduced,
+      //    e.g. \VisualN::buildDrawerDataKeysForm(), we should handle form_state values for the drawer_fields
+      //    manually (i.e. in case of form validation errors form_state values should be used).
+      $drawer_fields
+        = $form_state->getValue(array_merge($element_parents, ['drawer_fields']), $this->options['drawer_fields']);
+    }
+    else {
+      // Leave drawer_config unset for later initialization with drawer_plugin->getConfiguration() values
+      // which are generally taken from visualn style configuration.
+
+      // Initialize drawer_config based on (visualn style stored config) in case it is needed somewhere else below.
+      $drawer_config = $drawer_plugin->getConfiguration();
+
+      // Since drawer_fields is always an empty array for a visualn style drawer plugin (VisualNStyle::getDrawerPlugin()),
+      // it is ok to set it to an empty array here. In contrast, if null, drawer_config should be taken
+      // from the visualn style plugin configuraion.
+      $drawer_fields = [];
+    }
+
+    // Use unique drawer container key for each visualn style from the select box so that the settings
+    // wouldn't be overridden by the previous one on ajax calls (expecially when styles use the same
+    // drawer and thus the same configuration form with the same keys).
+    $drawer_container_key = $visualn_style_id;
+
+
+    // get drawer configuration form
+
+    $element[$drawer_container_key]['drawer_config'] = [];
+    $element[$drawer_container_key]['drawer_config'] += [
+      '#parents' => array_merge($element['#parents'], [$drawer_container_key, 'drawer_config']),
+      '#array_parents' => array_merge($element['#array_parents'], [$drawer_container_key, 'drawer_config']),
+    ];
+
+    $subform_state = SubformState::createForSubform($element[$drawer_container_key]['drawer_config'], $form, $form_state);
+    // attach drawer configuration form
+    $element[$drawer_container_key]['drawer_config']
+              = $drawer_plugin->buildConfigurationForm($element[$drawer_container_key]['drawer_config'], $subform_state);
+
+
+
+
+    // @todo: Use some kind of \VisualN::buildDrawerDataKeysForm($drawer_plugin, $form, $form_state) here.
+
+    $data_keys = $drawer_plugin->dataKeys();
+    if (!empty($data_keys)) {
+      // @todo: get rid of value from 'field' or massage value at plugin submit
+      $element[$drawer_container_key]['drawer_fields'] = [
+        '#type' => 'table',
+        '#header' => [$this->t('Data key'), $this->t('Field')],
+      ];
+      $field_names = $this->displayHandler->getFieldLabels();
+      foreach ($data_keys as $data_key) {
+        $element[$drawer_container_key]['drawer_fields'][$data_key]['label'] = [
+          '#plain_text' => $data_key,
+        ];
+        $element[$drawer_container_key]['drawer_fields'][$data_key]['field'] = [
+          '#type' => 'select',
+          '#options' => $field_names,
+          '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
+        ];
+      }
+    }
+
+
+    // since drawer and fields onfiguration forms may be empty, do a check (then it souldn't be of details type)
+    if (Element::children($element[$drawer_container_key]['drawer_config'])
+         || Element::children($element[$drawer_container_key]['drawer_fields'])) {
+      $style_element_array_parents = array_slice($element['#array_parents'], 0, -1);
+      // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
+      $triggering_element = $form_state->getTriggeringElement();
+      // @todo: triggering element may be empty
+      $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, ['visualn_style_id']);
+      $element[$drawer_container_key] = [
+        '#type' => 'details',
+        '#title' => t('Style configuration'),
+        '#open' => $details_open,
+      ] + $element[$drawer_container_key];
+    }
+
+
+    // @todo: attach #element_validate
+
+    return $element;
+  }
+
   /**
    * {@inheritdoc}
    */
   public function submitOptionsForm(&$form, FormStateInterface $form_state) {
-    // restructure config values if needed
-    // set options values from table fields (i.e. remove "field" key from options path to the value)
-    $drawer_fields = $form_state->getValue(['style_options', 'drawer_fields']);
-    foreach ($drawer_fields as $key => $drawer_field) {
-      // @todo: setValue() doesn't need to return any value
-      $drawer_fields = $form_state->setValue(['style_options', 'drawer_fields', $key], $drawer_field['field']);
-    }
+    //$drawer_container_key = reset(Element::children($form['drawer_container']));
+    $drawer_container_key = Element::children($form['drawer_container'])[0];
+    //$base_element_parents = array_slice($element_parents, 0, -1);
+    $element_parents = array_merge($form['#parents'], ['drawer_container']);
+    $base_element_parents = $form['#parents'];
 
-    $visualn_style_id  = $form_state->getValue(['style_options', 'visualn_style']);
-    // @todo: add check if visual_style_id is selected
+
+
+    // Call drawer_plugin submitConfigurationForm(),
+    // submitting should be done before $form_state->unsetValue() after restructuring the form_state values, see below.
+
+    $full_form = $form_state->getCompleteForm();
+    $subform = $form['drawer_container'][$drawer_container_key]['drawer_config'];
+    $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
+
+    $visualn_style_id  = $form_state->getValue(array_merge($base_element_parents, ['visualn_style_id']));
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
     $drawer_plugin = $visualn_style->getDrawerPlugin();
-
-    // submit drawer config form values (allow plugin to extract and restructure form values)
-    // we need to getValue(['style_options', 'drawer_config']) and to set it there in submitConfigurationForm()
-    // @todo: check for a nicer way to get the full form for the subform if any
-
-    $subform = $form['drawer_config'];
-    //$full_form = ['style_options' => $form, '#parents' => []]; // @todo: this is a hack
-    $full_form = ['subform' => $form, '#parents' => []]; // @todo: this is a hack
-    $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
     $drawer_plugin->submitConfigurationForm($subform, $sub_form_state);
+
+
+
+
+
+
+
+    // move drawer_config two levels up (remove 'drawer_container' and $drawer_container_key) in form_state values
+    $drawer_config_values = $form_state->getValue(array_merge($element_parents, [$drawer_container_key, 'drawer_config']));
+    if (!is_null($drawer_config_values)) {
+      $form_state->setValue(array_merge($base_element_parents, ['drawer_config']), $drawer_config_values);
+    }
+
+    // move drawer_config two levels up (remove 'drawer_container' and $drawer_container_key) in form_state values
+    $drawer_fields_values = $form_state->getValue(array_merge($element_parents, [$drawer_container_key, 'drawer_fields']));
+    if (!is_null($drawer_fields_values)) {
+      $new_drawer_fields_values = [];
+      foreach ($drawer_fields_values as $drawer_field_key => $drawer_field) {
+        $new_drawer_fields_values[$drawer_field_key] = $drawer_field['field'];
+      }
+
+      $form_state->setValue(array_merge($base_element_parents, ['drawer_fields']), $new_drawer_fields_values);
+    }
+
+    // remove remove 'drawer_container' key itself from form_state
+    $form_state->unsetValue(array_merge($element_parents, [$drawer_container_key]));
   }
+
 
   /**
    * {@inheritdoc}
@@ -270,7 +388,7 @@ class Visualization extends StylePluginBase {
     // @todo: since this can be cached it could not take style changes (i.e. made in style
     //   configuration interface) into consideration, so a cache tag may be needed.
 
-    $visualn_style_id = $style_options['visualn_style'];
+    $visualn_style_id = $style_options['visualn_style_id'];
     if (empty($visualn_style_id)) {
       return;
     }

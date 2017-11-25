@@ -1,6 +1,9 @@
 <?php
 
 // @todo: rename the file to VisualNFileWidget.php
+// @todo: fix bugs:
+//    @see https://www.drupal.org/project/drupal/issues/2926219
+//    @see https://www.drupal.org/project/drupal/issues/2926220
 
 namespace Drupal\visualn_file\Plugin\Field\FieldWidget;
 
@@ -11,8 +14,11 @@ use Drupal\Core\Field\FieldItemListInterface;
 //use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
-use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
+//use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
+use Drupal\visualn_file\Plugin\FileWidgetWrapper;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\visualn\Helpers\VisualNFormsHelper;
+use Drupal\Core\Field\WidgetBase;
 
 /**
  * Plugin implementation of the 'visualn_visualn' widget.
@@ -25,14 +31,16 @@ use Symfony\Component\HttpFoundation\Request;
  *   }
  * )
  */
-class VisualNWidget extends FileWidget {
+//class VisualNWidget extends FileWidget {
+class VisualNWidget extends FileWidgetWrapper {
 
   /**
    * {@inheritdoc}
    */
   public static function defaultSettings() {
     return array(
-      'drawer_config' => [],
+      'visualn_style_id' => '',
+      'visualn_data' => '',
     ) + parent::defaultSettings();
   }
 
@@ -45,229 +53,226 @@ class VisualNWidget extends FileWidget {
     return $element;
   }
 
-  /**
-   * Restructure $form_state values for $drawer_fields.
-   * @todo: rename the method
-   */
-  public function validateDrawerFieldsForm(&$form, FormStateInterface $form_state, $full_form) {
-    // see WidgetBase::extractFormValues()
-    $field_name = $this->fieldDefinition->getName();
-
-    $path = array_merge($form['#parents'], ['visualn_style_id']);
-    $key_exists = NULL;
-    $visualn_style_id = NestedArray::getValue($form_state->getValues(), $path, $key_exists);
-    if($visualn_style_id) {
-      $path = ['drawer_container', 'drawer_config'];
-      $key_exists = NULL;
-      $subform = NestedArray::getValue($form, $path, $key_exists);
-      if ($key_exists) {
-        $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
-
-        $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
-        $drawer_plugin = $visualn_style->getDrawerPlugin();
-
-        // @todo: it is not correct to call submit inside a validate method (validateDrawerFieldsForm())
-        //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
-        $drawer_plugin->submitConfigurationForm($subform, $sub_form_state);
-      }
-    }
-  }
 
   /**
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
+    $item = $items[$delta];
 
-    // @todo: what if style doesn't exist?
-    $element['#element_validate'][] = [$this, 'validateDrawerFieldsForm'];
-
-    return $element;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
-    $new_values = parent::massageFormValues($values, $form, $form_state);
-    // @todo: get drawer config values and attach to $new_values
-    foreach ($new_values as $key => $new_value) {
-      $drawer_config = [];
-      if (!empty($new_value['drawer_container']['drawer_config'])) {
-        foreach ($new_value['drawer_container']['drawer_config'] as $drawer_config_key => $drawer_config_item) {
-          $drawer_config[$drawer_config_key] = $drawer_config_item;
-        }
-        // @todo: unset()
-      }
-      /*
-      $visualn_style_id = $new_value['visualn_style_id'];
-      if($visualn_style_id) {
-        $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
-        $drawer_plugin = $visualn_style->getDrawerPlugin();
-        // @todo: submitConfigurationForm() should be used here instead of extractConfigArrayValues()
-        //     also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
-        $extracted_values = $drawer_plugin->extractConfigArrayValues($new_value, ['drawer_container', 'drawer_config']);
-        $drawer_config = $extracted_values;
-      }
-      */
-      /*if (is_array($drawer_config)) {
-        $new_values[$key]['drawer_config'] = serialize($drawer_config);
-      }*/
-
-      $drawer_fields = [];
-      // @todo: set correct #parents array for the data keys to avoid this part
-      if (!empty($new_value['drawer_container']['drawer_fields'])) {
-        foreach ($new_value['drawer_container']['drawer_fields'] as $drawer_field_key => $drawer_field) {
-          $drawer_fields[$drawer_field_key] = $drawer_field['field'];
-        }
-        // @todo: unset()
-      }
-
-      $visualn_data = [
-        'resource_format' => $new_value['resource_format'],
-        'drawer_config' => $drawer_config,
-        'drawer_fields' => $drawer_fields,
-      ];
-      $new_values[$key]['visualn_data'] = serialize($visualn_data);
+    // exclude element with no files uploaded ("add more" button)
+    if (empty($item->fids)) {
+      return $element;
     }
 
-    return $new_values;
-  }
+    // @todo: check the same issue https://drupal.stackexchange.com/questions/235459/get-previous-values-for-inline-entity-form-items-when-parent-form-submitted
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function process($element, FormStateInterface $form_state, $form) {
-    // @see ImageWidget::process()
-
-    // Define services as variables to explicitly see that they are loaded here
-    // but not while object instantiation because the method is static.
-    $visualNStyleStorage = \Drupal::service('entity_type.manager')->getStorage('visualn_style');
-    //$visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
-
-    $item = $element['#value'];
-    // @todo: check if not empty
-    $item['visualn_data'] = !empty($item['visualn_data']) ? unserialize($item['visualn_data']) : [];
-    $item['resource_format'] = !empty($item['visualn_data']['resource_format']) ? $item['visualn_data']['resource_format'] : '';
-    $item['drawer_config'] = !empty($item['visualn_data']['drawer_config']) ? $item['visualn_data']['drawer_config'] : [];
-    $item['drawer_fields'] = !empty($item['visualn_data']['drawer_fields']) ? $item['visualn_data']['drawer_fields'] : [];
-
-    if (empty($item['fids'])) {
-      return parent::process($element, $form_state, $form);
+    // @todo: Basically it is a hack to keep initial field configuration for selected visualn style
+    //    to be able to return to it when user changes selected style and then goes back.
+    //    We can avoid overriding $item->visualn_data and visualn_style_id here and just create another
+    //    standard object (or an array) to pass the initial config to #process callback (see below
+    //    for $element['drawer_container']['#item']).
+    //    The issue is related to FileWidet::submit() and maybe FileWidget::extractFormValues().
+/*
+    if (!isset($item->visualn_data_storage)) {
+      $item->visualn_data_storage = $item->visualn_data;
     }
-    // @todo: attach style_id form only if file is uploaded
+    //$item->visualn_data = $item->visualn_data_storage;
+    if (!isset($item->visualn_style_id_storage)) {
+      $item->visualn_style_id_storage = $item->visualn_style_id;
+    }
+    //$item->visualn_style_id = $item->visualn_style_id_storage;
+*/
+
+    $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
+    //$visualn_data = !empty($item->visualn_data_storage) ? unserialize($item->visualn_data_storage) : [];
+    $visualn_data['resource_format'] = !empty($visualn_data['resource_format']) ? $visualn_data['resource_format'] : '';
+
+    // @todo: it is a weird behaviour somehow connected with adding/removing new files and rebuilding the
+    //    whole widget form. For details see FileWidget::submit(), where it unsets user input with comment
+    //    that "The rebuilt elements will have #default_value set appropriately for the current state of the field,
+    //    so nothing is lost in doing this."
+    // @todo: see FileWidget::submit()
+
+/*
+    // We can't use here visual_data key directly because it will be overridden by actual form values.
+    $element['visualn_style_id_storage'] = [
+      '#type' => 'hidden',
+      //'#default_value' => $item->visualn_data_storage ? : $item->visualn_data,
+      '#default_value' => $item->visualn_style_id_storage,
+    ];
+    $element['visualn_data_storage'] = [
+      '#type' => 'hidden',
+      //'#default_value' => $item->visualn_data_storage ? : $item->visualn_data,
+      '#default_value' => $item->visualn_data_storage,
+    ];
+*/
+
+    // @todo: together with the FileWidget::submit() override in FileWidgetWrapper this
+    // is a hack to keep visualn_data between requests (especially when uploading new files)
+    // @todo: !important: leaving it like this may potentially cause security issues since
+    //    configuration may containt data that shouldn't be accessible by user
+    //    (that may have access to the widget form).
+/*
+    $element['visualn_data'] = [
+      '#type' => 'hidden',
+      '#default_value' => $item->visualn_data,
+    ];
+*/
+    $element['visualn_data'] = [
+      '#type' => 'value',
+      '#value' => $item->visualn_data,
+    ];
+
+
+
+    // @todo: all this deserves more attention, it seems to be very buggy, at least
+    //    what relates to retrieving original visualn_style_id and visualn_data from storage
+
+
+
+/*
+    $initial_config_item = new \StdClass();
+    $initial_config_item->visualn_style_id = $item->visualn_style_id_storage;
+    $initial_config_item->visualn_data = $item->visualn_data_storage;
+*/
+
+    //dsm($item->visualn_style_id);
+    //dsm($item->visualn_data);
+
+    // @todo: this is a copy of VisualNResourceWidget so may be moved into the \VisualNFormsHelper class
+    //    except the last line with setting #item key to initial_config_item
+    //    also here visualn_style_id is used from original value which resembles actual state of the
+    //    form. For more detail see FileWidget::submit().
 
     // @todo: move into a function (since resource format selection is used in many places)
     $definitions = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinitions();
     // @todo: there should be some default behaviour for the 'None' choice (actually, this refers to formatter)
-    $resource_formats = ['' => t('- None -')];
+    $resource_formats = ['' => $this->t('- None -')];
     foreach ($definitions as $definition) {
       $resource_formats[$definition['id']] = $definition['label'];
     }
 
     $element['resource_format'] = [
       '#type' => 'select',
-      '#title' => t('Resource format'),
-      '#description' => t('The format of the data source'),
-      '#default_value' => $item['resource_format'],
+      '#title' => $this->t('Resource format'),
+      '#description' => $this->t('The format of the data source'),
+      '#default_value' => $visualn_data['resource_format'],
       '#options' => $resource_formats,
+      '#weight' => '2',
     ];
 
-    // @todo: show this if override is allowed
-    $parents = array_slice($element['#array_parents'], 0, -1);
-    $field_element = NestedArray::getValue($form, $parents);
-    //$ajax_wrapper_id = $field_element['#id'] . '-' . $element['#delta'] . '-drawer-config-ajax-wrapper';
-    // @todo: this is test only ajax id (because the process method is static)
-    $ajax_wrapper_id = 'field-name-id' . '-' . $element['#delta'] . '-drawer-config-ajax-wrapper';
+    // @todo: it is not clear why it saving the values (actually why it works as it should) since
+    //    in ResourceGenericDrawingFetcher the drawer_container part should have been moved into a separate #process callback
+    $visualn_style_id = $item->visualn_style_id ?: '';
+    $field_name = $this->fieldDefinition->getName();
+    $ajax_wrapper_id = $field_name . '-' . $delta . '-drawer-config-ajax-wrapper';
     $visualn_styles = visualn_style_options(FALSE);
-    $visualn_style_id = !empty ($item['visualn_style_id']) ? $item['visualn_style_id'] : '';
+    asort($visualn_styles);
     $element['visualn_style_id'] = [
       '#title' => t('VisualN style'),
       '#type' => 'select',
       '#default_value' => $visualn_style_id,
       '#empty_option' => t('Default'),
       '#options' => $visualn_styles,
-      // @todo: add ajax settings
-      // @todo:
+      '#weight' => '3',
       '#ajax' => [
         'callback' => [get_called_class(), 'ajaxCallback'],
-        // @todo: ajax wrapper id for style id is ignored, and image (file) widget native one is called
-        //   for multiple field
         'wrapper' => $ajax_wrapper_id,
       ],
     ];
     $element['drawer_container'] = [
       '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
       '#suffix' => '</div>',
+      '#weight' => '3',
       '#type' => 'container',
+      '#process' => [[$this, 'processDrawerContainerSubform']],
     ];
-    // field_visualn_file_multiple[0][visualn_style_id]
-    // @todo: if value is set, get it from from_state (see VisualNFormatter)
-    $visualn_style_id = !empty ($item['visualn_style_id']) ? $item['visualn_style_id'] : '';
+    // @todo: $item is needed in the #process callback to access drawer_config from field configuration,
+    //    maybe there is a better way
+    $element['drawer_container']['#item'] = $item;
+    //$element['drawer_container']['#item'] = $initial_config_item;
 
-    // @todo: this is a copy-paste from VisualNFormatter, maybe move into a Trait class (actually not exactly a copy-paste)
-    // Attach drawer configuration form
-    if($visualn_style_id) {
-      $visualn_style = $visualNStyleStorage->load($visualn_style_id);
-      $drawer_plugin = $visualn_style->getDrawerPlugin();
-
-      // prepare drawer config; use per-field config and drawer config from visualn style
-      // @todo: also get formatter config if any because this causes misunderstanding (?)
-      //    actually it is not correct to use formatter settings in widget settings (those should be field settings then)
-      $drawer_config = $item['drawer_config'] + $drawer_plugin->getConfiguration();
+    return $element;
+  }
 
 
-      // @todo: maybe there is no need to pass config since it is passed in createInstance
-      // @todo: what if drawer form uses #process callback by itself, isn't it a problem
-      //    since the current one is already a #process callback?
-      $element['drawer_container']['drawer_config'] = [];
-      // set new configuration. may be used by ajax calls from drawer forms
-      $configuration = $form_state->getValue(array_merge($element['#parents'], ['drawer_container', 'drawer_config']));
-      $configuration = !empty($configuration) ? $configuration : [];
-      // @todo: is that the right order? won't it override form_state values, that changed on ajax call?
-      $configuration = $drawer_config + $configuration;
-      $drawer_plugin->setConfiguration($configuration);
-      // @todo: createForSubform() works not pretty well by itself because when form
-      //  is composed, its "#parents" key may be not set at the moment
-      // @todo: pass Subform:createForSubform() instead of $form_state
-      $element['drawer_container']['drawer_config'] = $drawer_plugin->buildConfigurationForm($element['drawer_container']['drawer_config'], $form_state);
-      // @todo: add a checkbox to choose whether to override default drawer config or not
-      // or an option to reset to defaults
-      // @todo: add group type of fieldset with info about overriding style drawer config
+  /**
+   * {@inheritdoc}
+   */
+  public function extractFormValues(FieldItemListInterface $items, array $form, FormStateInterface $form_state) {
+    //parent::extractFormValues($items, $form, $form_state);
+    //return;
 
-      // prepare drawer fields subform
-      // @todo: trim values after submitting settings
-      $data_keys = $drawer_plugin->dataKeys();
-      if (!empty($data_keys)) {
-        $keys_subform = [];
-        // @todo: get option setting
-        $drawer_fields = $item['drawer_fields'];
-        $keys_subform = [
-          '#type' => 'table',
-          '#header' => [t('Data key'), t('Field')],
-        ];
-        foreach ($data_keys as $i => $data_key) {
-          $keys_subform[$data_key]['label'] = [
-            '#plain_text' => $data_key,
-          ];
-          $keys_subform[$data_key]['field'] = [
-            '#type' => 'textfield',
-            '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
-          ];
+    // @todo: needs to open an issue on the FileWidget?
+    // This is not a static method, this is a way to call parent class for FileWidget
+    // since FileWidget::extractFormValues() overrides initial $items values with current ones
+    // and thus we can't get initial values for drawer_plugin initialization and checking if style select
+    // was changed.
+    WidgetBase::extractFormValues($items, $form, $form_state);
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+    //$new_values = parent::massageFormValues($values, $form, $form_state);
+    $values = parent::massageFormValues($values, $form, $form_state);
+    // @todo: get drawer config values and attach to $new_values
+    foreach ($values as &$value) {
+      //$value['uri'] = static::getUserEnteredStringAsUri($value['uri']);
+      $drawer_config = [];
+      if (!empty($value['drawer_config'])) {
+        foreach ($value['drawer_config'] as $drawer_config_key => $drawer_config_item) {
+          $drawer_config[$drawer_config_key] = $drawer_config_item;
         }
-        $element['drawer_container']['drawer_fields'] = $keys_subform;
       }
 
-      $element['drawer_container'] = [
-        '#type' => 'details',
-        '#title' => t('Style configuration'),
-        // @todo: actually we should change which exactly element was triggered, because as it is done now
-        //    it will open all 'details' (but it's not a problem here since it will be visible only on ajax replace)
-        '#open' => $form_state->getTriggeringElement(),
-      ] + $element['drawer_container'];
+      $drawer_fields = !empty($value['drawer_fields']) ? $value['drawer_fields'] : [];
+
+
+      $visualn_data = [
+        'resource_format' => $value['resource_format'],
+        'drawer_config' => $drawer_config,
+        'drawer_fields' => $drawer_fields,
+      ];
+
+      // unset the values
+      unset($value['drawer_config']);
+      unset($value['drawer_fields']);
+      unset($value['resource_format']);
+
+      $value['visualn_data'] = serialize($visualn_data);
+      // @todo: add comment
+      $value += ['options' => []];
     }
-    return parent::process($element, $form_state, $form);
+
+    return $values;
   }
+
+
+  // @todo: this should be static since may not work on field settings form (see fetcher field widget for example)
+  // @todo: mostly this is a copy ResourceGenericDrawerFetcher::processDrawerContainerSubform()
+  public static function processDrawerContainerSubform(array $element, FormStateInterface $form_state, $form) {
+    $item = $element['#item'];
+    $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
+    $visualn_data['resource_format'] = !empty($visualn_data['resource_format']) ? $visualn_data['resource_format'] : '';
+    $visualn_data['drawer_config'] = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
+    $visualn_data['drawer_fields'] = !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [];
+
+    $configuration = $visualn_data;
+    $configuration['visualn_style_id'] = $item->visualn_style_id ?: '';
+    //dsm('resource id: ' . $item->visualn_style_id);
+    // @todo: add visualn_style_id = "" to widget default config (check) to avoid "?:" check
+
+    $element = VisualNFormsHelper::processDrawerContainerSubform($element, $form_state, $form, $configuration);
+
+    return $element;
+  }
+
 
   /**
    * {@inheritdoc}
@@ -277,24 +282,11 @@ class VisualNWidget extends FileWidget {
    * @todo: Rename method if needed
    */
   public static function ajaxCallback(array $form, FormStateInterface $form_state, Request $request) {
-
-    //$form_parents = explode('/', $request->query->get('element_parents'));
-
     $triggering_element = $form_state->getTriggeringElement();
-    $triggering_element_parents = $triggering_element['#array_parents'];
-    array_pop($triggering_element_parents);
+    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);
     $element = NestedArray::getValue($form, $triggering_element_parents);
-    //\Drupal::logger('visualn')->notice(print_r($element['#cardinality'], 1));
 
-    // see FileWidget::process()
-    // @todo: check field cardinality. see ManagedField:uploadAjaxCallback()
-    if ($element['#cardinality'] != 1) {
-      // @todo:
-      return $form[$triggering_element['#parents'][0]];
-    }
-    else {
-      return $element['drawer_container'];
-    }
+    return $element['drawer_container'];
   }
 
 }

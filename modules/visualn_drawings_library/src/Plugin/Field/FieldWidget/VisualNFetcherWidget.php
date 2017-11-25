@@ -117,26 +117,25 @@ class VisualNFetcherWidget extends WidgetBase {
       '#type' => 'container',
     ];
 
-    if ($fetcher_id) {
-      $element['fetcher_container']['fetcher_config'] = ['#process' => [[$this, 'processFetcherConfigurationSubform']]];
-      // @todo: $item is needed in the #process callback to access fetcher_config from field configuration,
-      //    maybe there is a better way
-      $element['fetcher_container']['fetcher_config']['#item'] = $item;
+    $element['fetcher_container']['fetcher_config'] = ['#process' => [[$this, 'processFetcherConfigurationSubform']]];
+    // @todo: $item is needed in the #process callback to access fetcher_config from field configuration,
+    //    maybe there is a better way
+    $element['fetcher_container']['fetcher_config']['#item'] = $item;
 
-      // @todo: Set entity type and bundle for the fetcher_plugin since it may need the list of all its fields.
+    // @todo: Set entity type and bundle for the fetcher_plugin since it may need the list of all its fields.
 
-      // @todo: We can't pass the current reference because it doesn't always exist,
-      //    e.g. when setting default value for the field in field settings.
-      $entity_type = $this->fieldDefinition->get('entity_type');
-      $bundle = $this->fieldDefinition->get('bundle');
+    // @todo: We can't pass the current reference to the entity because it doesn't always exist,
+    //    e.g. when setting default value for the field in field settings.
+    $entity_type = $this->fieldDefinition->get('entity_type');
+    $bundle = $this->fieldDefinition->get('bundle');
 
-      // @todo: maybe we can get this data in the #process callback directly from the $item object
-      $element['fetcher_container']['fetcher_config']['#entity_type'] = $entity_type;
-      $element['fetcher_container']['fetcher_config']['#bundle'] = $bundle;
-    }
+    // @todo: maybe we can get this data in the #process callback directly from the $item object
+    $element['fetcher_container']['fetcher_config']['#entity_type'] = $entity_type;
+    $element['fetcher_container']['fetcher_config']['#bundle'] = $bundle;
 
     return $element;
   }
+
 
   public function processFetcherConfigurationSubform(array $element, FormStateInterface $form_state, $form) {
     $item = $element['#item'];
@@ -189,7 +188,7 @@ class VisualNFetcherWidget extends WidgetBase {
         $element['#title'] = t('Drawing fetcher settings');
       }
 
-      // @todo: a $fetcher_container_key could be use here to avoid the case when two fetcher plugins
+      // @todo: a $fetcher_container_key could be used here to avoid the case when two fetcher plugins
       //    have configuration forms with the same keys and one overrides another on changing selected
       //    fetcher in the fetcher select box. See ResourceGenericDrawerFetcher for how it is done
       //    for visualn_style_id and drawer config form select.
@@ -212,6 +211,7 @@ class VisualNFetcherWidget extends WidgetBase {
     return $element;
   }
 
+
   /**
    * {@inheritdoc}
    */
@@ -229,6 +229,7 @@ class VisualNFetcherWidget extends WidgetBase {
     }
     return $values;
   }
+
 
   /**
    * {@inheritdoc}

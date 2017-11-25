@@ -14,7 +14,7 @@ use Drupal\visualn\Plugin\VisualNResourceFormatBase;
  *
  * @VisualNResourceFormat(
  *  id = "visualn_xml",
- *  label = @Translation("XML"),
+ *  label = @Translation("XML (not working)"),
  *  output = "xml_generic",
  * )
  */

@@ -149,6 +149,7 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
    */
   public function getDrawerPlugin() {
 
+    // @todo: use getDrawerByPrefixedId()
     if (!isset($this->drawer_plugin)) {
       $common_drawer_id = $this->getDrawerId();
       if (!empty($common_drawer_id)) {

@@ -2,11 +2,15 @@
 
 namespace Drupal\visualn\Form;
 
+use Drupal\Component\Utility\NestedArray;
+use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Render\Element;
+use Drupal\visualn\Helpers\VisualNFormsHelper;
 
 /**
  * Class VisualNDrawerFormBase.
@@ -80,7 +84,8 @@ class VisualNDrawerFormBase extends EntityForm {
       $drawers_list[$definition['id']] = $definition['label'];
     }
     $default_drawer = $visualn_drawer->isNew() ? '' : $visualn_drawer->getBaseDrawerId();
-    $form['drawer_id'] = [
+    // @todo: add a checkbox to filter out drawers without native drawers and enable it by default
+    $form['drawer_plugin_id'] = [
       '#type' => 'select',
       '#title' => $this->t('Base Drawer'),
       '#options' => $drawers_list,
@@ -88,54 +93,58 @@ class VisualNDrawerFormBase extends EntityForm {
       // @todo: check terminology (for user drawer). maybe derived drawers or smth else
       '#description' => $this->t("Base Drawer for the VisualN User Drawer."),
       '#ajax' => [
-        'callback' => '::drawerConfigForm',
-        'wrapper' => 'drawer-config-form-ajax',
+        'callback' => [get_called_class(), 'ajaxCallback'],
+        'wrapper' => 'visualn-subdrawer-config-form-ajax',
       ],
       '#empty_value' => '',
       '#required' => TRUE,
     ];
 
-    // Attach drawer configuration form
-    $drawer_plugin_id = !empty($form_state->getValues()) ? $form_state->getValue('drawer_id') : $default_drawer;
 
-    // @todo: potentially config values can override style values e.g. "label" (see "name" attribute, it should be
-    //    contained inside a container)
-    $form['drawer_config'] = [];
-    if ($drawer_plugin_id) {
-      $drawer_config = $visualn_drawer->getDrawerConfig();
-      $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $drawer_config);
 
-      // set new configuration. may be used by ajax calls from drawer forms and also when submitting the form
-      //    without ajax (when js is disabled) or when validation errors occur. see stored_drawer_config in other handlers
-      $configuration = $form_state->getValues();
-      $configuration = !empty($configuration) ? $configuration : [];
-      // @todo: check order here. for ajax call configuration should (since changed values should go
-      //    to buildConfigurationForm() to rebuild the form) override drawer_config
-      $configuration = $drawer_config + $configuration;
-      $drawer_plugin->setConfiguration($configuration);
+    // @todo: check entity default configuration: values should be set to "" and [] respectively
 
-      $subform_state = SubformState::createForSubform($form['drawer_config'], $form, $form_state);
-      $form['drawer_config'] = $drawer_plugin->buildConfigurationForm($form['drawer_config'], $subform_state);
-    }
-
-    $form['drawer_config'] += [
+    $form['drawer_container'] = [
       '#tree' => TRUE,
-      '#prefix' => '<div id="drawer-config-form-ajax">',
+      '#prefix' => '<div id="visualn-subdrawer-config-form-ajax">',
       '#suffix' => '</div>',
+      '#type' => 'container',
+      '#process' => [[$this, 'processBaseDrawerSubform']],
     ];
+    $stored_configuration = [
+      'drawer_plugin_id' => $visualn_drawer->getBaseDrawerId(),
+      'drawer_config' => $visualn_drawer->getDrawerConfig(),
+    ];
+    $form['drawer_container']['#stored_configuration'] = $stored_configuration;
+
 
     return $form;
   }
 
-  /**
-   * {@inheritdoc}
-   *
-   * @todo: Add into an interface or add description
-   * @todo: Rename method if needed
-   */
-  public function drawerConfigForm(array $form, FormStateInterface $form_state) {
-    return !empty($form['drawer_config']) ? $form['drawer_config'] : FALSE;
+
+  // @todo: maybe this should be static
+  public function processBaseDrawerSubform(array $element, FormStateInterface $form_state, $form) {
+    $stored_configuration = $element['#stored_configuration'];
+    $configuration = [
+      'drawer_plugin_id' => $stored_configuration['drawer_plugin_id'],
+      'drawer_config' => $stored_configuration['drawer_config'],
+    ];
+    $element = VisualNFormsHelper::doProcessBaseDrawerSubform($element, $form_state, $form, $configuration);
+    return $element;
   }
+
+
+  /**
+   * Return Drawer configuration form via ajax at Base Drawer select change
+   */
+  public static function ajaxCallback(array $form, FormStateInterface $form_state, Request $request) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);
+    $element = NestedArray::getValue($form, $triggering_element_parents);
+
+    return $element['drawer_container'];
+  }
+
 
   /**
    * {@inheritdoc}
@@ -165,18 +174,12 @@ class VisualNDrawerFormBase extends EntityForm {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    $drawer_plugin_id = $form_state->getValue('drawer_id');
-    // @todo: maybe use config (?)
-    $drawer_plugin = $this->visualNDrawerManager->createInstance($drawer_plugin_id, []);
-
-    // Extract config values from drawer config form for saving in VisualNStyle config entity
-    // and add drawer plugin id for the visualn style.
-    $this->entity->set('base_drawer_id', $drawer_plugin_id);
-
-    $subform_state = SubformState::createForSubform($form['drawer_config'], $form, $form_state);
-    $drawer_plugin->submitConfigurationForm($form['drawer_config'], $subform_state);
+    $drawer_plugin_id = $form_state->getValue('drawer_plugin_id');
     $drawer_config_values = $form_state->getValue('drawer_config') ?: [];
 
+    // Extract config values from drawer config form for saving in VisualNStyle config entity
+    // and add drawer plugin id for the user-defined drawer.
+    $this->entity->set('base_drawer_id', $drawer_plugin_id);
     $this->entity->set('drawer_config', $drawer_config_values);
   }
 

@@ -210,7 +210,7 @@ class VisualNDrawerEditForm extends VisualNDrawerFormBase {
 
     // do no allow to change base drawer if modifiers are already added
     if (count($this->entity->getModifiers())) {
-      $form['drawer_id']['#disabled'] = TRUE;
+      $form['drawer_plugin_id']['#disabled'] = TRUE;
     }
 
     return $form;
