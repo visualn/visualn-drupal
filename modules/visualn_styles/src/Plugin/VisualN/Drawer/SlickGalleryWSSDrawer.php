@@ -33,9 +33,10 @@ class SlickGalleryWSSDrawer extends SlickGalleryDrawer {
   /**
    * @inheritdoc
    */
-  protected function getConfigurationForm(array $configuration = []) {
-    $configuration =  $configuration + $this->configuration + $this->defaultConfiguration();
-    $form = [];
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $configuration = $this->extractFormValues($form, $form_state);
+    $configuration =  $configuration + $this->configuration;
+
     // The id of the VisualNSetup config entity
     $form['drawer_setup_id'] = [
       '#type' => 'select',

@@ -47,8 +47,10 @@ class DashboardDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  protected function getConfigurationForm(array $configuration = []) {
-    $configuration =  $configuration + $this->configuration + $this->defaultConfiguration();
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $configuration = $this->extractFormValues($form, $form_state);
+    $configuration =  $configuration + $this->configuration;
+
     foreach (range(1, 100) as $number) {
       $options[$number] = $number;
     }

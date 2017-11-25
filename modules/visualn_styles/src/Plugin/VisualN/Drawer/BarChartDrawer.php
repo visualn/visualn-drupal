@@ -46,11 +46,10 @@ class BarChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  protected function getConfigurationForm(array $configuration = []) {
-    // @todo: pass form element $parents so that it could be used e.g. for elements 'states' visibility etc.
-    //  here it is needed for scale setting depending on y_axis_tick setting
-    $configuration =  $configuration + $this->configuration + $this->defaultConfiguration();
-    $form = [];
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $configuration = $this->extractFormValues($form, $form_state);
+    $configuration =  $configuration + $this->configuration;
+
     $form['y_label'] = [
       '#type' => 'textfield',
       '#title' => t('Y Axis label'),

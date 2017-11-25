@@ -43,10 +43,11 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     //The drawer_config from form_state should not change the plugin configuration,
     //it is only used to build the form according to that config.
-    // @todo: remove ::getConfigurationForm() method
     $drawer_config = $this->extractFormValues($form, $form_state);
-    $config_form = $this->getConfigurationForm($drawer_config);
-    $form = $config_form + $form;
+
+    $form['markup'] = [
+      '#markup' => '<div>' . t('No configuration provided for this drawer') . '</div>',
+    ];
 
     return $form;
   }
@@ -106,18 +107,6 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    return [];
-  }
-
-  /**
-   * Get Drawer configuration form array.
-   *
-   * @param array $configuration
-   *
-   * @return array $form
-   */
-  protected function getConfigurationForm(array $configuration = []) {
-    // @todo: pass form element $parents so that it could be used e.g. for elements 'states' visibility etc.
     return [];
   }
 

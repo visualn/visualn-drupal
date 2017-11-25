@@ -77,16 +77,6 @@ abstract class VisualNDrawerWrapperBase extends PluginBase implements VisualNDra
   /**
    * @inheritdoc
    */
-  // @todo: such drawers must be made protected (as it is here) to work correctly for subdrawers
-  //    because buildConfigurationForm only should be overridden and accessed
-  //    from outside
-  protected function getConfigurationForm(array $configuration = []) {
-    return $this->subdrawer_base_drawer->getConfigurationForm($configuration);
-  }
-
-  /**
-   * @inheritdoc
-   */
   public function extractConfigArrayValues(array $values, array $element_parents) {
     return $this->subdrawer_base_drawer->extractConfigArrayValues($values, $element_parents);
   }

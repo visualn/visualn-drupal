@@ -35,9 +35,10 @@ class HighchartsBarDrawer extends HighchartsDrawer {
   /**
    * @inheritdoc
    */
-  protected function getConfigurationForm(array $configuration = []) {
-    $configuration =  $configuration + $this->configuration + $this->defaultConfiguration();
-    $form = [];
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $configuration = $this->extractFormValues($form, $form_state);
+    $configuration =  $configuration + $this->configuration;
+
     $form['title'] = [
       '#type' => 'textfield',
       '#title' => t('Chart title'),
@@ -56,6 +57,7 @@ class HighchartsBarDrawer extends HighchartsDrawer {
       '#default_value' => $configuration['y_axis_title'],
       '#size' => 10,
     ];
+
     return $form;
   }
 

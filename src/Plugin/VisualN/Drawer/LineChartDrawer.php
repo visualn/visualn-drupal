@@ -54,10 +54,10 @@ class LineChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  protected function getConfigurationForm(array $configuration = []) {
-    // @todo: rename to this::defaultConfig() to get ConfigForm default values
-    $configuration =  $configuration + $this->configuration + $this->defaultConfiguration();
-    $form = [];
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $configuration = $this->extractFormValues($form, $form_state);
+    $configuration =  $configuration + $this->configuration;
+
     $form['color'] = [
       '#type' => 'textfield',
       '#title' => t('Color'),

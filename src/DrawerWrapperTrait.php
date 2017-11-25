@@ -102,10 +102,6 @@ trait DrawerWrapperTrait {
   }
 
 /*
-  protected function getConfigurationForm(array $configuration = []) {
-    return $this->subdrawer_base_drawer->getConfigurationForm($configuration);
-  }
-
   public function extractConfigArrayValues(array $values, array $element_parents) {
     return $this->subdrawer_base_drawer->extractConfigArrayValues($values, $element_parents);
   }
