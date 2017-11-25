@@ -4,6 +4,7 @@ namespace Drupal\visualn\Plugin;
 
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines an interface for VisualN Drawer plugins.
@@ -30,6 +31,18 @@ interface VisualNDrawerInterface extends VisualNPluginInterface, PluginFormInter
    * @return array $drawer_config_values
    */
   public function extractConfigArrayValues(array $values, array $array_parents);
+
+  /**
+   * Extract drawer configuration array values from $form_state for drawer configuration form.
+   *
+   * @param array $form
+   *
+   * @param  \Drupal\Core\Form\FormStateInterface $form_state
+   *
+   * @return array $values
+   *   An array of drawer_config values.
+   */
+  public function extractFormValues($form, FormStateInterface $form_state);
 
   /**
    * Return a list of data keys used by the drawer script.

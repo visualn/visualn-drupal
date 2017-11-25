@@ -112,6 +112,13 @@ abstract class VisualNDrawerWrapperBase extends PluginBase implements VisualNDra
     return $this->subdrawer_base_drawer->dataKeysStructure();
   }
 
+  /**
+   * @inheritdoc
+   */
+  public function extractFormValues($form, FormStateInterface $form_state) {
+    return $this->subdrawer_base_drawer->extractFormValues($form, $form_state);
+  }
+
 
 
 

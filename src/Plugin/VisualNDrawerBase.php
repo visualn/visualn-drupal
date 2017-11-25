@@ -121,6 +121,15 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
     return [];
   }
 
+
+  /**
+   * @inheritdoc
+   */
+  public function extractFormValues($form, FormStateInterface $form_state) {
+    // Since it is supposed to be subform_state, get all the values without limiting the scope.
+    return $form_state->getValues();
+  }
+
   /**
    * @inheritdoc
    *
