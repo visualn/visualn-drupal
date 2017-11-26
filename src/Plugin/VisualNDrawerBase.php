@@ -31,10 +31,9 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    $config_values = $form_state->getValues();
-    $config_values = $this->extractConfigArrayValues($config_values, []);
-
-    $form_state->setValues($config_values);
+    // Clean submitted values
+    $drawer_config = $this->extractFormValues($form, $form_state);
+    $form_state->setValues($drawer_config);
   }
 
   /**
@@ -119,16 +118,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
     return $form_state->getValues();
   }
 
-  /**
-   * @inheritdoc
-   *
-   * @todo: maybe rename the method
-   * @todo: maybe make static
-   */
-  public function extractConfigArrayValues(array $values, array $array_parents) {
-    $values = NestedArray::getValue($values, $array_parents);
-    return !empty($values) ? $values : [];
-  }
+  // @todo: remove legacy methods
 
   /**
    * @inheritdoc

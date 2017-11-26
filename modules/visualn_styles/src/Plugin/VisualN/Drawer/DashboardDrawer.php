@@ -72,6 +72,7 @@ class DashboardDrawer extends VisualNDrawerBase {
       // @todo: trigger style 'change' handler (though it won't work for style configuration itself)
       //    also when dealing with wrappe id, consider that mapping keys structure also should be updated
     ];
+    // @todo: the value should be cleaned out from form_state in the extractFormValues() method
     $form['update_sections'] = [
       '#type' => 'submit',
       '#value' => t('Update sections'),
@@ -94,8 +95,10 @@ class DashboardDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function extractConfigArrayValues(array $values, array $array_parents) {
-    $values = parent::extractConfigArrayValues($values, $array_parents);
+  public function extractFormValues($form, FormStateInterface $form_state) {
+    $values = parent::extractFormValues($form, $form_state);
+
+    // @todo:
     // remove submit button value from config values
     unset($values['update_sections']);
 

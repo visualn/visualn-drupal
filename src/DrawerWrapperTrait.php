@@ -102,10 +102,6 @@ trait DrawerWrapperTrait {
   }
 
 /*
-  public function extractConfigArrayValues(array $values, array $element_parents) {
-    return $this->subdrawer_base_drawer->extractConfigArrayValues($values, $element_parents);
-  }
-
   public function jsId() {
     return $this->subdrawer_base_drawer->jsId();
   }

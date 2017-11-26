@@ -45,28 +45,21 @@ class LeafletMapDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function extractConfigArrayValues(array $values, array $element_parents) {
-    $values = parent::extractConfigArrayValues($values, $element_parents);
-    $default_config = $this->defaultConfiguration();  // @todo: remove if not used
-    $drawer_config_values = [
-      'center_lat' => trim($values['center_lat']),
-      'center_lon' => trim($values['center_lon']),
-    ];
+  public function extractFormValues($form, FormStateInterface $form_state) {
+    $values = parent::extractFormValues($form, $form_state);
 
-    // do not override if value is empty
-    // @todo: maybe also check if not equal to defualt config value
-    foreach ($drawer_config_values as $k => $v) {
-      if (empty($drawer_config_values[$k])) {
-      //if (empty($drawer_config_values[$k]) && $drawer_config_values[$k] != $default_config[$k]) {
-        unset($drawer_config_values[$k]);
-      }
+    if (!empty($values)) {
+      // @todo: validation should not allow whitespace values and generally any non-geo values
+      $new_values = [
+        'center_lat' => trim($values['center_lat']),
+        'center_lon' => trim($values['center_lon']),
+      ];
+      // attach 'calculate_center' flag value
+      // also considers values possibly added by extending drawers
+      $values = $new_values + $values;
     }
 
-    // @todo: what to do with checkbox? here we don't unset in the upper cycle checkbox value even if empty
-    unset($values['center_lat']);
-    unset($values['center_lon']);
-    $drawer_config_values += $values;
-    return $drawer_config_values;
+    return $values;
   }
 
   /**
@@ -80,12 +73,14 @@ class LeafletMapDrawer extends VisualNDrawerBase {
       '#type' => 'textfield',
       '#title' => t('Center latitude'),
       '#default_value' => $configuration['center_lat'],
+      '#required' => TRUE,
       '#size' => 10,
     ];
     $form['center_lon'] = [
       '#type' => 'textfield',
       '#title' => t('Center longitude'),
       '#default_value' => $configuration['center_lon'],
+      '#required' => TRUE,
       '#size' => 10,
     ];
     $form['calculate_center'] = [

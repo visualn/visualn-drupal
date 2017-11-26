@@ -62,12 +62,14 @@ class LineChartDrawer extends VisualNDrawerBase {
       '#type' => 'textfield',
       '#title' => t('Color'),
       '#default_value' => $configuration['color'],
+      '#required' => TRUE,
       '#size' => 10,
     ];
     $form['y_label'] = [
       '#type' => 'textfield',
       '#title' => t('Y Axis label'),
       '#default_value' => $configuration['y_label'],
+      '#required' => TRUE,
       '#size' => 10,
     ];
     return $form;
@@ -76,21 +78,20 @@ class LineChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function extractConfigArrayValues(array $values, array $element_parents) {
-    $values = parent::extractConfigArrayValues($values, $element_parents);
-    $drawer_config_values = [
-      'color' => trim($values['color']),
-      'y_label' => trim($values['y_label']),
-    ];
-    // do not override if value is empty
-    // @todo: maybe also check if not equal to defualt config value
-    // but this should be checked against not necessarily default config by the config that should be overridden (e.g. file formatter config)
-    foreach ($drawer_config_values as $k => $v) {
-      if (empty($drawer_config_values[$k])) {
-        unset($drawer_config_values[$k]);
-      }
+  public function extractFormValues($form, FormStateInterface $form_state) {
+    $values = parent::extractFormValues($form, $form_state);
+
+    if (!empty($values)) {
+      // @todo: validation should not allow whitespace values and color should be also validated
+      $new_values = [
+        'color' => trim($values['color']),
+        'y_label' => trim($values['y_label']),
+      ];
+      // actually there are no more values but leave it for exteding drawers
+      $values = $new_values + $values;
     }
-    return $drawer_config_values;
+
+    return $values;
   }
 
   /**
