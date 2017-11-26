@@ -54,10 +54,9 @@ class DashboardDrawer extends VisualNDrawerBase {
     foreach (range(1, 100) as $number) {
       $options[$number] = $number;
     }
-    // @todo: somewhere here should go mapping (and maybe other) subforms that depend
-    //    on the drawer config form values (actually this should be done in appropriate places
-    //    such as widget settings form, views style settins form etc.) because number of mapping
-    //    fields change
+    // @todo: choose a better ajax selector
+    //$ajax_wrapper_id = implode('-', $form['#array_parents']) . '--dashboard-ajax';
+    $ajax_wrapper_id = 'some-wrapper--dashboard-ajax';
     $form['sections'] = [
       '#type' => 'select',
       '#title' => t('Number of sections'),
@@ -66,7 +65,7 @@ class DashboardDrawer extends VisualNDrawerBase {
       // @todo: add ajax
       '#ajax' => [
         'callback' => [get_called_class(), 'ajaxCallback'],
-        'wrapper' => 'some-wrapper',
+        'wrapper' => $ajax_wrapper_id,
         //'url' => views_ui_build_form_url($form_state),  // this is for views, so ajax setting depends on somewhere else
       ],
       // @todo: trigger style 'change' handler (though it won't work for style configuration itself)
@@ -79,17 +78,31 @@ class DashboardDrawer extends VisualNDrawerBase {
       '#prefix' => '<div class="form-item">',
       '#suffix' => '</div>',
     ];
-    $form['#prefix'] = '<div id="some-wrapper">';
-    $form['#suffix'] = '</div>';
+    $form['ajax_container'] = [
+      '#type' => 'container',
+      '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
+      '#suffix' => '</div>',
+      '#process' => [[get_called_class(), 'processConfigurationFormSectionsUpdate']],
+    ];
 
-    if ($configuration['sections'] > 3) {
-      $form['tmp'] = [
+    return $form;
+  }
+
+  public static function processConfigurationFormSectionsUpdate(array $element, FormStateInterface $form_state, $form) {
+    // Generally $element['#parents'] could be directly here since 'section' element triggers ajax request
+    // by we leave it as it is for clarity.
+    $element_parents = array_slice($element['#parents'], 0, -1);
+    $sections = $form_state->getValue(array_merge($element_parents, ['sections']));
+    if ($sections >= 3) {
+      $container_key = $sections;
+      $element[$container_key]['demo_textfield'] = [
         '#type' => 'textfield',
-        '#description' => t('This field is for ajaxified config form demo purposes only.'),
+        '#description' => t('This field is for ajaxified config form demo purposes only. Change "sections" to see how it works.'),
+        '#default_value' => $sections,
         '#disabled' => TRUE,
       ];
     }
-    return $form;
+    return $element;
   }
 
   /**
@@ -112,11 +125,11 @@ class DashboardDrawer extends VisualNDrawerBase {
    */
   public static function ajaxCallback(array $form, FormStateInterface $form_state, Request $request) {
     $triggering_element = $form_state->getTriggeringElement();
-    $triggering_element_parents = $triggering_element['#array_parents'];
-    array_pop($triggering_element_parents);
+    $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
+    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);
     $element = NestedArray::getValue($form, $triggering_element_parents);
 
-    return $element;
+    return $element['ajax_container'];
   }
 
   /**
