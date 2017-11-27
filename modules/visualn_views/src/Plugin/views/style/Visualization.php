@@ -278,6 +278,10 @@ class Visualization extends StylePluginBase {
               = $drawer_plugin->buildConfigurationForm($element[$drawer_container_key]['drawer_config'], $subform_state);
 
 
+    // Process #ajax elements. If drawer configuration form uses #ajax to rebuild elements on cerain events,
+    // those calls must use views specific 'url' setting or new elements values won't be saved.
+    $this->replaceAjaxOptions($element[$drawer_container_key]['drawer_config'], $form_state);
+
 
 
     // @todo: Use some kind of \VisualN::buildDrawerDataKeysForm($drawer_plugin, $form, $form_state) here.
@@ -306,11 +310,23 @@ class Visualization extends StylePluginBase {
     // since drawer and fields onfiguration forms may be empty, do a check (then it souldn't be of details type)
     if (Element::children($element[$drawer_container_key]['drawer_config'])
          || Element::children($element[$drawer_container_key]['drawer_fields'])) {
-      $style_element_array_parents = array_slice($element['#array_parents'], 0, -1);
-      // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
-      $triggering_element = $form_state->getTriggeringElement();
-      // @todo: triggering element may be empty
-      $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, ['visualn_style_id']);
+      $details_open = FALSE;
+      if ($form_state->getTriggeringElement()) {
+        $style_element_array_parents = array_slice($element['#array_parents'], 0, -1);
+        // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
+        $triggering_element = $form_state->getTriggeringElement();
+        // @todo: triggering element may be empty
+        $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, ['visualn_style_id']);
+        // if triggered an ajaxafield configuration form element, open configuration form details after refresh
+        if (!$details_open) {
+          $array_merge = array_merge($element['#array_parents'], [$drawer_container_key, 'drawer_config']);
+          $array_diff = array_diff($triggering_element['#array_parents'], $array_merge);
+          $is_subarray = $triggering_element['#array_parents'] == array_merge($array_merge, $array_diff);
+          if ($is_subarray) {
+            $details_open = TRUE;
+          }
+        }
+      }
       $element[$drawer_container_key] = [
         '#type' => 'details',
         '#title' => t('Style configuration'),
@@ -322,6 +338,22 @@ class Visualization extends StylePluginBase {
     // @todo: attach #element_validate
 
     return $element;
+  }
+
+
+  /**
+   * Process #ajax elements. If drawer configuration form uses #ajax to rebuild elements on cerain events,
+   * those calls must use views specific 'url' setting or new elements values won't be saved.
+   */
+  protected function replaceAjaxOptions(&$element, FormStateInterface $form_state) {
+    foreach (Element::children($element) as $key) {
+      if (isset($element[$key]['#ajax'])) {
+        $element[$key]['#ajax']['url'] = views_ui_build_form_url($form_state);
+      }
+
+      // check subtree elements
+      $this->replaceAjaxOptions($element[$key], $form_state);
+    }
   }
 
   /**
