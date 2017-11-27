@@ -1,6 +1,6 @@
 name: VisualN Resource
 type: module
-description: VisualN support for url resources
+description: VisualN support for url resources.
 core: 8.x
 package: VisualN
 dependencies:

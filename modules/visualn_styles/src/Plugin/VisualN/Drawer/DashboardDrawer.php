@@ -54,7 +54,7 @@ class DashboardDrawer extends VisualNDrawerBase {
     foreach (range(1, 100) as $number) {
       $options[$number] = $number;
     }
-    // @todo: choose a better ajax selector
+    // @todo: choose a better ajax selector, must be unique
     //$ajax_wrapper_id = implode('-', $form['#array_parents']) . '--dashboard-ajax';
     $ajax_wrapper_id = 'some-wrapper--dashboard-ajax';
     $form['sections'] = [
