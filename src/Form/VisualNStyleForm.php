@@ -110,6 +110,7 @@ class VisualNStyleForm extends EntityForm {
       // @todo: the empty value shouldn't be added if #default_value is set (according to FAPI documentation)
       '#empty_value' => '',
       '#required' => TRUE,
+      '#weight' => 1,
     ];
 
     // get real drawer plugin stored configuration for visualn style
@@ -124,6 +125,7 @@ class VisualNStyleForm extends EntityForm {
       '#suffix' => '</div>',
       '#type' => 'container',
       '#process' => [[$this, 'processBaseDrawerSubform']],
+      '#weight' => 2,
     ];
     $stored_configuration = [
       'prefixed_id' => $prefixed_id,
@@ -190,14 +192,15 @@ class VisualNStyleForm extends EntityForm {
     if (Element::children($element[$drawer_container_key]['drawer_config'])) {
       $drawer_element_array_parents = array_slice($element['#array_parents'], 0, -1);
       // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
-      // @todo: triggering element may be empty
-      $triggering_element = $form_state->getTriggeringElement();
-      $details_open = $triggering_element['#array_parents'] === array_merge($drawer_element_array_parents, ['drawer_id']);
-      $element[$drawer_container_key] = [
-        '#type' => 'details',
-        '#title' => t('VisualN Style configuration'),
-        '#open' => $details_open,
-      ] + $element[$drawer_container_key];
+      if ($form_state->getTriggeringElement()) {
+        $triggering_element = $form_state->getTriggeringElement();
+        $details_open = $triggering_element['#array_parents'] === array_merge($drawer_element_array_parents, ['drawer_id']);
+        $element[$drawer_container_key] = [
+          '#type' => 'details',
+          '#title' => t('VisualN Style configuration'),
+          '#open' => $details_open,
+        ] + $element[$drawer_container_key];
+      }
     }
 
     // @todo: uncomment validate callback

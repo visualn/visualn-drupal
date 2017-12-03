@@ -122,14 +122,16 @@ class VisualNFormsHelper {
 
 
 
-    // since drawer and fields onfiguration forms may be empty, do a check (then it souldn't be of details type)
+    // since drawer and fields configuration forms may be empty, do a check (then it souldn't be of details type)
     if (Element::children($element[$drawer_container_key]['drawer_config'])
          || Element::children($element[$drawer_container_key]['drawer_fields'])) {
       $style_element_array_parents = array_slice($element['#array_parents'], 0, -1);
       // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
-      // @todo: triggering element may be empty
-      $triggering_element = $form_state->getTriggeringElement();
-      $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, ['visualn_style_id']);
+      $details_open = FALSE;
+      if ($form_state->getTriggeringElement()) {
+        $triggering_element = $form_state->getTriggeringElement();
+        $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, ['visualn_style_id']);
+      }
       $element[$drawer_container_key] = [
         '#type' => 'details',
         '#title' => t('Style configuration'),
@@ -189,7 +191,7 @@ class VisualNFormsHelper {
       $form_state->setValue(array_merge($base_element_parents, ['drawer_config']), $drawer_config_values);
     }
 
-    // move drawer_config two levels up (remove 'drawer_container' and $drawer_container_key) in form_state values
+    // move drawer_fields two levels up (remove 'drawer_container' and $drawer_container_key) in form_state values
     $drawer_fields_values = $form_state->getValue(array_merge($element_parents, [$drawer_container_key, 'drawer_fields']));
     if (!is_null($drawer_fields_values)) {
       $new_drawer_fields_values = [];
@@ -258,14 +260,15 @@ class VisualNFormsHelper {
     if (Element::children($element[$drawer_container_key]['drawer_config'])) {
       $drawer_element_array_parents = array_slice($element['#array_parents'], 0, -1);
       // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
-      // @todo: triggering element may be empty
-      $triggering_element = $form_state->getTriggeringElement();
-      $details_open = $triggering_element['#array_parents'] === array_merge($drawer_element_array_parents, ['drawer_plugin_id']);
-      $element[$drawer_container_key] = [
-        '#type' => 'details',
-        '#title' => t('Base Drawer configuration'),
-        '#open' => $details_open,
-      ] + $element[$drawer_container_key];
+      if ($form_state->getTriggeringElement()) {
+        $triggering_element = $form_state->getTriggeringElement();
+        $details_open = $triggering_element['#array_parents'] === array_merge($drawer_element_array_parents, ['drawer_plugin_id']);
+        $element[$drawer_container_key] = [
+          '#type' => 'details',
+          '#title' => t('Base Drawer configuration'),
+          '#open' => $details_open,
+        ] + $element[$drawer_container_key];
+      }
     }
 
     $element[$drawer_container_key]['#element_validate'] = [[get_called_class(), 'validateBaseDrawerSubForm']];
@@ -301,6 +304,7 @@ class VisualNFormsHelper {
 
     // @todo: it is not correct to call submit inside a validate method (validateDrawerContainerSubForm())
     //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
+    // @todo: get full_form from the method arguments
     $full_form = $form_state->getCompleteForm();
     $subform = $form['drawer_config'];
     $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);

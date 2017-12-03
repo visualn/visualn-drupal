@@ -57,7 +57,7 @@ class IframeController extends ControllerBase {
       // @todo: this is somehow cached but is it proper behaviour?
       $options = $configuration;
       $render = $content_provider->provideContent($record_key, $options);
-      // @todo: create DefaultContentProivder class (see DefaultNegotiator in case of ThemeNegotiator)
+      // @todo: create DefaultContentProvider class (see DefaultNegotiator in case of ThemeNegotiator)
     }
 
     else {

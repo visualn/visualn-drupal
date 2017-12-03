@@ -2,6 +2,7 @@
 
 namespace Drupal\visualn_drawings_library\Plugin\VisualN\DrawingFetcher;
 
+use Drupal\visualn_drawings_library\Plugin\GenericDrawingFetcherBase;
 use Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
@@ -14,7 +15,7 @@ use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
 use Drupal\visualn\Plugin\VisualNResourceFormatManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+//use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Form\SubformStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
@@ -29,34 +30,15 @@ use Drupal\visualn\Helpers\VisualNFormsHelper;
  *  needs_entity_info = FALSE,
  * )
  */
-class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements ContainerFactoryPluginInterface {
+//class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase implements ContainerFactoryPluginInterface {
+class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
 
   // @todo: this is to avoid the error: "LogicException: The database connection is not serializable.
   // This probably means you are serializing an object that has an indirect reference to the database connection.
   // Adjust your code so that is not necessary. Alternatively, look at DependencySerializationTrait
   // as a temporary solution." when using from inside VisualNFetcherWidget
-  use DependencySerializationTrait;
+  //use DependencySerializationTrait;
 
-  /**
-   * The image style entity storage.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected $visualNStyleStorage;
-
-  /**
-   * The visualn drawer manager service.
-   *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
-   */
-  protected $visualNDrawerManager;
-
-  /**
-   * The visualn manager manager service.
-   *
-   * @var \Drupal\visualn\Plugin\VisualNManagerManager
-   */
-  protected $visualNManagerManager;
 
   /**
    * The visualn resource format manager service.
@@ -68,6 +50,7 @@ class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements
   /**
    * {@inheritdoc}
    */
+
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
@@ -102,13 +85,11 @@ class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements
    *   The visualn resource format manager service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceFormatManager $visualn_resource_format_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_manager_manager);
 
-    $this->visualNStyleStorage = $visualn_style_storage;
-    $this->visualNDrawerManager = $visualn_drawer_manager;
-    $this->visualNManagerManager = $visualn_manager_manager;
     $this->visualNResourceFormatManager = $visualn_resource_format_manager;
   }
+
 
   /**
    * {@inheritdoc}
@@ -117,9 +98,10 @@ class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements
     return [
       'resource_url' => '',
       'resource_format' => '',
-      'visualn_style_id' => '',
-      'drawer_config' => [],
-      'drawer_fields' => [],
+      // these settings are provided by GenericDrawingFetcherBase abstract class
+      //'visualn_style_id' => '',
+      //'drawer_config' => [],
+      //'drawer_fields' => [],
     ] + parent::defaultConfiguration();
 
  }
@@ -128,16 +110,6 @@ class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $visualn_style_id = $form_state->getValue('visualn_style_id');
-
-    // @todo: how to check if the form is fresh
-    // is null basically means that the form is fresh (maybe check the whole $form_state->getValues() to be sure?)
-    // $visualn_style_id can be empty string (in case of default choice) or NULL in case of fresh form
-
-    if (is_null($visualn_style_id)) {
-      $visualn_style_id = $this->configuration['visualn_style_id'];
-    }
-
 
     // @todo: validate the url
     $form['resource_url'] = [
@@ -167,78 +139,10 @@ class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements
       '#empty_option' => t('- Select resource format -'),
     ];
 
-
-    // Attach visualn style select
-    $visualn_styles = visualn_style_options(FALSE);
-    $description_link = Link::fromTextAndUrl(
-      t('Configure VisualN Styles'),
-      Url::fromRoute('entity.visualn_style.collection')
-    );
-
-
-
-    // @todo: so we can use #array_parents to create a unique wrapper or store it even in form_state->addBuildInfo()
-    //    also keyed by #array_parents since there may be multiple fetcher plugins forms on a page (e.g. entity fields)
-    //    or even store as a hidden element and get it from form_state->getValues()
-    $ajax_wrapper_id = implode('-', array_merge($form['#array_parents'], ['visualn_style_id'])) .'-ajax-wrapper';
-
-
-    $form['visualn_style_id'] = [
-      '#type' => 'select',
-      '#title' => t('VisualN style'),
-      '#options' => $visualn_styles,
-      '#default_value' => $visualn_style_id,
-      '#description' => t('Default style for the data to render.'),
-      // @todo: add permission check for current user
-      '#description' => $description_link->toRenderable() + [
-        //'#access' => $this->currentUser->hasPermission('administer visualn styles')
-        '#access' => TRUE
-      ],
-      '#ajax' => [
-        'callback' => [get_called_class(), 'ajaxCallback'],
-        'wrapper' => $ajax_wrapper_id,
-      ],
-      '#required' => TRUE,
-      '#empty_value' => '',
-      '#empty_option' => t('- Select visualization style -'),
-    ];
-    $form['drawer_container'] = [
-      '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
-      '#suffix' => '</div>',
-      '#type' => 'container',
-      //'#process' => [[get_called_class(), 'processDrawerContainerSubform']],
-      '#process' => [[$this, 'processDrawerContainerSubform']],
-    ];
-    $form['drawer_container']['#stored_configuration'] = $this->configuration;
+    // Attach visualn style select box for the fetcher
+    $form += parent::buildConfigurationForm($form, $form_state);
 
     return $form;
-  }
-
-  /**
-   * Return drawer configuration form via ajax request at style change
-   */
-  public static function ajaxCallback(array $form, FormStateInterface $form_state, Request $request) {
-    $triggering_element = $form_state->getTriggeringElement();
-    $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
-    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);
-    $element = NestedArray::getValue($form, $triggering_element_parents);
-
-    return $element['drawer_container'];
-  }
-
-  // @todo: this should be static since may not work on field settings form (see fetcher field widget for example)
-  //public static function processDrawerContainerSubform(array $element, FormStateInterface $form_state, $form) {
-  public function processDrawerContainerSubform(array $element, FormStateInterface $form_state, $form) {
-    $stored_configuration = $element['#stored_configuration'];
-    $configuration = [
-      'visualn_style_id' => $stored_configuration['visualn_style_id'],
-      'drawer_config' => $stored_configuration['drawer_config'],
-      'drawer_fields' => $stored_configuration['drawer_fields'],
-    ];
-
-    $element = VisualNFormsHelper::processDrawerContainerSubform($element, $form_state, $form, $configuration);
-
-    return $element;
   }
 
 
@@ -316,10 +220,7 @@ class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    // @todo: extract and restructure data fields
-    //    at the moment this is done on the validation level which is not correct,
-    //    also it leaves an empty 'drawer_container' key in form_state->getValues()
-    //    (though removes drawer_container_key)
+    parent::submitConfigurationForm($form, $form_state);
   }
 
   /**
@@ -327,6 +228,7 @@ class ResourceGenericDrawingFetcher extends VisualNDrawingFetcherBase implements
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     // @todo: validate configuration form: resource_url
+    parent::validateConfigurationForm($form, $form_state);
   }
 
 }
