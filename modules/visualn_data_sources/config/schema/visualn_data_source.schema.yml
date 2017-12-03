@@ -1,0 +1,12 @@
+visualn_data_sources.visualn_data_source.*:
+  type: config_entity
+  label: 'VisualN Data Source config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string

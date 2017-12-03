@@ -1,0 +1,6 @@
+entity.visualn_data_source.add_form:
+  route_name: entity.visualn_data_source.add_form
+  title: 'Add VisualN Data Source'
+  appears_on:
+    - entity.visualn_data_source.collection
+

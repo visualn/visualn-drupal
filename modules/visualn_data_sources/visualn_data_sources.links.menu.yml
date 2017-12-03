@@ -1,0 +1,9 @@
+
+# VisualN Data Source menu items definition
+entity.visualn_data_source.collection:
+  title: 'Data Sources'
+  route_name: entity.visualn_data_source.collection
+  description: 'List VisualN Data Sources'
+  parent: visualn.admin_config_visualn
+  weight: 6
+

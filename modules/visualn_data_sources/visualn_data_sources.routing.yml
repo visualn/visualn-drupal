@@ -1,4 +1,3 @@
-
 visualn_data_sources.data_provider_controller_data:
   path: '/visualn-data-sources/data/{data_type}'
   defaults:
