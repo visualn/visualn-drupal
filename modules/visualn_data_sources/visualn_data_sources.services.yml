@@ -1,0 +1,4 @@
+services:
+  plugin.manager.visualn.data_provider:
+    class: Drupal\visualn_data_sources\Plugin\VisualNDataProviderManager
+    parent: default_plugin_manager
