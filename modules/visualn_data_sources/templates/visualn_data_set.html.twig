@@ -1,0 +1,22 @@
+{#
+/**
+ * @file visualn_data_set.html.twig
+ * Default theme implementation to present VisualN Data Set data.
+ *
+ * This template is used when viewing VisualN Data Set pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_visualn_data_set()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('visualn_data_set') }}>
+  {% if content %}
+    {{- content -}}
+  {% endif %}
+</div>

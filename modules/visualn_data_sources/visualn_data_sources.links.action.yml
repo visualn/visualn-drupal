@@ -4,3 +4,14 @@ entity.visualn_data_source.add_form:
   appears_on:
     - entity.visualn_data_source.collection
 
+entity.visualn_data_set.add_form:
+  route_name: entity.visualn_data_set.add_page
+  title: 'Add VisualN Data Set'
+  appears_on:
+    - entity.visualn_data_set.collection
+entity.visualn_data_set_type.add_form:
+  route_name: entity.visualn_data_set_type.add_form
+  title: 'Add VisualN Data Set type'
+  appears_on:
+    - entity.visualn_data_set_type.collection
+
