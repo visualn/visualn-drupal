@@ -28,9 +28,9 @@ class VisualNDataProviderItem extends FieldItemBase {
    */
   public static function defaultStorageSettings() {
     return [
-      'max_length' => 255,
-      'is_ascii' => FALSE,
-      'case_sensitive' => FALSE,
+      //'max_length' => 255,
+      //'is_ascii' => FALSE,
+      //'case_sensitive' => FALSE,
     ] + parent::defaultStorageSettings();
   }
 
@@ -39,10 +39,12 @@ class VisualNDataProviderItem extends FieldItemBase {
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
     // Prevent early t() calls by using the TranslatableMarkup.
-    $properties['value'] = DataDefinition::create('string')
-      ->setLabel(new TranslatableMarkup('Text value'))
-      ->setSetting('case_sensitive', $field_definition->getSetting('case_sensitive'))
-      ->setRequired(TRUE);
+    $properties['data_provider_id'] = DataDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('Data provider plugin'));
+    // @todo: maybe there is a way to store config without serializing it
+    // @todo: what is available length for the config?
+    $properties['data_provider_config'] = DataDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('Data provider config'));
 
     return $properties;
   }
@@ -53,12 +55,19 @@ class VisualNDataProviderItem extends FieldItemBase {
   public static function schema(FieldStorageDefinitionInterface $field_definition) {
     $schema = [
       'columns' => [
-        'value' => [
-          'type' => $field_definition->getSetting('is_ascii') === TRUE ? 'varchar_ascii' : 'varchar',
-          'length' => (int) $field_definition->getSetting('max_length'),
-          'binary' => $field_definition->getSetting('case_sensitive'),
-        ],
       ],
+    ];
+
+    $schema['columns']['data_provider_id'] = [
+      'description' => 'The ID of the data provider plugin used if overridden.',
+      'type' => 'varchar_ascii',
+      'length' => 255,
+    ];
+    // @todo: use data_provider_data if there should be not only data_provider (as it is done for visualn_data)
+    $schema['columns']['data_provider_config'] = [
+      'type' => 'text',
+      'mysql_type' => 'blob',
+      'description' => 'Serialized data provider config.',
     ];
 
     return $schema;
@@ -67,61 +76,52 @@ class VisualNDataProviderItem extends FieldItemBase {
   /**
    * {@inheritdoc}
    */
-  public function getConstraints() {
+  /*public function getConstraints() {
     $constraints = parent::getConstraints();
-
-    if ($max_length = $this->getSetting('max_length')) {
-      $constraint_manager = \Drupal::typedDataManager()->getValidationConstraintManager();
-      $constraints[] = $constraint_manager->create('ComplexData', [
-        'value' => [
-          'Length' => [
-            'max' => $max_length,
-            'maxMessage' => t('%name: may not be longer than @max characters.', [
-              '%name' => $this->getFieldDefinition()->getLabel(),
-              '@max' => $max_length
-            ]),
-          ],
-        ],
-      ]);
-    }
-
     return $constraints;
-  }
+  }*/
+
 
   /**
    * {@inheritdoc}
    */
-  public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-    $random = new Random();
-    $values['value'] = $random->word(mt_rand(1, $field_definition->getSetting('max_length')));
-    return $values;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
+  /*public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
     $elements = [];
-
-    $elements['max_length'] = [
-      '#type' => 'number',
-      '#title' => t('Maximum length'),
-      '#default_value' => $this->getSetting('max_length'),
-      '#required' => TRUE,
-      '#description' => t('The maximum length of the field in characters.'),
-      '#min' => 1,
-      '#disabled' => $has_data,
-    ];
-
     return $elements;
-  }
+  }*/
 
   /**
    * {@inheritdoc}
    */
   public function isEmpty() {
-    $value = $this->get('value')->getValue();
+    $value = $this->get('data_provider_id')->getValue();
     return $value === NULL || $value === '';
+  }
+
+
+  /**
+   * {@inheritdoc}
+   *
+   * @todo: add to interface
+   * @todo: maybe rename the method
+   */
+  // @todo: In a similar manner fetcher field for the drawing should return instantiated and configured
+  //    fetcher plugin instead of drawing markup
+  public function getDataProviderPlugin() {
+    $data_provider_plugin = NULL;
+    if (!$this->isEmpty()) {
+      $data_provider_id = $this->get('data_provider_id')->getValue();
+      $data_provider_config = $this->get('data_provider_config')->getValue();
+      $data_provider_config = !empty($data_provider_config) ? unserialize($data_provider_config) : [];
+      // @todo: instantiate at calss create
+      $data_provider_plugin = \Drupal::service('plugin.manager.visualn.data_provider')
+                          ->createInstance($data_provider_id, $data_provider_config);
+
+      // Set reference to the entity since data provider plugin generally may need all entity fields.
+      //$data_provider_plugin->setDataSetEntity($this->getEntity());
+    }
+
+    return $data_provider_plugin;
   }
 
 }

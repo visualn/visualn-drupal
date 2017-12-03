@@ -72,9 +72,17 @@ class VisualNDataProviderFormatter extends FormatterBase {
    *   The textual output generated.
    */
   protected function viewValue(FieldItemInterface $item) {
-    // The text value has no text format assigned to it, so the user input
-    // should equal the output, including newlines.
-    return nl2br(Html::escape($item->value));
+    $output = '';
+    $data_provider_plugin = $item->getDataProviderPlugin();
+    if (!is_null($data_provider_plugin)) {
+      //$output = $data_provider_plugin->label();
+      $output = print_r($data_provider_plugin->getConfiguration(), 1);
+    }
+
+    return '<pre>' . $output . '</pre>';
+
+    //dsm($data_provider_plugin->getOutputType());
+    //dsm($data_provider_plugin->getOutputInterface());
   }
 
 }

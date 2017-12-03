@@ -35,7 +35,7 @@ class VisualNDrawingTypeForm extends EntityForm {
       '#disabled' => !$visualn_drawing_type->isNew(),
     ];
 
-    $options = ['' => t('- Select drawing fetcher field -')];
+    $options = [];
     if (!$visualn_drawing_type->isNew()) {
       // @todo: instantiate on create
       $entityManager = \Drupal::service('entity_field.manager');
@@ -64,6 +64,8 @@ class VisualNDrawingTypeForm extends EntityForm {
       '#options' => $options,
       '#default_value' => $this->entity->getDrawingFetcherField(),
       '#disabled' => $visualn_drawing_type->isNew(),
+      '#empty_value' => '',
+      '#empty_option' => t('- Select drawing fetcher field -'),
     ];
 
     return $form;

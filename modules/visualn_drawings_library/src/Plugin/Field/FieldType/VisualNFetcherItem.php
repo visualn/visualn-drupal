@@ -32,6 +32,7 @@ class VisualNFetcherItem extends FieldItemBase {
     $properties['fetcher_id'] = DataDefinition::create('string')
       //->setLabel(t('Drawing fetcher plugin'));
       ->setLabel(new TranslatableMarkup('Drawing fetcher plugin'));
+    // @todo: what is available length for the config?
     $properties['fetcher_config'] = DataDefinition::create('string')
       //->setLabel(t('Drawing fetcher config'));
       ->setLabel(new TranslatableMarkup('Drawing fetcher config'));
@@ -53,7 +54,7 @@ class VisualNFetcherItem extends FieldItemBase {
       'type' => 'varchar_ascii',
       'length' => 255,
     ];
-    // @todo: use fetcher_data if there should be not only fetcher_config
+    // @todo: use fetcher_data if there should be not only fetcher_config (as it is done for visualn_data)
     $schema['columns']['fetcher_config'] = [
       'type' => 'text',
       'mysql_type' => 'blob',

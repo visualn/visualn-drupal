@@ -10,3 +10,6 @@ visualn_data_sources.visualn_data_set_type.*:
       label: 'Label'
     uuid:
       type: string
+    data_provider_field:
+      type: string
+      label: 'Data provider field'

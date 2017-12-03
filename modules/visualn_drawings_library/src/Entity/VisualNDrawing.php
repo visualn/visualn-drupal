@@ -262,7 +262,7 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
    * @todo: add to interface
    */
   public function buildDrawing() {
-    // @todo: there are multiple ways to get bundle entity type<
+    // @todo: there are multiple ways to get bundle entity type,
     //    see https://www.drupal.org/docs/8/api/entity-api/working-with-the-entity-api
     $bundle_entity_type = $this->getEntityType()->getBundleEntityType();
     $bundle = $this->bundle();

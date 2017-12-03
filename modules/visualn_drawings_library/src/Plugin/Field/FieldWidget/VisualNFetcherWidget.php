@@ -38,6 +38,7 @@ class VisualNFetcherWidget extends WidgetBase {
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $elements = [];
 
+    // Actually default drawing fetcher is already set at field default value configuration level.
     /*$elements['fetcher_id'] = [
       '#type' => 'select',
       '#title' => t('Fetcher plugin id'),
@@ -137,6 +138,7 @@ class VisualNFetcherWidget extends WidgetBase {
   }
 
 
+  // @todo: The code below should be almost the same as for VisualN block configuration form
   public function processFetcherConfigurationSubform(array $element, FormStateInterface $form_state, $form) {
     $item = $element['#item'];
     $entity_type = $element['#entity_type'];

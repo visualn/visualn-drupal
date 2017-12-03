@@ -35,7 +35,38 @@ class VisualNDataSetTypeForm extends EntityForm {
       '#disabled' => !$visualn_data_set_type->isNew(),
     ];
 
-    /* You will need additional form elements for your custom properties. */
+    $options = [];
+    if (!$visualn_data_set_type->isNew()) {
+      // @todo: instantiate on create
+      $entityManager = \Drupal::service('entity_field.manager');
+      // @todo: get type from entity properties
+      $entity_type = 'visualn_data_set';
+      $bundle = $visualn_data_set_type->id();
+      $bundle_fields = $entityManager->getFieldDefinitions($entity_type, $bundle);
+
+      foreach ($bundle_fields as $field_name => $field_definition) {
+        // filter out base fields
+        if ($field_definition->getFieldStorageDefinition()->isBaseField() == TRUE) {
+          continue;
+        }
+
+        // @todo: move field type into constant
+        if ($field_definition->getType() == 'visualn_data_provider') {
+          $options[$field_name] = $field_definition->getLabel();
+        }
+      }
+    }
+
+
+    $form['data_provider_field'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Data provider field'),
+      '#options' => $options,
+      '#default_value' => $this->entity->getDataProviderField(),
+      '#disabled' => $visualn_data_set_type->isNew(),
+      '#empty_value' => '',
+      '#empty_option' => t('- Select data provider field -'),
+    ];
 
     return $form;
   }
@@ -60,6 +91,16 @@ class VisualNDataSetTypeForm extends EntityForm {
         ]));
     }
     $form_state->setRedirectUrl($visualn_data_set_type->toUrl('collection'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    parent::submitForm($form, $form_state);
+
+    $data_provider_field = $form_state->getValue('data_provider_field') ?: '';
+    $this->entity->set('data_provider_field', $data_provider_field);
   }
 
 }
