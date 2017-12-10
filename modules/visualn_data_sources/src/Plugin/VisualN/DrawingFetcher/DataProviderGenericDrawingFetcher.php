@@ -19,13 +19,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 
+use Drupal\Core\Plugin\Context\Context;
+use Drupal\Core\Plugin\Context\ContextDefinition;
+
 /**
  * Provides a 'VisualN Data Provider generic drawing fetcher' VisualN drawing fetcher.
  *
  * @VisualNDrawingFetcher(
  *  id = "visualn_data_provider_generic",
  *  label = @Translation("VisualN Data Provider generic drawing fetcher"),
- *  needs_entity_info = FALSE,
+ *  context = {
+ *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type"), required = FALSE),
+ *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle"), required = FALSE),
+ *    "current_entity" = @ContextDefinition("any", label = @Translation("Current entity"), required = FALSE)
+ *  }
  * )
  */
 //class DataProviderGenericDrawingFetcher extends VisualNDrawingFetcherBase implements ContainerFactoryPluginInterface {
@@ -104,6 +111,24 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
     $definitions = $this->visualNDataProviderManager->getDefinitions();
     $data_providers = [];
     foreach ($definitions as $definition) {
+
+      // Exclude providers with which have at least one required context scince here no context is provided.
+      if (!empty($definition['context'])) {
+        foreach ($definition['context'] as $name => $context_definition) {
+          // @todo: Here we check only contexts required for the form (e.g. we don't check "current_entity" context)
+          //    though it may be required for getDataProviderPlugin() method to work. We suppose that
+          //    only "entity_type" and "bundle" are enough here (which generally may be wrong).
+          //    Also the "current_entity" context seems to not being checked anywhere and is supposed to work
+          //    by convention.
+          if (!in_array($name, array('entity_type', 'bundle'))) {
+            continue;
+          }
+          elseif ($context_definition->isRequired() && !$this->getContextValue($name)) {
+            continue 2;
+          }
+        }
+      }
+
       $data_providers[$definition['id']] = $definition['label'];
     }
 
@@ -131,6 +156,14 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
       '#process' => [[$this, 'processProviderContainerSubform']],
     ];
     $form['provider_container']['#stored_configuration'] = $this->configuration;
+
+    // @todo: no need to set this contexts for data provider plugins that don't have
+    //    them in their annotation (plugin definition), e.g. random data generator plugins.
+    // @todo: a similar note should be added to settings context for
+    //    generic fetcher plugins (e.g. resource generic fetcher which doesn't need any context to work).
+    $form['provider_container']['#entity_type'] = $this->getContextValue('entity_type');
+    // @todo: use #entity_bundle key for consistency
+    $form['provider_container']['#bundle'] = $this->getContextValue('bundle');
 
     // Attach visualn style select box for the fetcher
     $form += parent::buildConfigurationForm($form, $form_state);
@@ -215,6 +248,14 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
       $build['data_provider'] = [];
       $provider_plugin->prepareBuild($build['data_provider'], $vuid, $options);
       // @todo: maybe in a similar way $build['drawing'] should be passed to manager but not the $build itself
+
+      $current_entity = $this->getContextValue('current_entity');
+
+      // @todo: replace "any" context type with an appropriate one
+      // Set "current_entity" context
+      $context_current_entity = new Context(new ContextDefinition('any', NULL, TRUE), $current_entity);
+      $provider_plugin->setContext('current_entity', $context_current_entity);
+      // @todo: see the note regarding setting context in VisualNDataProviderItem class
 
       $options['output_type'] = $provider_plugin->getOutputType();
       // @todo: Previously named adapter_settings but then renamed because it relates to

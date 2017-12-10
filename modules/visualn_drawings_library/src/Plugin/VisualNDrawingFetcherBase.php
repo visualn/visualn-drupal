@@ -2,20 +2,14 @@
 
 namespace Drupal\visualn_drawings_library\Plugin;
 
-use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn_drawings_library\Entity\VisualNDrawing;
 
 /**
  * Base class for VisualN Drawing Fetcher plugins.
  */
-abstract class VisualNDrawingFetcherBase extends PluginBase implements VisualNDrawingFetcherInterface {
-
-  protected $drawing_entity;
-
-  protected $entity_type;
-
-  protected $entity_bundle;
+abstract class VisualNDrawingFetcherBase extends ContextAwarePluginBase implements VisualNDrawingFetcherInterface {
 
   /**
    * {@inheritdoc}
@@ -25,25 +19,6 @@ abstract class VisualNDrawingFetcherBase extends PluginBase implements VisualNDr
     $this->setConfiguration($configuration);
   }
 
-
-  /**
-   * {@inheritdoc}
-   *
-   * @todo: review this method name, argments and usage
-   */
-  public function setEntityInfo($entity_type, $entity_bundle) {
-    $this->entity_type = $entity_type;
-    $this->entity_bundle = $entity_bundle;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setDrawingEntity(VisualNDrawing $entity) {
-    $this->drawing_entity = $entity;
-    return $this;
-  }
 
   /**
    * {@inheritdoc}

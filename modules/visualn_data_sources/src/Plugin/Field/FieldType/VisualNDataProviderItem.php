@@ -10,6 +10,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
+use Drupal\Core\Plugin\Context\Context;
+use Drupal\Core\Plugin\Context\ContextDefinition;
+
 /**
  * Plugin implementation of the 'visualn_data_provider' field type.
  *
@@ -118,7 +121,14 @@ class VisualNDataProviderItem extends FieldItemBase {
                           ->createInstance($data_provider_id, $data_provider_config);
 
       // Set reference to the entity since data provider plugin generally may need all entity fields.
-      //$data_provider_plugin->setDataSetEntity($this->getEntity());
+
+      // @todo: replace "any" context type with an appropriate one
+      // Set "current_entity" context
+      $context_current_entity = new Context(new ContextDefinition('any', NULL, TRUE), $this->getEntity());
+      $data_provider_plugin->setContext('current_entity', $context_current_entity);
+      // @todo: or just setContextValue() here, the context itself could be initialized in the $provider_plugin,
+      //    also context values could be set as part of $data_provider_config['context'], that will
+      //    be used by ContextAwarePluginBase::_consturct() to initialize context values
     }
 
     return $data_provider_plugin;

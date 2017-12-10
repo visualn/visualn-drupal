@@ -275,7 +275,7 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
     if (!empty($data_provider_field)) {
       // get data provider plugin instance or NULL
       // @todo: what if data provider field has multiple items (can we also configure delta)?
-      $data_provider_plugin = $this->get($data_provider_field)->getDataProviderPlugin();
+      $data_provider_plugin = $this->get($data_provider_field)->first()->getDataProviderPlugin();
     }
 
     return $data_provider_plugin;

@@ -6,6 +6,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Render\Element;
 
+use Drupal\Core\Plugin\Context\Context;
+use Drupal\Core\Plugin\Context\ContextDefinition;
+
 class VisualNFormsHelper {
 
   // @todo: rename to doProcessDrawerContainerSubform() to avoid confusion
@@ -335,6 +338,8 @@ class VisualNFormsHelper {
       'data_provider_id' => $stored_configuration['data_provider_id'],
       'data_provider_config' => $stored_configuration['data_provider_config'],
     ];
+    $context_entity_type = $element['#entity_type'] ?: '';
+    $context_bundle = $element['#bundle'] ?: '';
 
 
 
@@ -357,6 +362,17 @@ class VisualNFormsHelper {
     $visualNDataProviderManager = \Drupal::service('plugin.manager.visualn.data_provider');
 
     $provider_plugin = $visualNDataProviderManager->createInstance($data_provider_id, $data_provider_config);
+
+    // @todo: maybe just pass all available contexts
+
+    // Set "entity_type" and "bundle" contexts
+    $context_entity_type = new Context(new ContextDefinition('string', NULL, TRUE), $context_entity_type);
+    $provider_plugin->setContext('entity_type', $context_entity_type);
+
+    $context_bundle = new Context(new ContextDefinition('string', NULL, TRUE), $context_bundle);
+    $provider_plugin->setContext('bundle', $context_bundle);
+
+    // @todo: see the note regarding setting context in VisualNDataProviderItem class
 
     $provider_container_key = $data_provider_id;
 

@@ -2,13 +2,21 @@
 
 namespace Drupal\visualn_data_sources\Plugin;
 
-use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Base class for VisualN Data Provider plugins.
  */
-abstract class VisualNDataProviderBase extends PluginBase implements VisualNDataProviderInterface {
+abstract class VisualNDataProviderBase extends ContextAwarePluginBase implements VisualNDataProviderInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->setConfiguration($configuration);
+  }
 
   /**
    * {@inheritdoc}

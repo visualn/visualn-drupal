@@ -26,8 +26,7 @@ use Drupal\visualn\Helpers\VisualNFormsHelper;
  *
  * @VisualNDrawingFetcher(
  *  id = "visualn_resource_generic",
- *  label = @Translation("VisualN Resource generic drawing fetcher"),
- *  needs_entity_info = FALSE,
+ *  label = @Translation("VisualN Resource generic drawing fetcher")
  * )
  */
 //class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase implements ContainerFactoryPluginInterface {

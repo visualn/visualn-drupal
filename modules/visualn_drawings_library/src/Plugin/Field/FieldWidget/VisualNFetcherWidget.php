@@ -10,6 +10,9 @@ use Drupal\Core\Form\SubformState;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Render\Element;
 
+use Drupal\Core\Plugin\Context\Context;
+use Drupal\Core\Plugin\Context\ContextDefinition;
+
 /**
  * Plugin implementation of the 'visualn_fetcher' widget.
  *
@@ -68,6 +71,8 @@ class VisualNFetcherWidget extends WidgetBase {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+    // @todo: review the code, see VisualNDataProviderWidget class
+
     $element['#type'] = 'fieldset';
 
     $item = $items[$delta];
@@ -127,6 +132,7 @@ class VisualNFetcherWidget extends WidgetBase {
 
     // @todo: We can't pass the current reference to the entity because it doesn't always exist,
     //    e.g. when setting default value for the field in field settings.
+    // @todo: maybe pass entityType config entity
     $entity_type = $this->fieldDefinition->get('entity_type');
     $bundle = $this->fieldDefinition->get('bundle');
 
@@ -176,8 +182,14 @@ class VisualNFetcherWidget extends WidgetBase {
       //$fetcher_plugin = $this->visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
       $fetcher_plugin = $visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
 
-      // @todo: maybe set as part of config?
-      $fetcher_plugin->setEntityInfo($entity_type, $bundle);
+
+      // Set "entity_type" and "bundle" contexts
+      $context_entity_type = new Context(new ContextDefinition('string', NULL, TRUE), $entity_type);
+      $fetcher_plugin->setContext('entity_type', $context_entity_type);
+
+      $context_bundle = new Context(new ContextDefinition('string', NULL, TRUE), $bundle);
+      $fetcher_plugin->setContext('bundle', $context_bundle);
+      // @todo: see the note regarding setting context in VisualNDataProviderItem class
 
       // attach fetcher configuration form
       // @todo: also fetcher_config_key may be added here as it is done for ResourceGenericDraweringFethcher

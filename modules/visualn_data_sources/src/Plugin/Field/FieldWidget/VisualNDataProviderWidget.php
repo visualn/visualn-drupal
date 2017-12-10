@@ -118,6 +118,20 @@ class VisualNDataProviderWidget extends WidgetBase {
     // @todo: Also set keys for #entity_type and #bundle (see fetcher widget). Maybe set as context.
 
 
+
+    // @todo: Set entity type and bundle for the fetcher_plugin since it may need the list of all its fields.
+
+    // @todo: We can't pass the current reference to the entity because it doesn't always exist,
+    //    e.g. when setting default value for the field in field settings.
+    // @todo: maybe pass entityType config entity
+    $entity_type = $this->fieldDefinition->get('entity_type');
+    $bundle = $this->fieldDefinition->get('bundle');
+
+    // @todo: maybe we can get this data in the #process callback directly from the $item object
+    $element['provider_container']['#entity_type'] = $entity_type;
+    $element['provider_container']['#bundle'] = $bundle;
+
+
     return $element;
   }
 

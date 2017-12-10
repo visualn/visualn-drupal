@@ -76,6 +76,8 @@ class RandomDataProvider extends VisualNDataProviderBase {
       '#options' => ['leaflet' => 'Leaflet (title, lat, lon)'],
       '#default_value' => $configuration['data_type'],
       '#required' => TRUE,
+      '#empty_option' => t('- Select Data Type -'),
+      '#empty_value' => '',
     ];
 
     return $form;

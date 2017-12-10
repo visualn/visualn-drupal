@@ -11,6 +11,11 @@ use Drupal\Core\Form\FormStateInterface;
  * @VisualNDrawingFetcher(
  *  id = "visualn_file_field",
  *  label = @Translation("VisualN File field drawing fetcher"),
+ *  context = {
+ *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type")),
+ *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle")),
+ *    "current_entity" = @ContextDefinition("any", label = @Translation("Current entity"))
+ *  }
  * )
  */
 class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
@@ -31,13 +36,15 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
   public function fetchDrawing() {
     $drawing_markup = parent::fetchDrawing();
 
+    $current_entity = $this->getContextValue('current_entity');
+
     $visualn_file_field = $this->configuration['visualn_file_field'];
-    if (empty($visualn_file_field) || !$this->drawing_entity->hasField($visualn_file_field)) {
+    if (empty($visualn_file_field) || !$current_entity->hasField($visualn_file_field)) {
       return $drawing_markup;
     }
 
-    $field_instance = $this->drawing_entity->get($visualn_file_field);
-    if (!empty($visualn_file_field) && !$field_instance->isEmpty()) {
+    $field_instance = $current_entity->get($visualn_file_field);
+    if (!$field_instance->isEmpty()) {
       $first_delta = $field_instance->first();
 
       // @todo: this is based on VisualNFormatterSettingsTrait; review
@@ -103,6 +110,20 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
+    $entity_type = $this->getContextValue('entity_type');
+    $bundle = $this->getContextValue('bundle');
+
+    // @todo: this is a temporary solution
+    if (empty($entity_type) || empty($bundle)) {
+      // @todo: throw an error
+      $form['markup'] = [
+        '#markup' => t('Entity type or bundle context not set.'),
+      ];
+
+      return $form;
+    }
+
+
     // @todo: here we don't give any direct access to the entity edited
     //    but we can find out whether the entity field has multiple or unlimited delta
 
@@ -112,7 +133,7 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
     $options = ['' => t('- Select -')];
     // @todo: instantiate on create
     $entityManager = \Drupal::service('entity_field.manager');
-    $bundle_fields = $entityManager->getFieldDefinitions($this->entity_type, $this->entity_bundle);
+    $bundle_fields = $entityManager->getFieldDefinitions($entity_type, $bundle);
 
     foreach ($bundle_fields as $field_name => $field_definition) {
       // filter out base fields
@@ -128,7 +149,7 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
 
     $form['visualn_file_field'] = [
       '#type' => 'select',
-      '#title' => t('VisualN File'),
+      '#title' => t('VisualN File field'),
       '#options' => $options,
       // @todo: where to use getConfiguration and where $this->configuration (?)
       //    the same question for other plugin types

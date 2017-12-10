@@ -90,14 +90,15 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $fetchers_list = [];
     $definitions = $this->visualNDrawingFetcherManager->getDefinitions();
     foreach ($definitions as $definition) {
-      // @todo: this is a temporary measure. see note on tags
-      if ($definition['needs_entity_info']) {
-        continue;
+      // Exclude fetchers with which have at least one required context scince here no context is provided.
+      if ($definition['context']) {
+        foreach ($definition['context'] as $name => $context_definition) {
+          if ($context_definition->isRequired()) {
+            continue 2;
+          }
+        }
       }
       $fetchers_list[$definition['id']] = $definition['label'];
-      // @todo: maybe check for fetcher tags (when introduced) since there is no need to include fetchers
-      //    that need an entity reference (e.g. field fetchers)
-      //    and causes errors when selecting such fetchers in the block configuration form
     }
 
     // @todo: review this check after the main issue in drupal core is resolved

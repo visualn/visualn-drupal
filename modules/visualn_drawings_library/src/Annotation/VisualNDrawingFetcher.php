@@ -32,14 +32,21 @@ class VisualNDrawingFetcher extends Plugin {
   public $label;
 
   /**
-   * Shows whether the plugin needs a reference to an entity.
+   * An array of context definitions describing the context used by the plugin.
    *
-   * It is usen by fetchers that use entity fields as data sources.
+   * The array is keyed by context names.
    *
-   * @todo: remove when not needed
-   *
-   * @var boolean
+   * @var \Drupal\Core\Annotation\ContextDefinition[]
    */
-  public $needs_entity_info = TRUE;
+  // @todo: uncomment if needed
+  //public $context = [];
+
+
+  /*
+  public function __construct($values) {
+    // @todo: here default contexts may be set though seems to be not required
+    parent::__construct($values);
+  }
+  */
 
 }

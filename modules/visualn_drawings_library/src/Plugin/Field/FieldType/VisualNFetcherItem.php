@@ -10,6 +10,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
+use Drupal\Core\Plugin\Context\Context;
+use Drupal\Core\Plugin\Context\ContextDefinition;
+
 /**
  * Plugin implementation of the 'visualn_fetcher' field type.
  *
@@ -105,8 +108,14 @@ class VisualNFetcherItem extends FieldItemBase {
       $fetcher_plugin = \Drupal::service('plugin.manager.visualn.drawing_fetcher')
                           ->createInstance($fetcher_id, $fetcher_config);
 
-      // Set reference to the entity since fetcher plugin generally needs all entity fields.
-      $fetcher_plugin->setDrawingEntity($this->getEntity());
+      // Set reference to the entity since fetcher plugin generally may need all entity fields.
+
+      // @todo: replace "any" context type with an appropriate one
+      // Set "current_entity" context
+      $context_current_entity = new Context(new ContextDefinition('any', NULL, TRUE), $this->getEntity());
+      $fetcher_plugin->setContext('current_entity', $context_current_entity);
+      // @todo: see the note regarding setting context in VisualNDataProviderItem class
+
 
       $drawing_markup = $fetcher_plugin->fetchDrawing();
     }

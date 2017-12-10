@@ -26,7 +26,9 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
   // This probably means you are serializing an object that has an indirect reference to the database connection.
   // Adjust your code so that is not necessary. Alternatively, look at DependencySerializationTrait
   // as a temporary solution." when using from inside VisualNFetcherWidget
-  use DependencySerializationTrait;
+  // @todo: commented since ContextAwarePluginBase implements it by itself, though it was introduced into fetchers before
+  //    using contexts so the reason should be explored first before deleting this comment and explicitly motivate usage.
+  //use DependencySerializationTrait;
 
   /**
    * The image style entity storage.
