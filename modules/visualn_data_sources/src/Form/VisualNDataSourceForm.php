@@ -4,6 +4,10 @@ namespace Drupal\visualn_data_sources\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\NestedArray;
+use Symfony\Component\HttpFoundation\Request;
+
+use Drupal\visualn\Helpers\VisualNFormsHelper;
 
 /**
  * Class VisualNDataSourceForm.
@@ -35,9 +39,83 @@ class VisualNDataSourceForm extends EntityForm {
       '#disabled' => !$visualn_data_source->isNew(),
     ];
 
-    /* You will need additional form elements for your custom properties. */
+    $data_providers_list = [];
+    $visualNDataProviderManager = \Drupal::service('plugin.manager.visualn.data_provider');
+    $definitions = $visualNDataProviderManager->getDefinitions();
+    foreach ($definitions as $definition) {
+      if (!empty($definition['context'])) {
+        foreach ($definition['context'] as $name => $context_definition) {
+          if ($context_definition->isRequired()) {
+            // exclude providers with required contexts
+            continue 2;
+          }
+        }
+      }
+
+      $data_providers_list[$definition['id']] = $definition['label'];
+    }
+
+    $ajax_wrapper_id =  'data_provider-config-form-ajax';
+
+    $default_provider = $visualn_data_source->getDataProviderId();
+    $form['data_provider_id'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Data Provider'),
+      '#options' => $data_providers_list,
+      '#default_value' => $default_provider,
+      '#description' => $this->t("Data Provider for the data source."),
+      '#ajax' => [
+        'callback' => '::ajaxCallbackDataProvider',
+        'wrapper' => $ajax_wrapper_id,
+      ],
+      '#empty_value' => '',
+      '#required' => TRUE,
+    ];
+    $form['provider_container'] = [
+      '#tree' => TRUE,
+      '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
+      '#suffix' => '</div>',
+      '#type' => 'container',
+      '#process' => [[$this, 'processProviderContainerSubform']],
+    ];
+    $stored_configuration = [
+      'data_provider_id' => $visualn_data_source->getDataProviderId(),
+      'data_provider_config' => $visualn_data_source->getDataProviderConfig(),
+    ];
+    $form['provider_container']['#stored_configuration'] = $stored_configuration;
+
+    // Set empty values for entity_type and bundle contexts since data providers with
+    // required contexts are not allowed for data sources.
+    $form['provider_container']['#entity_type'] = '';
+    $form['provider_container']['#bundle'] = '';
+
+    // @todo: add into documentation
+    // Using data sources is supposed to be a good practice since it allows to limit the list of data providers
+    // in fetchers selects only to those that are needed but when a data provider has required contexts
+    // it can be used only directly using corresponding fetcher.
 
     return $form;
+  }
+
+  /**
+   * Return data provider configuration form via ajax request at style change.
+   * Should have a different name since ajaxCallback can be used by base class.
+   */
+  public static function ajaxCallbackDataProvider(array $form, FormStateInterface $form_state, Request $request) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
+    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);
+    $element = NestedArray::getValue($form, $triggering_element_parents);
+
+    return $element['provider_container'];
+  }
+
+  // @todo: this should be static since may not work on field settings form (see fetcher field widget for example)
+  //public static function processDrawerContainerSubform(array $element, FormStateInterface $form_state, $form) {
+  public function processProviderContainerSubform(array $element, FormStateInterface $form_state, $form) {
+    // @todo: explicitly set #stored_configuration and other keys (#entity_type and #bundle) here
+    $element = VisualNFormsHelper::doProcessProviderContainerSubform($element, $form_state, $form);
+    return $element;
   }
 
   /**
@@ -60,6 +138,14 @@ class VisualNDataSourceForm extends EntityForm {
         ]));
     }
     $form_state->setRedirectUrl($visualn_data_source->toUrl('collection'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    parent::submitForm($form, $form_state);
+    // @todo: seems that there is no need in submitForm() here
   }
 
 }

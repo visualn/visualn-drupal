@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\visualn_data_sources\Entity\VisualNDataSource;
 
 /**
  * Implements hook_help().
@@ -55,4 +56,21 @@ function visualn_data_sources_theme_suggestions_visualn_data_set(array $variable
   $suggestions[] = 'visualn_data_set__' . $entity->id();
   $suggestions[] = 'visualn_data_set__' . $entity->id() . '__' . $sanitized_view_mode;
   return $suggestions;
+}
+
+
+function visualn_data_source_options($include_empty = TRUE) {
+  $data_sources = VisualNDataSource::loadMultiple();
+  $options = array();
+  if ($include_empty && !empty($data_sources)) {
+    $options[''] = t('- None -');
+  }
+  foreach ($data_sources as $name => $data_source) {
+    $options[$name] = $data_source->label();
+  }
+
+  if (empty($options)) {
+    $options[''] = t('No defined data sources');
+  }
+  return $options;
 }

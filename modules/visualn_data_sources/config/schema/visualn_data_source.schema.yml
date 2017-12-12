@@ -10,3 +10,9 @@ visualn_data_sources.visualn_data_source.*:
       label: 'Label'
     uuid:
       type: string
+    data_provider_id:
+      type: string
+      label: 'Data Provider ID'
+    data_provider_config:
+      type: serial
+      label: 'Data Provider config'

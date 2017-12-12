@@ -89,6 +89,8 @@ class VisualNSetupForm extends EntityForm {
       '#required' => TRUE,
     ];
 
+    // @todo: attach setup baker configuration form inside a #process callback
+
 
     // output setup baker form
 
@@ -102,17 +104,6 @@ class VisualNSetupForm extends EntityForm {
       $baker_config = $visualn_setup->getBakerConfig();
       $baker_plugin = $this->visualNSetupBakerManager->createInstance($baker_plugin_id, $baker_config);
 
-      // @todo:
-/*
-      // set new configuration. may be used by ajax calls from drawer forms and also when submitting the form
-      //    without ajax (when js is disabled) or when validation errors occur. see stored_drawer_config in other handlers
-      $configuration = $form_state->getValues();
-      $configuration = !empty($configuration) ? $configuration : [];
-      // @todo: check order here. for ajax call configuration should (since changed values should go
-      //    to buildConfigurationForm() to rebuild the form) override drawer_config
-      $configuration = $drawer_config + $configuration;
-      $drawer_plugin->setConfiguration($configuration);
-*/
 
       $subform_state = SubformState::createForSubform($form['baker_config'], $form, $form_state);
       $form['baker_config'] = $baker_plugin->buildConfigurationForm($form['baker_config'], $subform_state);
@@ -128,9 +119,7 @@ class VisualNSetupForm extends EntityForm {
   }
 
   /**
-   * {@inheritdoc}
-   *
-   * @todo: Add into an interface or add description
+   * @todo: Add description
    * @todo: Rename method if needed
    */
   public function bakerConfigForm(array $form, FormStateInterface $form_state) {

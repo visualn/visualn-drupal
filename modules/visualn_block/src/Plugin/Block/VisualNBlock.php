@@ -91,7 +91,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $definitions = $this->visualNDrawingFetcherManager->getDefinitions();
     foreach ($definitions as $definition) {
       // Exclude fetchers with which have at least one required context scince here no context is provided.
-      if ($definition['context']) {
+      if (!empty($definition['context'])) {
         foreach ($definition['context'] as $name => $context_definition) {
           if ($context_definition->isRequired()) {
             continue 2;

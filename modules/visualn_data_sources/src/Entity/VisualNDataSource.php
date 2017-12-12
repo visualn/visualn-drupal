@@ -27,7 +27,9 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
- *     "uuid" = "uuid"
+ *     "uuid" = "uuid",
+ *     "data_provider_id" = "data_provider_id",
+ *     "data_provider_config" = "data_provider_config"
  *   },
  *   links = {
  *     "canonical" = "/admin/config/media/visualn/data-sources/manage/{visualn_data_source}",
@@ -53,5 +55,70 @@ class VisualNDataSource extends ConfigEntityBase implements VisualNDataSourceInt
    * @var string
    */
   protected $label;
+
+  /**
+   * The VisualN data provider ID.
+   *
+   * @var string
+   */
+  protected $data_provider_id;
+
+  /**
+   * The VisualN data provider config.
+   *
+   * @var array
+   */
+  protected $data_provider_config = [];
+
+  /**
+   * The VisualN source specific data provider plugin.
+   *
+   * @var \Drupal\visualn_data_sources\Plugin\VisualNDataProviderInterface
+   */
+  protected $data_provider_plugin;
+
+  /**
+   * {@inheritdoc}
+   *
+   * @todo: add description
+   */
+  public function getDataProviderId() {
+    return $this->data_provider_id ?: '';
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @todo: add description
+   */
+  public function getDataProviderPlugin() {
+    if (!isset($this->data_provider_plugin)) {
+      $data_provider_id = $this->getDataProviderId();
+      if (!empty($data_provider_id)) {
+        $data_provider_config = [];
+        $data_provider_config = $this->getDataProviderConfig() + $data_provider_config;
+        // @todo: load manager at object instantiation
+        $this->data_provider_plugin = \Drupal::service('plugin.manager.visualn.data_provider')->createInstance($data_provider_id, $data_provider_config);
+      }
+    }
+
+    return $this->data_provider_plugin;
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDataProviderConfig() {
+    return $this->data_provider_config;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setDataProviderConfig($data_provider_config) {
+    $this->data_provider = $data_provider_config;
+    return $this;
+  }
 
 }

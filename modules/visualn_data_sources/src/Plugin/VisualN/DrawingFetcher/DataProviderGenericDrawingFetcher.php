@@ -35,8 +35,7 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
  *  }
  * )
  */
-//class DataProviderGenericDrawingFetcher extends VisualNDrawingFetcherBase implements ContainerFactoryPluginInterface {
-//class DataProviderGenericDrawingFetcher extends VisualNDrawingFetcherBase {
+// @todo: GenericDrawingFetcherBase already implements ContainerFactoryPluginInterface interface
 class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -101,8 +100,8 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
       //'drawer_config' => [],
       //'drawer_fields' => [],
     ] + parent::defaultConfiguration();
+  }
 
- }
 
   /**
    * {@inheritdoc}
