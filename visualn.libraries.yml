@@ -47,6 +47,12 @@ adapter-file-generic-default:
     - visualn/d3
     - visualn/xml2json
 
+adapter-attached-json-data:
+  js:
+    js/adapters/attached-json-data-adapter.js: {}
+  dependencies:
+    - visualn/d3
+
 default-mapper:
   js:
     js/mappers/default-mapper.js: {}

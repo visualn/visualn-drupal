@@ -6,3 +6,4 @@ package: VisualN
 dependencies:
   - visualn
   - file
+  - image
