@@ -12,7 +12,7 @@ use Drupal\Core\Url;
  *
  * @VisualNDataProvider(
  *  id = "visualn_random_data",
- *  label = @Translation("VisualN Random data provider"),
+ *  label = @Translation("VisualN Random data provider (*** DO NOT USE ***)"),
  * )
  */
 //class RandomDataProvider extends VisualNDataProviderBase implements ContainerFactoryPluginInterface {

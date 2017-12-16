@@ -465,7 +465,7 @@ class VisualNFormsHelper {
     // remove remove 'provider_container' key itself from form_state
     $form_state->unsetValue(array_merge($element_parents, [$provider_container_key]));
     // also unset 'provider_container' key if empty
-    // this check is added in case something else is added to the container by exteinding classes
+    // this check is added in case something else is added to the container by extending classes
     // @todo: actually the same check should be added before unsetting provider_container_key (and
     //    to other places where the same logic with config forms is implemented)
     if (!$form_state->getValue($element_parents)) {
@@ -474,6 +474,128 @@ class VisualNFormsHelper {
   }
 
 
+
+
+
+  public static function doProcessGeneratorContainerSubform(array $element, FormStateInterface $form_state, $form, $configuration) {
+    $generator_element_parents = array_slice($element['#parents'], 0, -1);
+    $data_generator_id = $form_state->getValue(array_merge($generator_element_parents, ['data_generator_id']));
+
+    // If it is a fresh form (is_null($data_generator_id)) or an empty option selected ($data_generator_id == ""),
+    // there is nothing to attach for generator config.
+    if (!$data_generator_id) {
+      return $element;
+    }
+
+    if ($data_generator_id == $configuration['data_generator_id']) {
+      $data_generator_config = $configuration['data_generator_config'];
+    }
+    else {
+      $data_generator_config = [];
+    }
+
+    $visualNDataGeneratorManager = \Drupal::service('plugin.manager.visualn.data_generator');
+
+    $generator_plugin = $visualNDataGeneratorManager->createInstance($data_generator_id, $data_generator_config);
+
+    $generator_container_key = $data_generator_id;
+
+    // get generator configuration form
+
+    $element[$generator_container_key]['generator_config'] = [];
+    $element[$generator_container_key]['generator_config'] += [
+      '#parents' => array_merge($element['#parents'], [$generator_container_key, 'generator_config']),
+      '#array_parents' => array_merge($element['#array_parents'], [$generator_container_key, 'generator_config']),
+    ];
+
+    $subform_state = SubformState::createForSubform($element[$generator_container_key]['generator_config'], $form, $form_state);
+    // attach generator configuration form
+    $element[$generator_container_key]['generator_config']
+              = $generator_plugin->buildConfigurationForm($element[$generator_container_key]['generator_config'], $subform_state);
+
+
+    // since generator configuration form may be empty, do a check (then it souldn't be of details type)
+    if (Element::children($element[$generator_container_key]['generator_config'])) {
+      $generator_element_array_parents = array_slice($element['#array_parents'], 0, -1);
+      // check that the triggering element is data_generator_id but not fetcher_id or data_provider_id select (or some other element) itself
+      $details_open = FALSE;
+      if ($form_state->getTriggeringElement()) {
+        $triggering_element = $form_state->getTriggeringElement();
+        $details_open = $triggering_element['#array_parents'] === array_merge($generator_element_array_parents, ['data_generator_id']);
+      }
+      // @todo: take it out everywhere else
+      $element[$generator_container_key] = [
+        '#type' => 'details',
+        '#title' => t('Generator configuration'),
+        '#open' => $details_open,
+      ] + $element[$generator_container_key];
+    }
+
+    // @todo: replace with #element_submit when introduced into core
+    // extract values for generator_container subform and generator_config
+    //    remove generator_container key from form_state values path
+    //    also it can be done in ::submitConfigurationForm()
+    $element[$generator_container_key]['#element_validate'] = [[get_called_class(), 'validateGeneratorContainerSubForm']];
+    //$element[$generator_container_key]['#element_validate'] = [[get_called_class(), 'submitDrawerContainerSubForm']];
+
+
+    return $element;
+  }
+
+  // @todo: Restructuring form_state values (removing generator_container key) should be moved
+  //    into #element_submit callback when introduced.
+  // This is based on VisualNFormHelper::validateDrawerContainerSubForm().
+  public static function validateGeneratorContainerSubForm(&$form, FormStateInterface $form_state, $full_form) {
+    // @todo: the code here should actually go to #element_submit, but it is not implemented at the moment in Drupal core
+
+    // Here the full form_state (e.g. not SubformStateInterface) is supposed to be
+    // since validation is done after the whole form is rendered.
+
+
+    // get generator_container_key (for selected generator is equal by convention to data_generator_id,
+    // see processGeneratorContainerSubform() #process callback)
+    $element_parents = $form['#parents'];
+    // use $generator_container_key for clarity though may get rid of array_pop() here and use end($element_parents)
+    $generator_container_key = array_pop($element_parents);
+
+    // remove 'generator_container' key
+    $base_element_parents = array_slice($element_parents, 0, -1);
+
+
+
+    // Call generator_plugin submitConfigurationForm(),
+    // submitting should be done before $form_state->unsetValue() after restructuring the form_state values, see below.
+
+    // @todo: it is not correct to call submit inside a validate method (validateDrawerContainerSubForm())
+    //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
+    //$full_form = $form_state->getCompleteForm();
+    $subform = $form['generator_config'];
+    $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
+
+    $visualNDataGeneratorManager = \Drupal::service('plugin.manager.visualn.data_generator');
+    $data_generator_id  = $form_state->getValue(array_merge($base_element_parents, ['data_generator_id']));
+    // The submit callback shouldn't depend on plugin configuration, it relies only on form_state values.
+    $data_generator_config  = [];
+    $generator_plugin = $visualNDataGeneratorManager->createInstance($data_generator_id, $data_generator_config);
+    $generator_plugin->submitConfigurationForm($subform, $sub_form_state);
+
+
+    // move generator_config two levels up (remove 'generator_container' and $generator_container_key) in form_state values
+    $generator_config_values = $form_state->getValue(array_merge($element_parents, [$generator_container_key, 'generator_config']));
+    if (!is_null($generator_config_values)) {
+      $form_state->setValue(array_merge($base_element_parents, ['data_generator_config']), $generator_config_values);
+    }
+
+    // remove remove 'generator_container' key itself from form_state
+    $form_state->unsetValue(array_merge($element_parents, [$generator_container_key]));
+    // also unset 'generator_container' key if empty
+    // this check is added in case something else is added to the container by extending classes
+    // @todo: actually the same check should be added before unsetting generator_container_key (and
+    //    to other places where the same logic with config forms is implemented)
+    if (!$form_state->getValue($element_parents)) {
+      $form_state->unsetValue($element_parents);
+    }
+  }
 
 
 }
