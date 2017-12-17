@@ -12,7 +12,11 @@ use Drupal\Core\Plugin\PluginFormInterface;
 //interface VisualNDataProviderInterface extends PluginInspectionInterface {
 interface VisualNDataProviderInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
 
-
-  // Add get/set methods for your plugin type here.
+  /**
+   * Get Resource object corresponding to the current provider.
+   *
+   * @return \Drupal\visualn\Plugin\VisualNResourceInterface
+   */
+  public function getResource();
 
 }

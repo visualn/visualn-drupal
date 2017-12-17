@@ -20,3 +20,6 @@ services:
   plugin.manager.visualn.setup_baker:
     class: Drupal\visualn\Plugin\VisualNSetupBakerManager
     parent: default_plugin_manager
+  plugin.manager.visualn.resource:
+    class: Drupal\visualn\Plugin\VisualNResourceManager
+    parent: default_plugin_manager

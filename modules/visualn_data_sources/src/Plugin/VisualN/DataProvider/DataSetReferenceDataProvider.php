@@ -36,33 +36,24 @@ class DataSetReferenceDataProvider extends VisualNDataProviderBase {
   public function prepareBuild(&$build, $vuid, $options) {
   }
 
-  public function getOutputType() {
-    // @todo: this actually returns getOutputType() from the referenced data provider field
 
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getResource() {
+    // @todo: this actually returns VisualN Resource from the referenced data provider field
     $data_provider_plugin = $this->getDataProviderPlugin();
     if ($data_provider_plugin) {
-      return $data_provider_plugin->getOutputType();
+      return $data_provider_plugin->getResource();
     }
 
-
-    // @todo: see FileFieldDrawingFetcher::fetchDrawing()
-    return '';
+    return NULL;
   }
 
-  // @todo: this method is called twice whereas getOutputType is called once (delete this comment if not clear)
-  public function getOutputInterface() {
-    // @todo: this actually returns getOutputInterface() from the referenced data provider field
-
-    $data_provider_plugin = $this->getDataProviderPlugin();
-    if ($data_provider_plugin) {
-      return $data_provider_plugin->getOutputInterface();
-    }
-
-    // @todo: see FileFieldDrawingFetcher::fetchDrawing()
-    return [];
-  }
-
-  // @todo: temporary method
+  /**
+   * Get data provider from the referenced Data Set entity.
+   */
   protected function getDataProviderPlugin() {
     $data_provider_plugin = NULL;
 

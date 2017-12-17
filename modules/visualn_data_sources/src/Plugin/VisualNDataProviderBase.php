@@ -13,6 +13,12 @@ abstract class VisualNDataProviderBase extends ContextAwarePluginBase implements
   /**
    * {@inheritdoc}
    */
+  abstract public function getResource();
+
+
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->setConfiguration($configuration);

@@ -33,27 +33,33 @@ class RandomDataProvider extends VisualNDataProviderBase {
   public function prepareBuild(&$build, $vuid, $options) {
   }
 
-  // @todo: add to interface
-  public function getOutputType() {
+
+
+  public function getResource() {
     // @todo: if here is an anknown output_type and chaing can't be build,
     //    all drawings on the page do not render (at least block drawings)
-    return 'json_generic';
-  }
-
-  // @todo: add to interface
-  // @todo: this method may be renamed to getOutputGateway() or getOutputAux() or smth.
-  public function getOutputInterface() {
+    $output_type = 'json_generic';
     $url = Url::fromRoute('visualn_data_sources.data_provider_controller_data',
       array('data_type' => $this->configuration['data_type'])
     )->setAbsolute()->toString();
     // @todo: build router or link for the data source
     // @todo: review option keys names
-    return [
+    $output_interface =  [
       'file_url' => $url,
       //'file_mimetype' => 'application/json',
     ];
 
+
+    $resource_plugin_id = 'visualn_attached_data';
+    $resource_plugin_config = [];
+    $visualNResourceManager = \Drupal::service('plugin.manager.visualn.resource');
+    $resource_plugin = $visualNResourceManager->createInstance($resource_plugin_id, $resource_plugin_config);
+
+    $resource_plugin->setOutputInfo($output_type, $output_interface);
+
+    return $resource_plugin;
   }
+
 
 
   /**

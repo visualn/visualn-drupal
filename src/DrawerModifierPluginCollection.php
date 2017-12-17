@@ -12,7 +12,7 @@ class DrawerModifierPluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    *
-   * @return \Drupal\visualn\Plugins\VisualNDrawerModifierInterface
+   * @return \Drupal\visualn\Plugin\VisualNDrawerModifierInterface
    */
   public function &get($instance_id) {
     return parent::get($instance_id);

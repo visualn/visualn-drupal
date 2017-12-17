@@ -37,14 +37,10 @@ class GeneratedDataProvider extends VisualNDataProviderBase {
   public function prepareBuild(&$build, $vuid, $options) {
   }
 
-  // @todo: add to interface
-  public function getOutputType() {
-    return 'json_generic_attached';
-  }
 
-  // @todo: add to interface
-  public function getOutputInterface() {
 
+  public function getResource() {
+    $output_type = 'json_generic_attached';
     $data = [];
     if ($this->configuration['data_generator_id']) {
       $visualNDataGeneratorManager = \Drupal::service('plugin.manager.visualn.data_generator');
@@ -54,11 +50,23 @@ class GeneratedDataProvider extends VisualNDataProviderBase {
       $data = $generator_plugin->generateData();
     }
 
-    return [
+    $output_interface =  [
       'data' => $data,
     ];
 
+
+    // @todo: maybe use some kind of resource selection by output_type
+    //    could be implemented as a method in VisualNResource manager service
+    $resource_plugin_id = 'visualn_attached_data';
+    $resource_plugin_config = [];
+    $visualNResourceManager = \Drupal::service('plugin.manager.visualn.resource');
+    $resource_plugin = $visualNResourceManager->createInstance($resource_plugin_id, $resource_plugin_config);
+
+    $resource_plugin->setOutputInfo($output_type, $output_interface);
+
+    return $resource_plugin;
   }
+
 
 
   /**

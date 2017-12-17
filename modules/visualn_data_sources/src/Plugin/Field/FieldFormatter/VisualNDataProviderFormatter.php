@@ -79,10 +79,9 @@ class VisualNDataProviderFormatter extends FormatterBase {
       $output = print_r($data_provider_plugin->getConfiguration(), 1);
     }
 
-    return '<pre>' . $output . '</pre>';
+    // @todo:
 
-    //dsm($data_provider_plugin->getOutputType());
-    //dsm($data_provider_plugin->getOutputInterface());
+    return '<pre>' . $output . '</pre>';
   }
 
 }
