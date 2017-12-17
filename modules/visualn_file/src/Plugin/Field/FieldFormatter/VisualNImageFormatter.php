@@ -203,7 +203,7 @@ class VisualNImageFormatter extends ImageFormatter {
     // @todo: prepare output type and output interface, attach manager build
 
     // @todo: prepare Resource object
-    // @todo: maybe just create a data provider plugin of a certain type that accepts
+    // @todo: maybe just create a resource provider plugin of a certain type that accepts
     //    data in json format as part of its configuration or even context
     $resource = [
       'output_type' => 'json_generic_attached',

@@ -1,17 +1,17 @@
 <?php
 
-namespace Drupal\visualn_data_sources\Plugin\VisualN\DataProvider;
+namespace Drupal\visualn_data_sources\Plugin\VisualN\ResourceProvider;
 
-use Drupal\visualn_data_sources\Plugin\VisualNDataProviderBase;
+use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
 /**
- * Provides a 'VisualN Data Set Reference' VisualN data provider.
+ * Provides a 'VisualN Data Set Reference' VisualN resource provider.
  *
- * @VisualNDataProvider(
+ * @VisualNResourceProvider(
  *  id = "visualn_data_set_reference",
- *  label = @Translation("VisualN Data Set Reference data provider"),
+ *  label = @Translation("VisualN Data Set Reference resource provider"),
  *  context = {
  *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type")),
  *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle")),
@@ -19,8 +19,8 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-//class DataSetReferenceDataProvider extends VisualNDataProviderBase implements ContainerFactoryPluginInterface {
-class DataSetReferenceDataProvider extends VisualNDataProviderBase {
+//class DataSetReferenceResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
+class DataSetReferenceResourceProvider extends VisualNResourceProviderBase {
 
   /**
    * {@inheritdoc}
@@ -32,7 +32,7 @@ class DataSetReferenceDataProvider extends VisualNDataProviderBase {
  }
 
   // @todo: add to interface
-  // @todo: maybe rename the method e.g. to attachDataProviderData() or smth else
+  // @todo: maybe rename the method e.g. to attachResourceProviderData() or smth else
   public function prepareBuild(&$build, $vuid, $options) {
   }
 
@@ -42,20 +42,20 @@ class DataSetReferenceDataProvider extends VisualNDataProviderBase {
    * {@inheritdoc}
    */
   public function getResource() {
-    // @todo: this actually returns VisualN Resource from the referenced data provider field
-    $data_provider_plugin = $this->getDataProviderPlugin();
-    if ($data_provider_plugin) {
-      return $data_provider_plugin->getResource();
+    // @todo: this actually returns VisualN Resource from the referenced resource provider field
+    $resource_provider_plugin = $this->getResourceProviderPlugin();
+    if ($resource_provider_plugin) {
+      return $resource_provider_plugin->getResource();
     }
 
     return NULL;
   }
 
   /**
-   * Get data provider from the referenced Data Set entity.
+   * Get resource provider from the referenced Data Set entity.
    */
-  protected function getDataProviderPlugin() {
-    $data_provider_plugin = NULL;
+  protected function getResourceProviderPlugin() {
+    $resource_provider_plugin = NULL;
 
     $current_entity = $this->getContextValue('current_entity');
 
@@ -73,15 +73,15 @@ class DataSetReferenceDataProvider extends VisualNDataProviderBase {
       $first_delta = $field_instance->first();
 
       // @todo: we use data_set_entity but not just an entity because data set entities have a method
-      //    to return data provider plugin specific to them
+      //    to return resource provider plugin specific to them
       $data_set_entity = $first_delta;
       // @todo: check that entity is of type visualn_data_set
 
       // @todo: check this line
-      $data_provider_plugin = $data_set_entity->get('entity')->getTarget()->getValue()->getDataProviderPlugin();
+      $resource_provider_plugin = $data_set_entity->get('entity')->getTarget()->getValue()->getResourceProviderPlugin();
     }
 
-    return $data_provider_plugin;
+    return $resource_provider_plugin;
   }
 
   /**

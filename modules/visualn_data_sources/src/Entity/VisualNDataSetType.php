@@ -29,7 +29,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     "id" = "id",
  *     "label" = "label",
  *     "uuid" = "uuid",
- *     "data_provider_field" = "data_provider_field"
+ *     "resource_provider_field" = "resource_provider_field"
  *   },
  *   links = {
  *     "canonical" = "/admin/config/media/visualn/data-set-types/manage/{visualn_data_set_type}",
@@ -57,17 +57,17 @@ class VisualNDataSetType extends ConfigEntityBundleBase implements VisualNDataSe
   protected $label;
 
   /**
-   * The VisualN Data Provider field ID.
+   * The VisualN Resource Provider field ID.
    *
    * @var string
    */
-  protected $data_provider_field;
+  protected $resource_provider_field;
 
   /**
    * {@inheritdoc}
    */
-  public function getDataProviderField() {
-    return $this->data_provider_field;
+  public function getResourceProviderField() {
+    return $this->resource_provider_field;
   }
 
 }

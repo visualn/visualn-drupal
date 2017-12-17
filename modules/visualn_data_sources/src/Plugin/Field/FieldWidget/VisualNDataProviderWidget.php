@@ -12,24 +12,24 @@ use Drupal\Core\Render\Element;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 
 /**
- * Plugin implementation of the 'visualn_data_provider' widget.
+ * Plugin implementation of the 'visualn_resource_provider' widget.
  *
  * @FieldWidget(
- *   id = "visualn_data_provider",
- *   label = @Translation("VisualN data provider"),
+ *   id = "visualn_resource_provider",
+ *   label = @Translation("VisualN resource provider"),
  *   field_types = {
- *     "visualn_data_provider"
+ *     "visualn_resource_provider"
  *   }
  * )
  */
-class VisualNDataProviderWidget extends WidgetBase {
+class VisualNResourceProviderWidget extends WidgetBase {
 
   /**
    * {@inheritdoc}
    */
   public static function defaultSettings() {
     return [
-      //'data_provider_id' => '',
+      //'resource_provider_id' => '',
     ] + parent::defaultSettings();
   }
 
@@ -39,12 +39,12 @@ class VisualNDataProviderWidget extends WidgetBase {
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $elements = [];
 
-    // Actually default data provider is already set at field default value configuration level.
-    /*$elements['data_provider_id'] = [
+    // Actually default resource provider is already set at field default value configuration level.
+    /*$elements['resource_provider_id'] = [
       '#type' => 'select',
-      '#title' => t('Data provider plugin id'),
+      '#title' => t('Resource provider plugin id'),
       '#options' => $options,
-      '#description' => t('Default data provider plugin.'),
+      '#description' => t('Default resource provider plugin.'),
     ];*/
 
     return $elements;
@@ -56,10 +56,10 @@ class VisualNDataProviderWidget extends WidgetBase {
   public function settingsSummary() {
     $summary = [];
 
-    /*if (!empty($this->getSetting('data_provider_id'))) {
-      // @todo: get label for the data provider plugin
-      $summary[] = t('Data provider: @data_provider_plugin_label',
-        ['@data_provider_plugin_label' => $this->getSetting('data_provider_id')]);
+    /*if (!empty($this->getSetting('resource_provider_id'))) {
+      // @todo: get label for the resource provider plugin
+      $summary[] = t('Resource provider: @resource_provider_plugin_label',
+        ['@resource_provider_plugin_label' => $this->getSetting('resource_provider_id')]);
     }*/
 
     return $summary;
@@ -71,33 +71,33 @@ class VisualNDataProviderWidget extends WidgetBase {
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $element['#type'] = 'fieldset';
     $item = $items[$delta];
-    $data_provider_config = !empty($item->data_provider_config) ? unserialize($item->data_provider_config) : [];
+    $resource_provider_config = !empty($item->resource_provider_config) ? unserialize($item->resource_provider_config) : [];
 
 
-    // Get data providers plugins list
-    $definitions = \Drupal::service('plugin.manager.visualn.data_provider')->getDefinitions();
-    $data_providers = [];
+    // Get resource providers plugins list
+    $definitions = \Drupal::service('plugin.manager.visualn.resource_provider')->getDefinitions();
+    $resource_providers = [];
     foreach ($definitions as $definition) {
-      $data_providers[$definition['id']] = $definition['label'];
+      $resource_providers[$definition['id']] = $definition['label'];
     }
 
     // @todo: how to check if the form is fresh
 
     $field_name = $this->fieldDefinition->getName();
-    $ajax_wrapper_id = $field_name . '-' . $delta . '-data_provider-config-ajax-wrapper';
+    $ajax_wrapper_id = $field_name . '-' . $delta . '-resource_provider-config-ajax-wrapper';
 
-    // select data provider plugin
-    $element['data_provider_id'] = [
+    // select resource provider plugin
+    $element['resource_provider_id'] = [
       '#type' => 'select',
-      '#title' => t('Data provider plugin'),
-      '#description' => t('The data provider for the drawing'),
-      '#default_value' => $item->data_provider_id,
-      '#options' => $data_providers,
+      '#title' => t('Resource provider plugin'),
+      '#description' => t('The resource provider for the drawing'),
+      '#default_value' => $item->resource_provider_id,
+      '#options' => $resource_providers,
       '#required' => TRUE,
       '#empty_value' => '',
-      '#empty_option' => t('- Select data provider -'),
+      '#empty_option' => t('- Select resource provider -'),
       '#ajax' => [
-        'callback' => [get_called_class(), 'ajaxCallbackDataProvider'],
+        'callback' => [get_called_class(), 'ajaxCallbackResourceProvider'],
         'wrapper' => $ajax_wrapper_id,
       ],
     ];
@@ -110,8 +110,8 @@ class VisualNDataProviderWidget extends WidgetBase {
     ];
 
     $stored_configuration = [
-      'data_provider_id' => $item->data_provider_id,
-      'data_provider_config' => $data_provider_config,
+      'resource_provider_id' => $item->resource_provider_id,
+      'resource_provider_config' => $resource_provider_config,
     ];
     $element['provider_container']['#stored_configuration'] = $stored_configuration;
 
@@ -136,10 +136,10 @@ class VisualNDataProviderWidget extends WidgetBase {
   }
 
   /**
-   * Return data provider configuration form via ajax request at style change.
+   * Return resource provider configuration form via ajax request at style change.
    * Should have a different name since ajaxCallback can be used by base class.
    */
-  public static function ajaxCallbackDataProvider(array $form, FormStateInterface $form_state, Request $request) {
+  public static function ajaxCallbackResourceProvider(array $form, FormStateInterface $form_state, Request $request) {
     $triggering_element = $form_state->getTriggeringElement();
     $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
     $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);
@@ -149,7 +149,7 @@ class VisualNDataProviderWidget extends WidgetBase {
   }
 
 
-  // @todo: this is a copy-paste from DataProviderGenericDrawingFetcher class
+  // @todo: this is a copy-paste from ResourceProviderGenericDrawingFetcher class
   // @todo: this should be static since may not work on field settings form (see fetcher field widget for example)
   //public static function processDrawerContainerSubform(array $element, FormStateInterface $form_state, $form) {
   public function processProviderContainerSubform(array $element, FormStateInterface $form_state, $form) {
@@ -163,10 +163,10 @@ class VisualNDataProviderWidget extends WidgetBase {
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
-    // serialize data_provider_config
+    // serialize resource_provider_config
     foreach ($values as &$value) {
-      $data_provider_config = !empty($value['data_provider_config']) ? $value['data_provider_config'] : [];
-      $value['data_provider_config'] = serialize($data_provider_config);
+      $resource_provider_config = !empty($value['resource_provider_config']) ? $value['resource_provider_config'] : [];
+      $value['resource_provider_config'] = serialize($resource_provider_config);
     }
     return $values;
   }

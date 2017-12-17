@@ -133,7 +133,7 @@ abstract class DrawerModifierFormBase extends FormBase {
    * @param string $drawer_modifier
    *   The drawer modifier ID.
    *
-   * @return \Drupal\visualn\Plugins\VisualNDrawerModifierInterface
+   * @return \Drupal\visualn\Plugin\VisualNDrawerModifierInterface
    *   The drawer modifier object.
    */
   abstract protected function prepareDrawerModifier($drawer_modifier);

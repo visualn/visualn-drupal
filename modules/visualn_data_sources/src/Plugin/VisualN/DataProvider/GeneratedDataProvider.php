@@ -1,8 +1,8 @@
 <?php
 
-namespace Drupal\visualn_data_sources\Plugin\VisualN\DataProvider;
+namespace Drupal\visualn_data_sources\Plugin\VisualN\ResourceProvider;
 
-use Drupal\visualn_data_sources\Plugin\VisualNDataProviderBase;
+use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,15 +11,15 @@ use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\Core\Url;
 
 /**
- * Provides a 'VisualN Generated Data Provider' VisualN data provider.
+ * Provides a 'VisualN Generated Resource Provider' VisualN resource provider.
  *
- * @VisualNDataProvider(
+ * @VisualNResourceProvider(
  *  id = "visualn_generated_data",
- *  label = @Translation("VisualN Generated Data Provider"),
+ *  label = @Translation("VisualN Generated Resource Provider"),
  * )
  */
-//class GeneratedDataProvider extends VisualNDataProviderBase implements ContainerFactoryPluginInterface {
-class GeneratedDataProvider extends VisualNDataProviderBase {
+//class GeneratedResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
+class GeneratedResourceProvider extends VisualNResourceProviderBase {
 
   /**
    * {@inheritdoc}
@@ -33,7 +33,7 @@ class GeneratedDataProvider extends VisualNDataProviderBase {
  }
 
   // @todo: add to interface
-  // @todo: maybe rename the method e.g. to attachDataProviderData() or smth else
+  // @todo: maybe rename the method e.g. to attachResourceProviderData() or smth else
   public function prepareBuild(&$build, $vuid, $options) {
   }
 

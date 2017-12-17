@@ -28,8 +28,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id" = "id",
  *     "label" = "label",
  *     "uuid" = "uuid",
- *     "data_provider_id" = "data_provider_id",
- *     "data_provider_config" = "data_provider_config"
+ *     "resource_provider_id" = "resource_provider_id",
+ *     "resource_provider_config" = "resource_provider_config"
  *   },
  *   links = {
  *     "canonical" = "/admin/config/media/visualn/data-sources/manage/{visualn_data_source}",
@@ -57,33 +57,33 @@ class VisualNDataSource extends ConfigEntityBase implements VisualNDataSourceInt
   protected $label;
 
   /**
-   * The VisualN data provider ID.
+   * The VisualN resource provider ID.
    *
    * @var string
    */
-  protected $data_provider_id;
+  protected $resource_provider_id;
 
   /**
-   * The VisualN data provider config.
+   * The VisualN resource provider config.
    *
    * @var array
    */
-  protected $data_provider_config = [];
+  protected $resource_provider_config = [];
 
   /**
-   * The VisualN source specific data provider plugin.
+   * The VisualN source specific resource provider plugin.
    *
-   * @var \Drupal\visualn_data_sources\Plugin\VisualNDataProviderInterface
+   * @var \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderInterface
    */
-  protected $data_provider_plugin;
+  protected $resource_provider_plugin;
 
   /**
    * {@inheritdoc}
    *
    * @todo: add description
    */
-  public function getDataProviderId() {
-    return $this->data_provider_id ?: '';
+  public function getResourceProviderId() {
+    return $this->resource_provider_id ?: '';
   }
 
   /**
@@ -91,33 +91,33 @@ class VisualNDataSource extends ConfigEntityBase implements VisualNDataSourceInt
    *
    * @todo: add description
    */
-  public function getDataProviderPlugin() {
-    if (!isset($this->data_provider_plugin)) {
-      $data_provider_id = $this->getDataProviderId();
-      if (!empty($data_provider_id)) {
-        $data_provider_config = [];
-        $data_provider_config = $this->getDataProviderConfig() + $data_provider_config;
+  public function getResourceProviderPlugin() {
+    if (!isset($this->resource_provider_plugin)) {
+      $resource_provider_id = $this->getResourceProviderId();
+      if (!empty($resource_provider_id)) {
+        $resource_provider_config = [];
+        $resource_provider_config = $this->getResourceProviderConfig() + $resource_provider_config;
         // @todo: load manager at object instantiation
-        $this->data_provider_plugin = \Drupal::service('plugin.manager.visualn.data_provider')->createInstance($data_provider_id, $data_provider_config);
+        $this->resource_provider_plugin = \Drupal::service('plugin.manager.visualn.resource_provider')->createInstance($resource_provider_id, $resource_provider_config);
       }
     }
 
-    return $this->data_provider_plugin;
+    return $this->resource_provider_plugin;
   }
 
 
   /**
    * {@inheritdoc}
    */
-  public function getDataProviderConfig() {
-    return $this->data_provider_config;
+  public function getResourceProviderConfig() {
+    return $this->resource_provider_config;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setDataProviderConfig($data_provider_config) {
-    $this->data_provider = $data_provider_config;
+  public function setResourceProviderConfig($resource_provider_config) {
+    $this->resource_provider = $resource_provider_config;
     return $this;
   }
 

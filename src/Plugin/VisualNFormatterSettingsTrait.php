@@ -54,6 +54,7 @@ trait VisualNFormatterSettingsTrait {
     ];
     // @todo: maybe using just an array instead of object would be a better option to avoid taking it for something
     //    different than a standard object for data storage
+    // @todo: no need to serialize settings here, see VisualNImageFormatter for example
     $initial_config_item->visualn_data = serialize($serialize_data);
 
 
@@ -186,6 +187,8 @@ trait VisualNFormatterSettingsTrait {
     // @todo: pass options as part of $manager_config (?)
     $options = [
       'style_id' => $visualn_style_id,
+      // @todo: getConfiguration() here isn't needed since configuration is taken from setConfiguration()
+      //    in __construct() of the drawer
       'drawer_config' => $drawer_plugin->getConfiguration() + $this->getSetting('drawer_config'),
       // @todo: use another name for adapter group
       // delimiter separated values file

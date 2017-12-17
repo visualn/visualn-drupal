@@ -1,22 +1,22 @@
 <?php
 
-namespace Drupal\visualn_data_sources\Plugin\VisualN\DataProvider;
+namespace Drupal\visualn_data_sources\Plugin\VisualN\ResourceProvider;
 
-use Drupal\visualn_data_sources\Plugin\VisualNDataProviderBase;
+use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 
 /**
- * Provides a 'VisualN Random data provider' VisualN data provider.
+ * Provides a 'VisualN Random resource provider' VisualN resource provider.
  *
- * @VisualNDataProvider(
+ * @VisualNResourceProvider(
  *  id = "visualn_random_data",
- *  label = @Translation("VisualN Random data provider (*** DO NOT USE ***)"),
+ *  label = @Translation("VisualN Random resource provider (*** DO NOT USE ***)"),
  * )
  */
-//class RandomDataProvider extends VisualNDataProviderBase implements ContainerFactoryPluginInterface {
-class RandomDataProvider extends VisualNDataProviderBase {
+//class RandomResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
+class RandomResourceProvider extends VisualNResourceProviderBase {
 
   /**
    * {@inheritdoc}
@@ -29,7 +29,7 @@ class RandomDataProvider extends VisualNDataProviderBase {
  }
 
   // @todo: add to interface
-  // @todo: maybe rename the method e.g. to attachDataProviderData() or smth else
+  // @todo: maybe rename the method e.g. to attachResourceProviderData() or smth else
   public function prepareBuild(&$build, $vuid, $options) {
   }
 
@@ -39,7 +39,7 @@ class RandomDataProvider extends VisualNDataProviderBase {
     // @todo: if here is an anknown output_type and chaing can't be build,
     //    all drawings on the page do not render (at least block drawings)
     $output_type = 'json_generic';
-    $url = Url::fromRoute('visualn_data_sources.data_provider_controller_data',
+    $url = Url::fromRoute('visualn_data_sources.resource_provider_controller_data',
       array('data_type' => $this->configuration['data_type'])
     )->setAbsolute()->toString();
     // @todo: build router or link for the data source

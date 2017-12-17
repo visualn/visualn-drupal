@@ -261,7 +261,7 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
    *
    * @todo: add to interface
    */
-  public function getDataProviderPlugin() {
+  public function getResourceProviderPlugin() {
     // @todo: there are multiple ways to get bundle entity type,
     //    see https://www.drupal.org/docs/8/api/entity-api/working-with-the-entity-api
     $bundle_entity_type = $this->getEntityType()->getBundleEntityType();
@@ -270,15 +270,15 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
     // get config entity for the bundle
     $bundle_config_entity = \Drupal::entityTypeManager()->getStorage($bundle_entity_type)->load($bundle);
 
-    // get data provider field
-    $data_provider_field = $bundle_config_entity->getDataProviderField();
-    if (!empty($data_provider_field)) {
-      // get data provider plugin instance or NULL
-      // @todo: what if data provider field has multiple items (can we also configure delta)?
-      $data_provider_plugin = $this->get($data_provider_field)->first()->getDataProviderPlugin();
+    // get resource provider field
+    $resource_provider_field = $bundle_config_entity->getResourceProviderField();
+    if (!empty($resource_provider_field)) {
+      // get resource provider plugin instance or NULL
+      // @todo: what if resource provider field has multiple items (can we also configure delta)?
+      $resource_provider_plugin = $this->get($resource_provider_field)->first()->getResourceProviderPlugin();
     }
 
-    return $data_provider_plugin;
+    return $resource_provider_plugin;
   }
 
 }

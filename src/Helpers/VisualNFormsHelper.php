@@ -335,8 +335,8 @@ class VisualNFormsHelper {
   public static function doProcessProviderContainerSubform(array $element, FormStateInterface $form_state, $form) {
     $stored_configuration = $element['#stored_configuration'];
     $configuration = [
-      'data_provider_id' => $stored_configuration['data_provider_id'],
-      'data_provider_config' => $stored_configuration['data_provider_config'],
+      'resource_provider_id' => $stored_configuration['resource_provider_id'],
+      'resource_provider_config' => $stored_configuration['resource_provider_config'],
     ];
     $context_entity_type = $element['#entity_type'] ?: '';
     $context_bundle = $element['#bundle'] ?: '';
@@ -344,24 +344,24 @@ class VisualNFormsHelper {
 
 
     $provider_element_parents = array_slice($element['#parents'], 0, -1);
-    $data_provider_id = $form_state->getValue(array_merge($provider_element_parents, ['data_provider_id']));
+    $resource_provider_id = $form_state->getValue(array_merge($provider_element_parents, ['resource_provider_id']));
 
-    // If it is a fresh form (is_null($data_provider_id)) or an empty option selected ($data_provider_id == ""),
+    // If it is a fresh form (is_null($resource_provider_id)) or an empty option selected ($resource_provider_id == ""),
     // there is nothing to attach for provider config.
-    if (!$data_provider_id) {
+    if (!$resource_provider_id) {
       return $element;
     }
 
-    if ($data_provider_id == $configuration['data_provider_id']) {
-      $data_provider_config = $configuration['data_provider_config'];
+    if ($resource_provider_id == $configuration['resource_provider_id']) {
+      $resource_provider_config = $configuration['resource_provider_config'];
     }
     else {
-      $data_provider_config = [];
+      $resource_provider_config = [];
     }
 
-    $visualNDataProviderManager = \Drupal::service('plugin.manager.visualn.data_provider');
+    $visualNResourceProviderManager = \Drupal::service('plugin.manager.visualn.resource_provider');
 
-    $provider_plugin = $visualNDataProviderManager->createInstance($data_provider_id, $data_provider_config);
+    $provider_plugin = $visualNResourceProviderManager->createInstance($resource_provider_id, $resource_provider_config);
 
     // @todo: maybe just pass all available contexts
 
@@ -372,9 +372,9 @@ class VisualNFormsHelper {
     $context_bundle = new Context(new ContextDefinition('string', NULL, TRUE), $context_bundle);
     $provider_plugin->setContext('bundle', $context_bundle);
 
-    // @todo: see the note regarding setting context in VisualNDataProviderItem class
+    // @todo: see the note regarding setting context in VisualNResourceProviderItem class
 
-    $provider_container_key = $data_provider_id;
+    $provider_container_key = $resource_provider_id;
 
     // get provider configuration form
 
@@ -393,11 +393,11 @@ class VisualNFormsHelper {
     // since provider configuration form may be empty, do a check (then it souldn't be of details type)
     if (Element::children($element[$provider_container_key]['provider_config'])) {
       $provider_element_array_parents = array_slice($element['#array_parents'], 0, -1);
-      // check that the triggering element is data_provider_id but not fetcher_id select (or some other element) itself
+      // check that the triggering element is resource_provider_id but not fetcher_id select (or some other element) itself
       $details_open = FALSE;
       if ($form_state->getTriggeringElement()) {
         $triggering_element = $form_state->getTriggeringElement();
-        $details_open = $triggering_element['#array_parents'] === array_merge($provider_element_array_parents, ['data_provider_id']);
+        $details_open = $triggering_element['#array_parents'] === array_merge($provider_element_array_parents, ['resource_provider_id']);
       }
       // @todo: take it out everywhere else
       $element[$provider_container_key] = [
@@ -428,7 +428,7 @@ class VisualNFormsHelper {
     // since validation is done after the whole form is rendered.
 
 
-    // get provider_container_key (for selected provider is equal by convention to data_provider_id,
+    // get provider_container_key (for selected provider is equal by convention to resource_provider_id,
     // see processProviderContainerSubform() #process callback)
     $element_parents = $form['#parents'];
     // use $provider_container_key for clarity though may get rid of array_pop() here and use end($element_parents)
@@ -448,18 +448,18 @@ class VisualNFormsHelper {
     $subform = $form['provider_config'];
     $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
 
-    $visualNDataProviderManager = \Drupal::service('plugin.manager.visualn.data_provider');
-    $data_provider_id  = $form_state->getValue(array_merge($base_element_parents, ['data_provider_id']));
+    $visualNResourceProviderManager = \Drupal::service('plugin.manager.visualn.resource_provider');
+    $resource_provider_id  = $form_state->getValue(array_merge($base_element_parents, ['resource_provider_id']));
     // The submit callback shouldn't depend on plugin configuration, it relies only on form_state values.
-    $data_provider_config  = [];
-    $provider_plugin = $visualNDataProviderManager->createInstance($data_provider_id, $data_provider_config);
+    $resource_provider_config  = [];
+    $provider_plugin = $visualNResourceProviderManager->createInstance($resource_provider_id, $resource_provider_config);
     $provider_plugin->submitConfigurationForm($subform, $sub_form_state);
 
 
     // move provider_config two levels up (remove 'provider_container' and $provider_container_key) in form_state values
     $provider_config_values = $form_state->getValue(array_merge($element_parents, [$provider_container_key, 'provider_config']));
     if (!is_null($provider_config_values)) {
-      $form_state->setValue(array_merge($base_element_parents, ['data_provider_config']), $provider_config_values);
+      $form_state->setValue(array_merge($base_element_parents, ['resource_provider_config']), $provider_config_values);
     }
 
     // remove remove 'provider_container' key itself from form_state
@@ -517,7 +517,7 @@ class VisualNFormsHelper {
     // since generator configuration form may be empty, do a check (then it souldn't be of details type)
     if (Element::children($element[$generator_container_key]['generator_config'])) {
       $generator_element_array_parents = array_slice($element['#array_parents'], 0, -1);
-      // check that the triggering element is data_generator_id but not fetcher_id or data_provider_id select (or some other element) itself
+      // check that the triggering element is data_generator_id but not fetcher_id or resource_provider_id select (or some other element) itself
       $details_open = FALSE;
       if ($form_state->getTriggeringElement()) {
         $triggering_element = $form_state->getTriggeringElement();

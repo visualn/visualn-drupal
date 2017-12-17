@@ -114,7 +114,7 @@ class VisualNFetcherItem extends FieldItemBase {
       // Set "current_entity" context
       $context_current_entity = new Context(new ContextDefinition('any', NULL, TRUE), $this->getEntity());
       $fetcher_plugin->setContext('current_entity', $context_current_entity);
-      // @todo: see the note regarding setting context in VisualNDataProviderItem class
+      // @todo: see the note regarding setting context in VisualNResourceProviderItem class
 
 
       $drawing_markup = $fetcher_plugin->fetchDrawing();

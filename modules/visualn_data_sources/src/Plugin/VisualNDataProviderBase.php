@@ -6,9 +6,9 @@ use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Base class for VisualN Data Provider plugins.
+ * Base class for VisualN Resource Provider plugins.
  */
-abstract class VisualNDataProviderBase extends ContextAwarePluginBase implements VisualNDataProviderInterface {
+abstract class VisualNResourceProviderBase extends ContextAwarePluginBase implements VisualNResourceProviderInterface {
 
   /**
    * {@inheritdoc}

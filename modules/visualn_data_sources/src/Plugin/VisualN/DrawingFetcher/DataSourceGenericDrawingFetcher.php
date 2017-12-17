@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a 'VisualN Data Provider generic drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'VisualN Resource Provider generic drawing fetcher' VisualN drawing fetcher.
  *
  * @VisualNDrawingFetcher(
  *  id = "visualn_data_source_generic",
@@ -80,7 +80,7 @@ class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
   public function defaultConfiguration() {
     return [
       'visualn_data_source_id' => '',
-      'data_provider_config' => [],
+      'resource_provider_config' => [],
       // these settings are provided by GenericDrawingFetcherBase abstract class
       //'visualn_style_id' => '',
       //'drawer_config' => [],
@@ -94,8 +94,8 @@ class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $visualn_data_sources = visualn_data_source_options(FALSE);
-    // Data providers with required contexts are not included here (since they are not
-    // included into the list of data providers when configuring data source).
+    // Resource providers with required contexts are not included here (since they are not
+    // included into the list of resource providers when configuring data source).
 
     $ajax_wrapper_id = implode('-', array_merge($form['#array_parents'], ['visualn_data_source_id'])) .'-ajax-wrapper';
 
@@ -128,7 +128,7 @@ class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
     $form['provider_container']['#stored_configuration'] = $this->configuration;
     */
 
-    // @todo: attach data provider configuration form to allow to override data source configuration
+    // @todo: attach resource provider configuration form to allow to override data source configuration
 
     // @todo: maybe add a checkbox to use defaults from data source configuration
 
@@ -141,7 +141,7 @@ class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
 
 
   /**
-   * Return data provider configuration form via ajax request at style change.
+   * Return resource provider configuration form via ajax request at style change.
    * Should have a different name since ajaxCallback can be used by base class.
    */
   public static function ajaxCallbackDataSource(array $form, FormStateInterface $form_state, Request $request) {
@@ -164,13 +164,13 @@ class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
     }
 
     $visualn_data_source = $this->visualNDataSourceStorage->load($visualn_data_source_id);
-    $data_provider_id = $visualn_data_source->getDataProviderId();
-    $data_provider_config = $visualn_data_source->getDataProviderConfig();
+    $resource_provider_id = $visualn_data_source->getResourceProviderId();
+    $resource_provider_config = $visualn_data_source->getResourceProviderConfig();
 
-    $fetcher_id = 'visualn_data_provider_generic';
+    $fetcher_id = 'visualn_resource_provider_generic';
     $fetcher_config = [
-      'data_provider_id' => $data_provider_id,
-      'data_provider_config' => $data_provider_config,
+      'resource_provider_id' => $resource_provider_id,
+      'resource_provider_config' => $resource_provider_config,
 
       'visualn_style_id' => $this->configuration['visualn_style_id'],
       'drawer_config' => $this->configuration['drawer_config'],
@@ -178,7 +178,7 @@ class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
     ];
 
     // @todo: maybe move into a trait
-    // @todo: just reuse DataProviderGenericDrawingFetcher::fetchDrawing()
+    // @todo: just reuse ResourceProviderGenericDrawingFetcher::fetchDrawing()
     $visualNDrawingFetcherManager = \Drupal::service('plugin.manager.visualn.drawing_fetcher');
     $fetcher_plugin = $visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
 

@@ -9,17 +9,17 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Plugin implementation of the 'visualn_data_provider' formatter.
+ * Plugin implementation of the 'visualn_resource_provider' formatter.
  *
  * @FieldFormatter(
- *   id = "visualn_data_provider",
- *   label = @Translation("VisualN data provider"),
+ *   id = "visualn_resource_provider",
+ *   label = @Translation("VisualN resource provider"),
  *   field_types = {
- *     "visualn_data_provider"
+ *     "visualn_resource_provider"
  *   }
  * )
  */
-class VisualNDataProviderFormatter extends FormatterBase {
+class VisualNResourceProviderFormatter extends FormatterBase {
 
   /**
    * {@inheritdoc}
@@ -73,10 +73,10 @@ class VisualNDataProviderFormatter extends FormatterBase {
    */
   protected function viewValue(FieldItemInterface $item) {
     $output = '';
-    $data_provider_plugin = $item->getDataProviderPlugin();
-    if (!is_null($data_provider_plugin)) {
-      //$output = $data_provider_plugin->label();
-      $output = print_r($data_provider_plugin->getConfiguration(), 1);
+    $resource_provider_plugin = $item->getResourceProviderPlugin();
+    if (!is_null($resource_provider_plugin)) {
+      //$output = $resource_provider_plugin->label();
+      $output = print_r($resource_provider_plugin->getConfiguration(), 1);
     }
 
     // @todo:

@@ -5,14 +5,14 @@ namespace Drupal\visualn_data_sources\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a VisualN Data Provider item annotation object.
+ * Defines a VisualN Resource Provider item annotation object.
  *
- * @see \Drupal\visualn_data_sources\Plugin\VisualNDataProviderManager
+ * @see \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager
  * @see plugin_api
  *
  * @Annotation
  */
-class VisualNDataProvider extends Plugin {
+class VisualNResourceProvider extends Plugin {
 
 
   /**

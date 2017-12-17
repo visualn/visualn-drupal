@@ -51,21 +51,21 @@ class VisualNDataSetTypeForm extends EntityForm {
         }
 
         // @todo: move field type into constant
-        if ($field_definition->getType() == 'visualn_data_provider') {
+        if ($field_definition->getType() == 'visualn_resource_provider') {
           $options[$field_name] = $field_definition->getLabel();
         }
       }
     }
 
 
-    $form['data_provider_field'] = [
+    $form['resource_provider_field'] = [
       '#type' => 'select',
-      '#title' => $this->t('Data provider field'),
+      '#title' => $this->t('Resource provider field'),
       '#options' => $options,
-      '#default_value' => $this->entity->getDataProviderField(),
+      '#default_value' => $this->entity->getResourceProviderField(),
       '#disabled' => $visualn_data_set_type->isNew(),
       '#empty_value' => '',
-      '#empty_option' => t('- Select data provider field -'),
+      '#empty_option' => t('- Select resource provider field -'),
     ];
 
     return $form;
@@ -99,8 +99,8 @@ class VisualNDataSetTypeForm extends EntityForm {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    $data_provider_field = $form_state->getValue('data_provider_field') ?: '';
-    $this->entity->set('data_provider_field', $data_provider_field);
+    $resource_provider_field = $form_state->getValue('resource_provider_field') ?: '';
+    $this->entity->set('resource_provider_field', $resource_provider_field);
   }
 
 }

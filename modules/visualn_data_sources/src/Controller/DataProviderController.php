@@ -4,26 +4,26 @@ namespace Drupal\visualn_data_sources\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\visualn_data_sources\Plugin\VisualNDataProviderManager;
+use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * Class DataProviderController.
+ * Class ResourceProviderController.
  */
-class DataProviderController extends ControllerBase {
+class ResourceProviderController extends ControllerBase {
 
   /**
-   * Drupal\visualn_data_sources\Plugin\VisualNDataProviderManager definition.
+   * Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager definition.
    *
-   * @var \Drupal\visualn_data_sources\Plugin\VisualNDataProviderManager
+   * @var \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager
    */
-  protected $pluginManagerVisualnDataProvider;
+  protected $pluginManagerVisualnResourceProvider;
 
   /**
-   * Constructs a new DataProviderController object.
+   * Constructs a new ResourceProviderController object.
    */
-  public function __construct(VisualNDataProviderManager $plugin_manager_visualn_data_provider) {
-    $this->pluginManagerVisualnDataProvider = $plugin_manager_visualn_data_provider;
+  public function __construct(VisualNResourceProviderManager $plugin_manager_visualn_resource_provider) {
+    $this->pluginManagerVisualnResourceProvider = $plugin_manager_visualn_resource_provider;
   }
 
   /**
@@ -31,7 +31,7 @@ class DataProviderController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.visualn.data_provider')
+      $container->get('plugin.manager.visualn.resource_provider')
     );
   }
 

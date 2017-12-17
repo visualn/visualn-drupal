@@ -39,9 +39,9 @@ class VisualNDataSourceForm extends EntityForm {
       '#disabled' => !$visualn_data_source->isNew(),
     ];
 
-    $data_providers_list = [];
-    $visualNDataProviderManager = \Drupal::service('plugin.manager.visualn.data_provider');
-    $definitions = $visualNDataProviderManager->getDefinitions();
+    $resource_providers_list = [];
+    $visualNResourceProviderManager = \Drupal::service('plugin.manager.visualn.resource_provider');
+    $definitions = $visualNResourceProviderManager->getDefinitions();
     foreach ($definitions as $definition) {
       if (!empty($definition['context'])) {
         foreach ($definition['context'] as $name => $context_definition) {
@@ -52,20 +52,20 @@ class VisualNDataSourceForm extends EntityForm {
         }
       }
 
-      $data_providers_list[$definition['id']] = $definition['label'];
+      $resource_providers_list[$definition['id']] = $definition['label'];
     }
 
-    $ajax_wrapper_id =  'data_provider-config-form-ajax';
+    $ajax_wrapper_id =  'resource_provider-config-form-ajax';
 
-    $default_provider = $visualn_data_source->getDataProviderId();
-    $form['data_provider_id'] = [
+    $default_provider = $visualn_data_source->getResourceProviderId();
+    $form['resource_provider_id'] = [
       '#type' => 'select',
-      '#title' => $this->t('Data Provider'),
-      '#options' => $data_providers_list,
+      '#title' => $this->t('Resource Provider'),
+      '#options' => $resource_providers_list,
       '#default_value' => $default_provider,
-      '#description' => $this->t("Data Provider for the data source."),
+      '#description' => $this->t("Resource Provider for the data source."),
       '#ajax' => [
-        'callback' => '::ajaxCallbackDataProvider',
+        'callback' => '::ajaxCallbackResourceProvider',
         'wrapper' => $ajax_wrapper_id,
       ],
       '#empty_value' => '',
@@ -79,29 +79,29 @@ class VisualNDataSourceForm extends EntityForm {
       '#process' => [[$this, 'processProviderContainerSubform']],
     ];
     $stored_configuration = [
-      'data_provider_id' => $visualn_data_source->getDataProviderId(),
-      'data_provider_config' => $visualn_data_source->getDataProviderConfig(),
+      'resource_provider_id' => $visualn_data_source->getResourceProviderId(),
+      'resource_provider_config' => $visualn_data_source->getResourceProviderConfig(),
     ];
     $form['provider_container']['#stored_configuration'] = $stored_configuration;
 
-    // Set empty values for entity_type and bundle contexts since data providers with
+    // Set empty values for entity_type and bundle contexts since resource providers with
     // required contexts are not allowed for data sources.
     $form['provider_container']['#entity_type'] = '';
     $form['provider_container']['#bundle'] = '';
 
     // @todo: add into documentation
-    // Using data sources is supposed to be a good practice since it allows to limit the list of data providers
-    // in fetchers selects only to those that are needed but when a data provider has required contexts
+    // Using data sources is supposed to be a good practice since it allows to limit the list of resource providers
+    // in fetchers selects only to those that are needed but when a resource provider has required contexts
     // it can be used only directly using corresponding fetcher.
 
     return $form;
   }
 
   /**
-   * Return data provider configuration form via ajax request at style change.
+   * Return resource provider configuration form via ajax request at style change.
    * Should have a different name since ajaxCallback can be used by base class.
    */
-  public static function ajaxCallbackDataProvider(array $form, FormStateInterface $form_state, Request $request) {
+  public static function ajaxCallbackResourceProvider(array $form, FormStateInterface $form_state, Request $request) {
     $triggering_element = $form_state->getTriggeringElement();
     $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
     $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);

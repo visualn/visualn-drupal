@@ -71,7 +71,7 @@ class VisualNFetcherWidget extends WidgetBase {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    // @todo: review the code, see VisualNDataProviderWidget class
+    // @todo: review the code, see VisualNResourceProviderWidget class
 
     $element['#type'] = 'fieldset';
 
@@ -189,7 +189,7 @@ class VisualNFetcherWidget extends WidgetBase {
 
       $context_bundle = new Context(new ContextDefinition('string', NULL, TRUE), $bundle);
       $fetcher_plugin->setContext('bundle', $context_bundle);
-      // @todo: see the note regarding setting context in VisualNDataProviderItem class
+      // @todo: see the note regarding setting context in VisualNResourceProviderItem class
 
       // attach fetcher configuration form
       // @todo: also fetcher_config_key may be added here as it is done for ResourceGenericDraweringFethcher

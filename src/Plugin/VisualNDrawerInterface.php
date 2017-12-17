@@ -49,4 +49,9 @@ interface VisualNDrawerInterface extends VisualNPluginInterface, PluginFormInter
    */
   public function dataKeysStructure();
 
+  // @todo: add external url into description
+
+  //public function getDescription();
+  //public function getDescriptionExternalUrl();
+
 }

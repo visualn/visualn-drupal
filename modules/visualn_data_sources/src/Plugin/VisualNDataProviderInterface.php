@@ -7,10 +7,10 @@ use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
- * Defines an interface for VisualN Data Provider plugins.
+ * Defines an interface for VisualN Resource Provider plugins.
  */
-//interface VisualNDataProviderInterface extends PluginInspectionInterface {
-interface VisualNDataProviderInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
+//interface VisualNResourceProviderInterface extends PluginInspectionInterface {
+interface VisualNResourceProviderInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
 
   /**
    * Get Resource object corresponding to the current provider.

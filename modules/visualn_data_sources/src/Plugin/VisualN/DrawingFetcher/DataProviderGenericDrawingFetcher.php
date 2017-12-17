@@ -7,7 +7,7 @@ use Drupal\visualn_drawings_library\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
-use Drupal\visualn_data_sources\Plugin\VisualNDataProviderManager;
+use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
@@ -23,11 +23,11 @@ use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 
 /**
- * Provides a 'VisualN Data Provider generic drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'VisualN Resource Provider generic drawing fetcher' VisualN drawing fetcher.
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_data_provider_generic",
- *  label = @Translation("VisualN Data Provider generic drawing fetcher"),
+ *  id = "visualn_resource_provider_generic",
+ *  label = @Translation("VisualN Resource Provider generic drawing fetcher"),
  *  context = {
  *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type"), required = FALSE),
  *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle"), required = FALSE),
@@ -36,14 +36,14 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
  * )
  */
 // @todo: GenericDrawingFetcherBase already implements ContainerFactoryPluginInterface interface
-class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implements ContainerFactoryPluginInterface {
+class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implements ContainerFactoryPluginInterface {
 
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn_data_sources\Plugin\VisualNDataProviderManager
+   * @var \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager
    */
-  protected $visualNDataProviderManager;
+  protected $visualNResourceProviderManager;
 
   /**
    * {@inheritdoc}
@@ -57,7 +57,7 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
       $container->get('plugin.manager.visualn.manager'),
-      $container->get('plugin.manager.visualn.data_provider')
+      $container->get('plugin.manager.visualn.resource_provider')
     );
   }
 
@@ -79,13 +79,13 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
    *   The visualn drawer manager service.
    * @param \Drupal\visualn\Plugin\VisualNManagerManager $visualn_manager_manager
    *   The visualn manager manager service.
-   * @param \Drupal\visualn_data_sources\Plugin\VisualNDataProviderManager $visualn_data_provider_manager
-   *   The visualn data provider manager service.
+   * @param \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager $visualn_resource_provider_manager
+   *   The visualn resource provider manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNDataProviderManager $visualn_data_provider_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceProviderManager $visualn_resource_provider_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_manager_manager);
 
-    $this->visualNDataProviderManager = $visualn_data_provider_manager;
+    $this->visualNResourceProviderManager = $visualn_resource_provider_manager;
   }
 
   /**
@@ -93,8 +93,8 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
    */
   public function defaultConfiguration() {
     return [
-      'data_provider_id' => '',
-      'data_provider_config' => [],
+      'resource_provider_id' => '',
+      'resource_provider_config' => [],
       // these settings are provided by GenericDrawingFetcherBase abstract class
       //'visualn_style_id' => '',
       //'drawer_config' => [],
@@ -107,15 +107,15 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $definitions = $this->visualNDataProviderManager->getDefinitions();
-    $data_providers = [];
+    $definitions = $this->visualNResourceProviderManager->getDefinitions();
+    $resource_providers = [];
     foreach ($definitions as $definition) {
 
       // Exclude providers with which have at least one required context scince here no context is provided.
       if (!empty($definition['context'])) {
         foreach ($definition['context'] as $name => $context_definition) {
           // @todo: Here we check only contexts required for the form (e.g. we don't check "current_entity" context)
-          //    though it may be required for getDataProviderPlugin() method to work. We suppose that
+          //    though it may be required for getResourceProviderPlugin() method to work. We suppose that
           //    only "entity_type" and "bundle" are enough here (which generally may be wrong).
           //    Also the "current_entity" context seems to not being checked anywhere and is supposed to work
           //    by convention.
@@ -128,22 +128,22 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
         }
       }
 
-      $data_providers[$definition['id']] = $definition['label'];
+      $resource_providers[$definition['id']] = $definition['label'];
     }
 
-    $ajax_wrapper_id = implode('-', array_merge($form['#array_parents'], ['data_provider_id'])) .'-ajax-wrapper';
+    $ajax_wrapper_id = implode('-', array_merge($form['#array_parents'], ['resource_provider_id'])) .'-ajax-wrapper';
 
-    $form['data_provider_id'] = [
+    $form['resource_provider_id'] = [
       '#type' => 'select',
-      '#title' => t('Data provider'),
-      '#description' => t('The data provider for the drawing'),
-      '#default_value' => $this->configuration['data_provider_id'],
-      '#options' => $data_providers,
+      '#title' => t('Resource provider'),
+      '#description' => t('The resource provider for the drawing'),
+      '#default_value' => $this->configuration['resource_provider_id'],
+      '#options' => $resource_providers,
       '#required' => TRUE,
       '#empty_value' => '',
-      '#empty_option' => t('- Select data provider -'),
+      '#empty_option' => t('- Select resource provider -'),
       '#ajax' => [
-        'callback' => [get_called_class(), 'ajaxCallbackDataProvider'],
+        'callback' => [get_called_class(), 'ajaxCallbackResourceProvider'],
         'wrapper' => $ajax_wrapper_id,
       ],
     ];
@@ -156,7 +156,7 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
     ];
     $form['provider_container']['#stored_configuration'] = $this->configuration;
 
-    // @todo: no need to set this contexts for data provider plugins that don't have
+    // @todo: no need to set this contexts for resource provider plugins that don't have
     //    them in their annotation (plugin definition), e.g. random data generator plugins.
     // @todo: a similar note should be added to settings context for
     //    generic fetcher plugins (e.g. resource generic fetcher which doesn't need any context to work).
@@ -171,10 +171,10 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
   }
 
   /**
-   * Return data provider configuration form via ajax request at style change.
+   * Return resource provider configuration form via ajax request at style change.
    * Should have a different name since ajaxCallback can be used by base class.
    */
-  public static function ajaxCallbackDataProvider(array $form, FormStateInterface $form_state, Request $request) {
+  public static function ajaxCallbackResourceProvider(array $form, FormStateInterface $form_state, Request $request) {
     $triggering_element = $form_state->getTriggeringElement();
     $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
     $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);
@@ -198,10 +198,10 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
   public function fetchDrawing() {
     //dsm($this->configuration);
 
-    $data_provider_id = $this->configuration['data_provider_id'];
-    $data_provider_config = $this->configuration['data_provider_config'];
+    $resource_provider_id = $this->configuration['resource_provider_id'];
+    $resource_provider_config = $this->configuration['resource_provider_config'];
     $visualn_style_id = $this->configuration['visualn_style_id'];
-    //if (empty($visualn_style_id) || empty($data_provider_id)) {
+    //if (empty($visualn_style_id) || empty($resource_provider_id)) {
     if (empty($visualn_style_id)) {
       return parent::fetchDrawing();
     }
@@ -221,7 +221,7 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
     // @todo:
 
     $vuid = \Drupal::service('uuid')->generate();
-    // Add drawer info before calling data provider in case it uses it. E.g. it can use
+    // Add drawer info before calling resource provider in case it uses it. E.g. it can use
     // these options to create demo data sets depending on the drawer and its config.
     $options = [
       'style_id' => $visualn_style_id,
@@ -232,8 +232,8 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
     ];
 
 
-    if (!empty($data_provider_id)) {
-      $provider_plugin = $this->visualNDataProviderManager->createInstance($data_provider_id, $data_provider_config);
+    if (!empty($resource_provider_id)) {
+      $provider_plugin = $this->visualNResourceProviderManager->createInstance($resource_provider_id, $resource_provider_config);
       // @todo:
       //  Provider plugin may return attachments:
       //  - js script that dynamically generates data
@@ -242,10 +242,10 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
       //  Provider should return output_type to be used by manager to build chain
       //  Provider may return additional adapter_settings or maybe resource_settings
       //    that could be taken into consideration by manager when defining adapter used
-      // @todo: review the decision to add an 'data_provider' subelement
-      //    though at this stage $build is empty anyway and data provide can make not so much use of it
-      $build['data_provider'] = [];
-      $provider_plugin->prepareBuild($build['data_provider'], $vuid, $options);
+      // @todo: review the decision to add an 'resource_provider' subelement
+      //    though at this stage $build is empty anyway and resource provider can make not so much use of it
+      $build['resource_provider'] = [];
+      $provider_plugin->prepareBuild($build['resource_provider'], $vuid, $options);
       // @todo: maybe in a similar way $build['drawing'] should be passed to manager but not the $build itself
 
       $current_entity = $this->getContextValue('current_entity');
@@ -254,7 +254,7 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
       // Set "current_entity" context
       $context_current_entity = new Context(new ContextDefinition('any', NULL, TRUE), $current_entity);
       $provider_plugin->setContext('current_entity', $context_current_entity);
-      // @todo: see the note regarding setting context in VisualNDataProviderItem class
+      // @todo: see the note regarding setting context in VisualNResourceProviderItem class
 
 
       $resource_plugin = $provider_plugin->getResource();
@@ -281,7 +281,7 @@ class DataProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implem
 
 
 
-    // @todo: pass parameter to the data provider and just get the result
+    // @todo: pass parameter to the resource provider and just get the result
 
 
     $manager_plugin->prepareBuild($build, $vuid, $options);
