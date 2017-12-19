@@ -199,7 +199,7 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
     // @todo: generate and set unique visualization (picture/canvas) id
     $vuid = \Drupal::service('uuid')->generate();
     // add selector for the drawing
-    $html_selector = 'js-visualn-selector-block--' . substr($vuid, 0, 8);
+    $html_selector = 'js-visualn-selector--' . substr($vuid, 0, 8);
 
     $build['#markup'] = "<div class='{$html_selector}'></div>";
 

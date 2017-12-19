@@ -34,6 +34,11 @@ var settings = e.detail;
           console.log(Drupal.visualnData.drawings[value]);
           // drawing.drawer is considered to be always set, since there is no need to have a drawing w/o a drawer
           var drawing = Drupal.visualnData.drawings[value];
+          // @todo: this is temporary solution to exclude drawers that don't use js,
+          //    actually there should be no settings at all at clientside for such drawers
+          if (typeof drawing.drawer == 'undefined') {
+            return;
+          }
           var drawerId = drawing.drawer.drawerId;
           if (typeof drawing.adapter != 'undefined') {
             var adapterId = drawing.adapter.adapterId;
