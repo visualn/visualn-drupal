@@ -74,9 +74,6 @@ class StandaloneDrawingFetcher extends GenericDrawingFetcherBase {
     $drawing_markup = $build;
 
     return $drawing_markup;
-
-
-    return parent::fetchDrawing();
   }
 }
 
