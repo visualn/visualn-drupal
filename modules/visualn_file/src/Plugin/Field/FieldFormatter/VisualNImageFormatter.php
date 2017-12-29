@@ -14,6 +14,7 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Plugin implementation of the 'visualn_image' formatter.
@@ -212,20 +213,6 @@ class VisualNImageFormatter extends ImageFormatter {
       ],
     ];
 
-    // @todo: move into ::create() method
-    $visualNStyleStorage = \Drupal::service('entity_type.manager')->getStorage('visualn_style');
-    $visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
-    $visualNManagerManager = \Drupal::service('plugin.manager.visualn.manager');
-
-    // load style and get drawer manager from plugin definition
-    $visualn_style = $visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin = $visualn_style->getDrawerPlugin();
-    $drawer_plugin_id = $drawer_plugin->getPluginId();
-    $manager_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
-
-    // @todo: check if config is needed
-    $manager_config = [];
-    $manager_plugin = $visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
 
     $options = [
       'style_id' => $visualn_style_id,
@@ -236,20 +223,12 @@ class VisualNImageFormatter extends ImageFormatter {
     ];
     $options['adapter_settings']['data'] = $resource['output_interface']['data'];
 
-    // @todo: generate and set unique visualization (picture/canvas) id
-    $vuid = \Drupal::service('uuid')->generate();
-    // add selector for the drawing
-    $html_selector = 'js-visualn-selector-block--' . substr($vuid, 0, 8);
+    // Get drawing build
+    $build = VisualN::makeBuild($options);
 
-    $build = [];
-    $build['#markup'] = "<div class='{$html_selector}'></div>";
-    // @todo: html_selector should be connected inside '.field__items' in order to be able to use
-    //    quick edit feature
+    // @todo: html_selector should be connected inside '.field__items' in order
+    //    to be able to use quick edit feature
 
-    $options['html_selector'] = $html_selector;  // where to attach drawing selector
-
-    // @todo: for different drawers there can be different managers
-    $manager_plugin->prepareBuild($build, $vuid, $options);
 
     // field template seems to ignore anything added to the $elements and renders only items (see field.html.twig)
 

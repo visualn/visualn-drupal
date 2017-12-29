@@ -18,6 +18,7 @@ use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Render\Element;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Style plugin to render listing.
@@ -424,12 +425,10 @@ class Visualization extends StylePluginBase {
     if (empty($visualn_style_id)) {
       return;
     }
-    // load style and get drawer manager from plugin definition
-    $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin_id = $visualn_style->getDrawerPlugin()->getPluginId();
-    $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
-    // @todo: pass options as part of $manager_config (?)
-    $vuid = $this->getVuid();
+
+
+    // @todo: actually no need to use data_class_suffix here, any random string is ok
+    $views_content_wrapper_selector = 'visualn-views-html-wrapper--' . $this->getDataClassSuffix();
     $options = [
       'style_id' => $visualn_style_id,
       // @todo: maybe move into 'drawer_settings'
@@ -438,28 +437,32 @@ class Visualization extends StylePluginBase {
       // @todo: maybe move into 'mapper_settings' (even though used in adapter)
       'drawer_fields' => $style_options['drawer_fields'],  // this setting should be used in adapter
       'output_type' => 'html_views',
+      'adapter_settings' => [
+        'views_content_wrapper_selector' => $views_content_wrapper_selector,
+        // @todo: the vuid should be kept (see getVuid()) to wrap html data
+        'data_class_suffix' => $this->getDataClassSuffix(),
+      ],
     ];
 
-    // add selector for the drawing
-    $html_selector = 'js-visualn-selector-views-html--' . $this->view->id() . '--' . substr($vuid, 0, 8);
-    $this->view->element['#attributes']['class'][] = $html_selector;
-    $options['html_selector'] = $html_selector;  // where to attach drawing selector
+    // Get drawing build
+    $build = VisualN::makeBuild($options);
 
-    // @todo: check if config is needed
-    $manager_config = [];
-    $manager_plugin = $this->visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
-    // @todo: get mapping settings from style plugin object and pass to manager
-    $manager_plugin->prepareBuild($this->view->element, $vuid, $options);
+    // Attach the build to the view output
+    $this->view->element['visualn_build'] = $build;
+
+    // @todo: add wrapper so that adapter could hide the contents with data (so this part of resource actually)
+    $this->view->element['#attributes']['class'][] = $views_content_wrapper_selector;
+
   }
 
   /**
    * Get Visualization vuid value.
-   *
-   * @todo: add into interface
    */
-  public function getVuid() {
+  public function getDataClassSuffix() {
+    // @todo: rename vuid property to data_class_suffix
     if (empty($this->vuid)) {
-      $this->vuid = \Drupal::service('uuid')->generate();
+      $vuid = \Drupal::service('uuid')->generate();
+      $this->vuid = substr($vuid, 0, 4);
     }
     return $this->vuid;
   }

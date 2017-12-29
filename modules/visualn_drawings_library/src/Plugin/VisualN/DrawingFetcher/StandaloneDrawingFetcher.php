@@ -3,6 +3,7 @@
 namespace Drupal\visualn_drawings_library\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn_drawings_library\Plugin\GenericDrawingFetcherBase;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Provides a 'VisualN Standalone drawing fetcher' VisualN drawing fetcher.
@@ -29,24 +30,12 @@ class StandaloneDrawingFetcher extends GenericDrawingFetcherBase {
     }
 
 
-    $build = [];
-
-    // load style and get drawer manager from plugin definition
-    $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin = $visualn_style->getDrawerPlugin();
-    $drawer_plugin_id = $drawer_plugin->getPluginId();
-    $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
-
-    // @todo: check if config is needed
-    $manager_config = [];
-    $manager_plugin = $this->visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
     // @todo: pass options as part of $manager_config (?)
     $options = [
       'style_id' => $visualn_style_id,
       // @todo: unsupported operand types error
-      // @todo: why can it be empty (not even an empty array)?
-      //'drawer_config' =>  $this->configuration['drawer_config'] + $visualn_style->get('drawer'),
-      'drawer_config' => ($this->configuration['drawer_config'] ?: []) + $drawer_plugin->getConfiguration(),
+      //    add default value into defaultConfiguration()
+      'drawer_config' => ($this->configuration['drawer_config'] ?: []),
       'drawer_fields' => $this->configuration['drawer_fields'],
       'adapter_settings' => [],
     ];
@@ -56,18 +45,8 @@ class StandaloneDrawingFetcher extends GenericDrawingFetcherBase {
 
 
 
-
-    // @todo: generate and set unique visualization (picture/canvas) id
-    $vuid = \Drupal::service('uuid')->generate();
-    // add selector for the drawing
-    $html_selector = 'js-visualn-selector--' . substr($vuid, 0, 8);
-
-    $build['#markup'] = "<div class='{$html_selector}'></div>";
-
-    $options['html_selector'] = $html_selector;  // where to attach drawing selector
-
-    // @todo: for different drawers there can be different managers
-    $manager_plugin->prepareBuild($build, $vuid, $options);
+    // Get drawing build
+    $build = VisualN::makeBuild($options);
 
     // @todo: attach drawer markup
 

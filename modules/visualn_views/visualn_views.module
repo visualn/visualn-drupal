@@ -96,8 +96,7 @@ function visualn_views_preprocess_views_view_fields(&$variables) {
 
   // add mapping classes for Visualization display style
   if ($view->style_plugin->getPluginId() == 'visualization') {
-    $vuid = $view->style_plugin->getVuid();
-    $vuid = substr($vuid, 0, 4);
+    $vuid = $view->style_plugin->getDataClassSuffix();
     // get mappings from display style settings
     $options = $view->style_plugin->options;
     $field_classes = [];

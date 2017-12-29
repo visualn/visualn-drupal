@@ -18,6 +18,7 @@ use Drupal\Core\Render\Element;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
+use Drupal\visualn\Helpers\VisualN;
 
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
@@ -208,18 +209,10 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
 
     $build = [];
 
-    // load style and get drawer manager from plugin definition
-    $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin = $visualn_style->getDrawerPlugin();
-    $drawer_plugin_id = $drawer_plugin->getPluginId();
-    $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
-
-    // @todo: check if config is needed
-    $manager_config = [];
-    $manager_plugin = $this->visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
 
     // @todo:
 
+    // @todo: the vuid here isn't the same as used in VisualN::makeBuild()
     $vuid = \Drupal::service('uuid')->generate();
     // Add drawer info before calling resource provider in case it uses it. E.g. it can use
     // these options to create demo data sets depending on the drawer and its config.
@@ -245,6 +238,7 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
       // @todo: review the decision to add an 'resource_provider' subelement
       //    though at this stage $build is empty anyway and resource provider can make not so much use of it
       $build['resource_provider'] = [];
+      // @todo: maybe allow resource to attach libraries or even get a resource_build
       $provider_plugin->prepareBuild($build['resource_provider'], $vuid, $options);
       // @todo: maybe in a similar way $build['drawing'] should be passed to manager but not the $build itself
 
@@ -271,20 +265,12 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
 
     // @todo: maybe use adapter_config instead of adapter_settings for consistency
 
-    // Add html selector where the drawing should be attached.
-    // Intentionally attach html_selector setting after provider call since
-    // it should not use it in any way.
-    $html_selector = 'js-visualn-selector-block--' . substr($vuid, 0, 8);
-    $options['html_selector'] = $html_selector;
-    // @todo: maybe use prefix and suffix instead of markup
-    $build['#markup'] = "<div class='{$html_selector}'></div>";
 
 
+    // Get drawing build
+    $build = VisualN::makeBuild($options) + $build;
 
-    // @todo: pass parameter to the resource provider and just get the result
 
-
-    $manager_plugin->prepareBuild($build, $vuid, $options);
 
     $drawing_markup = $build;
 

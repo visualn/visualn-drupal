@@ -4,6 +4,7 @@ namespace Drupal\visualn_drawings_library\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Provides a 'VisualN File field drawing fetcher' VisualN drawing fetcher.
@@ -25,6 +26,7 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
    */
   public function defaultConfiguration() {
     return [
+      // @todo: rename key to visualn_file_field_name
       'visualn_file_field' => '',
     ] + parent::defaultConfiguration();
 
@@ -38,6 +40,7 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
 
     $current_entity = $this->getContextValue('current_entity');
 
+    // @todo: use just $field_name for the variable name
     $visualn_file_field = $this->configuration['visualn_file_field'];
     if (empty($visualn_file_field) || !$current_entity->hasField($visualn_file_field)) {
       return $drawing_markup;
@@ -54,14 +57,6 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
         $drawer_config = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
         $drawer_fields = !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [];
 
-        $visualn_style = \Drupal::service('entity_type.manager')->getStorage('visualn_style')->load($visualn_style_id);
-        $drawer_plugin = $visualn_style->getDrawerPlugin();
-        $drawer_plugin_id = $drawer_plugin->getPluginId();
-        $manager_plugin_id = \Drupal::service('plugin.manager.visualn.drawer')->getDefinition($drawer_plugin_id)['manager'];
-
-        // @todo: check if config is needed
-        $manager_config = [];
-        $manager_plugin = \Drupal::service('plugin.manager.visualn.manager')->createInstance($manager_plugin_id, $manager_config);
 
         $options = [
           'style_id' => $visualn_style_id,
@@ -70,9 +65,8 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
           'adapter_settings' => [],
         ];
         $options['output_type'] = 'file_dsv';
-        $vuid = \Drupal::service('uuid')->generate();
-        $html_selector = 'js-visualn-selector-drawing-fetcher--' . substr($vuid, 0, 8);
-        $options['html_selector'] = $html_selector;
+
+
         // @todo: this is a bit hackish, see GenericFileFormatter::viewElements
         $file = $first_delta->entity;
 
@@ -84,9 +78,11 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
           $options['output_type'] = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinition($resource_format_plugin_id)['output'];
         }
 
-        $drawing_markup = [];
-        $drawing_markup['#suffix'] = "<div class='{$html_selector}'></div>";
-        $manager_plugin->prepareBuild($drawing_markup, $vuid, $options);
+
+
+        // Get drawing build
+        $build = VisualN::makeBuild($options);
+        $drawing_markup = $build;
 
 
         // @todo: this doesn't take into consideration formatter settings if visualn style is the same,
@@ -97,9 +93,6 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
 
       // @todo: get drawer id and configuration and render the drawing (if overridden)
       //    else get settings from formatter (if not raw)
-
-      //$drawing_markup = $this->get($drawing_fetcher_field)->first()->buildDrawing();
-      //$drawing_markup = $this->get($drawing_fetcher_field)->get(0)->buildDrawing();
     }
 
     return $drawing_markup;

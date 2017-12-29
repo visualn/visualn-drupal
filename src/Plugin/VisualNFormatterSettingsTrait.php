@@ -15,6 +15,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Provides common elements for VisualN fields formatters
@@ -212,8 +213,6 @@ trait VisualNFormatterSettingsTrait {
       $item = $items[$delta];
       if ($items[$delta]->visualn_style_id) {
         $visualn_style_id = $items[$delta]->visualn_style_id;
-        $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-        $drawer_plugin = $visualn_style->getDrawerPlugin();
 
         $visualn_data = !empty($items[$delta]->visualn_data) ? unserialize($items[$delta]->visualn_data) : [];
         $drawer_config = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
@@ -222,8 +221,6 @@ trait VisualNFormatterSettingsTrait {
         if ($visualn_style_id == $this->getSetting('visualn_style_id')) {
           $drawer_config += $this->getSetting('drawer_config');
         }
-        // @todo: here we need just to get drawer manager (as in code above); also check comment for the manager below
-        $drawer_plugin->setConfiguration($drawer_config);
         $options = [
           'style_id' => $visualn_style_id,
           'drawer_config' => $drawer_config,
@@ -240,20 +237,18 @@ trait VisualNFormatterSettingsTrait {
         ];
       }
 
-      // @todo: generate and set unique visualization (picture/canvas) id
-      $vuid = \Drupal::service('uuid')->generate();
 
       // set additional options for the formatter type for each single delta (can be overridden by the formatter)
       $options = $this->visualnViewElementsOptionsEach($element, $options, $item);
-      // add selector for the drawing
-      $html_selector = 'js-visualn-selector-file--' . $delta . '--' . substr($vuid, 0, 8);
-      //$elements[$delta]['#attributes']['class'][] = $html_selector;
-      $elements[$delta]['#suffix'] = isset($elements[$delta]['#suffix']) ? $elements[$delta]['#suffix'] : '';
-      $elements[$delta]['#suffix'] .= "<div class='{$html_selector}'></div>";
-      $options['html_selector'] = $html_selector;  // where to attach drawing selector
 
-      // @todo: for different drawers there can be different managers
-      $manager_plugin->prepareBuild($elements[$delta], $vuid, $options);
+
+      // Get drawing build
+      $build = VisualN::makeBuild($options);
+      //$elements[$delta]['visualn_drawing'] = $build;
+
+      // @todo: this is a temporary solution, should be used custom theme template
+      $elements[$delta]['#suffix'] = isset($elements[$delta]['#suffix']) ? $elements[$delta]['#suffix'] : '';
+      $elements[$delta]['#suffix'] .= \Drupal::service('renderer')->render($build);
     }
     return $elements;
   }
