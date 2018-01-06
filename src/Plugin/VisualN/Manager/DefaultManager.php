@@ -11,6 +11,7 @@ use Drupal\visualn\Plugin\VisualNAdapterManager;
 use Drupal\visualn\Plugin\VisualNMapperManager;
 use Drupal\visualn\Entity\VisualNStyle;
 use Drupal\visualn\Plugin\VisualNDrawerInterface;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides a 'Default Manager' VisualN manager.
@@ -78,6 +79,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     $this->visualNMapperManager = $visualn_mapper_manager;
   }
 
+
   /**
    * @inheritdoc
    *
@@ -85,20 +87,25 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
    * @todo: some or all options should be passed as part of manager_config (at least visualn_style_id)
    *  at plugin object instatiation
    */
-  public function prepareBuild(array &$build, $vuid, $options = []) {
+  // @todo: pass drawing_options and its components as manager config
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource, $drawing_options) {
+    // @todo: add this to the VisualNPluginBase method
+    $options = $drawing_options;
+    $output_type = $resource->getResourceType();
+
+
     // @todo: visualn-core.js should be attached before other visualn js scripts (drawers, mappers, adapters, managers)
     // @todo: move into base class or even into dependencies for manager js script and attach it here instead of end of method function
     $build['#attached']['library'][] = 'visualn/visualn-core';
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
+    // @todo: check the way it is used, add a comment
     $manager_id = 'visualnDefaultManager';
-    $build['#attached']['drupalSettings']['visualn']['handlerItems']['managers'][$manager_id][$vuid] = $vuid;  // @todo: this settings is just for reference
+    $build['#attached']['drupalSettings']['visualn']['handlerItems']['managers'][$manager_id][$vuid] = $vuid;
 
     // required options: style_id, html_selector
     // add optional options
     $options += [
-      'output_type' => '',  // optional (drawer can perform adapter functionality by itself)
       'drawer_config' => [],  // optional (drawer default config is considered)
-      'adapter_settings' => [],  // optional (in some cases, e.g. file_csv, it is needed to pass file url)
     ];
     // @todo: do we really need style_id here? maybe just pass drawer_plugin_id or both
     //  manager needs to know nothing about the visualn style
@@ -114,7 +121,10 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     $drawer = $visualn_style->getDrawerPlugin()->setConfiguration($options['drawer_config']);
 
     //$chain = $this->composePluginsChain($drawer, $input_type, $input_data);
-    $chain = $this->composePluginsChain($drawer, $options['output_type'], []); // $drawer, $input_type, $input_options
+    $chain = $this->composePluginsChain($drawer, $output_type, []); // $drawer, $input_type, $input_options
+    //$chain = $this->composePluginsChain($drawer, $resource, $drawing_options);
+    // @todo: review this interface, additional data may be used e.g. to alter chain building (vuid, drawing_options etc.)
+    //$chain = $this->composePluginsChain($drawer, $resource);
 
     // there could be now drawer after composing chain
     if (empty($chain['drawer'])) {
@@ -128,9 +138,13 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     // it can be required by mappers (e.g. basic_tree_mapper) or adapters.
     // The info is attached to the $build array (instead of using a certain variable)
     // in case it could be required in some non-standard workflow or even anywhere outside VisualN process.
+/*
     $build['#visualn'] = [];
+*/
 
-    // options contain other plugins (adapter, mapper) settings in case drawer needs them
+    // @todo: remove setting drawer_field in drawer base class
+    // @todo: check VisualDrawerBase::prepareBuild() and remove unused info from $build[#visualn] key,
+    //    e.g. data_keys_structure info
 
     // First drawer plugins are called, so they could set data_keys_structure.
     // Then adapter plugins since they can provide some data for mappers.
@@ -138,20 +152,34 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     foreach ($plugin_types as $plugin_type) {
       // generally there is one plugin of each kind
       foreach ($chain[$plugin_type] as $k => $chain_plugin) {
-        $input_options = [];
         if ($plugin_type == 'adapter' && $k == 0) {
-          $input_options = [
-            'adapter_settings' => $options['adapter_settings'] ?: [],
+          // @todo: maybe also set data_keys since adapter may need only data keys info
+          // @todo: actually drawer_fields, data_keys_structure (and possibly data_keys) should be
+          //    set for every type of plugin (adapter, mapper, drawer) since any of them should be
+          //    able to do remapping (if it needs to) so these properties should be set
+          //    in VisualNPluginBase::defaultConfiguration() and inherited in type-specific classes
+          $chain_plugin_config = [
             'drawer_fields' => $options['drawer_fields'] ?: [],
-          ];
+          ] + $chain_plugin->getConfiguration();
+          $chain_plugin->setConfiguration($chain_plugin_config);
         }
         elseif ($plugin_type == 'mapper' && $k == 0) {
-          $input_options = [
-            'data_keys_structure' => $build['#visualn']['chain_info']['drawer'][0]['data_keys_structure'],
+          // @todo: check if plugin configuration (or default configuration) has data_keys_structure
+          //    and maybe drawer_fields keys and only set if parameters are really needed.
+          //    Actually these options should be set by linker plugin based on resource and input/output types
+          //    or even based on plugin type itself (so that linker could be chosen not only based on
+          //    input/output types but also on specific plugins in the chain.
+          $chain_plugin_config = [
+            'data_keys_structure' => $drawer->dataKeysStructure(),
             'drawer_fields' => $options['drawer_fields'] ?: [],
-          ];
+          ] + $chain_plugin->getConfiguration();
+          $chain_plugin->setConfiguration($chain_plugin_config);
+
+          // @todo: set 'data_keys_structure' as a property for mappers and adapters default config
+          //    so that it would be an assumption of the workflow
         }
-        $chain_plugin->prepareBuild($build, $vuid, $input_options);
+        // @todo: pass Resource into arguments, what to do with the resource, should be uniquely defined by the config
+        $resource = $chain_plugin->prepareBuild($build, $vuid, $resource);
       }
     }
 
@@ -167,7 +195,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
       //    An example could be "$input_options = Linker($chain_plugin, $build['#visualn'], $options);"
       //
 
-      $chain_plugin->prepareBuild($build, $vuid, $options);
+      $resource = $chain_plugin->prepareBuild($build, $vuid, $resource);
     }
 */
 
@@ -175,6 +203,10 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     // Attach visualn manager js script.
     // @todo: move this to a method in a base abstract class
     $build['#attached']['library'][] = 'visualn/visualn-manager';
+
+    // @todo: set visualn/core library as a dependency (?)
+
+    return $resource;
   }
 
   /**

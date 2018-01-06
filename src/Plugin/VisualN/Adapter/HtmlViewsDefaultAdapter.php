@@ -3,6 +3,7 @@
 namespace Drupal\visualn\Plugin\VisualN\Adapter;
 
 use Drupal\visualn\Plugin\VisualNAdapterBase;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides a 'Html Views Default Adapter' VisualN adapter.
@@ -22,20 +23,25 @@ class HtmlViewsDefaultAdapter extends VisualNAdapterBase {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // Attach drawer config to js settings
-    parent::prepareBuild($build, $vuid, $options);
+    parent::prepareBuild($build, $vuid, $resource);
+    // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)
 
     // adapter specific js settings
-    $dataKeys = array_keys($options['drawer_fields']);  // we need only keys in adaper
+    $drawer_fields = $this->configuration['drawer_fields'];
+    $dataKeys = array_keys($drawer_fields);  // we need only keys in adaper
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['dataKeys'] = $dataKeys;
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn/adapter-html-views-default';
 
-    $views_wrapper_id = $options['adapter_settings']['views_content_wrapper_selector'];
-    $data_class_suffix = $options['adapter_settings']['data_class_suffix'];
+    $resource_params = $resource->getResourceParams();
+    $views_wrapper_id = $resource_params['views_content_wrapper_selector'];
+    $data_class_suffix = $resource_params['data_class_suffix'];
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['viewsContentWrapperSelector'] = $views_wrapper_id;
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['dataClassSuffix'] = $data_class_suffix;
+
+    return $resource;
   }
 
   /**

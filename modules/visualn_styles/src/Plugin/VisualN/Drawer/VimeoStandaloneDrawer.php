@@ -9,6 +9,7 @@ namespace Drupal\visualn_styles\Plugin\VisualN\Drawer;
 
 use Drupal\visualn\Plugin\VisualNDrawerBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides a 'Vimeo Standalone' VisualN drawer.
@@ -23,7 +24,7 @@ class VimeoStandaloneDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // Attach iframe markup directly without using js
 
     // @todo: a template could be used to generate html markup for the vimeo iframe
@@ -34,6 +35,8 @@ class VimeoStandaloneDrawer extends VisualNDrawerBase {
         '#allowed_tags' => ['iframe'],
       ];
     }
+
+    return $resource;
   }
 
   /**

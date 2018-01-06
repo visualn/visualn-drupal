@@ -5,6 +5,7 @@ namespace Drupal\visualn\Plugin;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\visualn\Entity\VisualNStyleInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Base class for VisualN Drawer plugins.
@@ -12,14 +13,6 @@ use Drupal\Core\Form\FormStateInterface;
  * @see \Drupal\visualn\Plugin\VisualNDrawerInterface
  */
 abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDrawerInterface {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->setConfiguration($configuration);
-  }
 
   /**
    * {@inheritdoc}
@@ -61,7 +54,7 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     $drawer_config =  $this->configuration + $this->defaultConfiguration();
     $this->prepareJSConfig($drawer_config);
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['config'] = $drawer_config;
@@ -70,44 +63,19 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['drawerId'] = $drawer_js_id;
     $build['#attached']['drupalSettings']['visualn']['handlerItems']['drawings'][$drawer_js_id][$vuid] = $vuid;  // @todo: this settings is just for reference
 
+    // @todo: this info is not needed any more
+/*
     $drawer_info = [];
     $drawer_info['data_keys_structure'] = $this->dataKeysStructure();
     // generally there will be only one element with "0" index but we keep it for consistency
     // with default workflow (see $chain array in DefaultManager class)
     $build['#visualn']['chain_info']['drawer'] = !empty($build['#visualn']['chain_info']['drawer']) ? $build['#visualn']['chain_info']['drawer'] : [];
     $build['#visualn']['chain_info']['drawer'][] = $drawer_info;
+*/
+
+    return $resource;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function defaultConfiguration() {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfiguration() {
-    return $this->configuration;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setConfiguration(array $configuration) {
-    // @todo: use NestedArray::mergeDeep here. See BlockBase::setConfiguration for example.
-    // @todo: also do the same for all other plugin types
-    $this->configuration = $configuration + $this->defaultConfiguration();
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
-    return [];
-  }
 
 
   /**

@@ -239,7 +239,7 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
       //    though at this stage $build is empty anyway and resource provider can make not so much use of it
       $build['resource_provider'] = [];
       // @todo: maybe allow resource to attach libraries or even get a resource_build
-      $provider_plugin->prepareBuild($build['resource_provider'], $vuid, $options);
+      $provider_plugin->prepareBuildByOptions($build['resource_provider'], $vuid, $options);
       // @todo: maybe in a similar way $build['drawing'] should be passed to manager but not the $build itself
 
       $current_entity = $this->getContextValue('current_entity');

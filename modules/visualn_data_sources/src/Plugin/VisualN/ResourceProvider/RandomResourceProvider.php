@@ -30,7 +30,7 @@ class RandomResourceProvider extends VisualNResourceProviderBase {
 
   // @todo: add to interface
   // @todo: maybe rename the method e.g. to attachResourceProviderData() or smth else
-  public function prepareBuild(&$build, $vuid, $options) {
+  public function prepareBuildByOptions(&$build, $vuid, $options) {
   }
 
 

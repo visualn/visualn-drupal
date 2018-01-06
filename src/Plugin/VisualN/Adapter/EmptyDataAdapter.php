@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Adapter;
 
-use Drupal\visualn\Plugin\VisualNAdapterBase;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides an 'Empty Data Adapter' VisualN adapter.
@@ -18,12 +18,21 @@ class EmptyDataAdapter extends AttachedJSONDataAdapter {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
-    $options['adapter_settings']['data'] = [];
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
+    $resource_params = $resource->getResourceParams();
+    $resource_params['data'] = [];
+    $resource->setResourceParams($resource_params);
+
+    // @todo: actually standalone drawers don't need adapters at all though
+    //    chain builder will try to build chain depending on the Resource output_type,
+    //    this case should be examined in more detail
 
     // @todo: some drawers that attach their markup directly do not need js at all
     //    though some settings are still attached here
-    parent::prepareBuild($build, $vuid, $options);
+    parent::prepareBuild($build, $vuid, $resource);
+    // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)
+
+    return $resource;
   }
 
   /**

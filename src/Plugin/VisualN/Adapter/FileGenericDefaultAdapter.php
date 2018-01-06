@@ -3,6 +3,7 @@
 namespace Drupal\visualn\Plugin\VisualN\Adapter;
 
 use Drupal\visualn\Plugin\VisualNAdapterBase;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides a 'File Generic Default Adapter' VisualN adapter.
@@ -21,15 +22,17 @@ class FileGenericDefaultAdapter extends VisualNAdapterBase {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // Attach drawer config to js settings
-    parent::prepareBuild($build, $vuid, $options);
+    parent::prepareBuild($build, $vuid, $resource);
+    // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)
 
-    $url = $options['adapter_settings']['file_url'];
+    $resource_params = $resource->getResourceParams();
+    $url = $resource_params['file_url'];
 
     $file_type = '';
-    if (!empty($options['adapter_settings']['file_mimetype'])) {
-      $file_mimetype = $options['adapter_settings']['file_mimetype'];
+    if (!empty($resource_params['file_mimetype'])) {
+      $file_mimetype = $resource_params['file_mimetype'];
       switch ($file_mimetype) {
         case 'text/tab-separated-values' :
           $file_type = 'tsv';
@@ -54,6 +57,8 @@ class FileGenericDefaultAdapter extends VisualNAdapterBase {
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['fileType'] = $file_type;
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn/adapter-file-generic-default';
+
+    return $resource;
   }
 
   /**

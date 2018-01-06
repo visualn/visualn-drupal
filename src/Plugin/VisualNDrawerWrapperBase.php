@@ -5,6 +5,7 @@ namespace Drupal\visualn\Plugin;
 use Drupal\visualn\Plugin\VisualNDrawerBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Base class for VisualN Wrapper Drawer plugins.
@@ -63,8 +64,8 @@ abstract class VisualNDrawerWrapperBase extends PluginBase implements VisualNDra
    *
    * @todo: add new comments here and for other docblocks regarding the role of the drawer wrapper
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
-    $this->subdrawer_base_drawer->prepareBuild($build, $vuid, $options);
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
+    return $this->subdrawer_base_drawer->prepareBuild($build, $vuid, $resource);
   }
 
   /**

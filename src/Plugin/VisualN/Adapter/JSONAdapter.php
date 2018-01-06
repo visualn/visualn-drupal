@@ -2,6 +2,8 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Adapter;
 
+use Drupal\visualn\ResourceInterface;
+
 //use Drupal\visualn\Plugin\VisualNAdapterBase;
 
 /**
@@ -21,14 +23,19 @@ class JSONAdapter extends FileGenericDefaultAdapter {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // This setting is required by the DSV/JSON Adapter method
     // @todo: though it should be set in source provder
-    $options['adapter_settings']['file_mimetype'] = 'application/json';
+    $resource_params = $resource->getResourceParams();
+    $resource_params['file_mimetype'] = 'application/json';
+    $resource->setResourceParams($resource_params);
 
     // Attach drawer config to js settings
     // Also attach settings from the parent method
-    parent::prepareBuild($build, $vuid, $options);
+    parent::prepareBuild($build, $vuid, $resource);
+    // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)
+
+    return $resource;
   }
 
 }

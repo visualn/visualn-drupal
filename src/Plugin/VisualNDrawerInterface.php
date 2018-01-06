@@ -3,7 +3,6 @@
 namespace Drupal\visualn\Plugin;
 
 use Drupal\Core\Plugin\PluginFormInterface;
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -11,7 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @see \Drupal\visualn\Plugin\VisualNDrawerBase
  */
-interface VisualNDrawerInterface extends VisualNPluginInterface, PluginFormInterface, ConfigurablePluginInterface {
+interface VisualNDrawerInterface extends VisualNPluginInterface, PluginFormInterface {
 
   /**
    * Modify drawer_config before attaching to js settings.

@@ -3,11 +3,13 @@
 namespace Drupal\visualn\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Defines an interface for VisualN drawer, mapper and adapter plugins.
  */
-interface VisualNPluginInterface extends PluginInspectionInterface {
+interface VisualNPluginInterface extends PluginInspectionInterface, ConfigurablePluginInterface, ChainPluginInterface {
 
   /**
    * Attach plugin libraries and settings to render array.
@@ -16,9 +18,11 @@ interface VisualNPluginInterface extends PluginInspectionInterface {
    *
    * @param string $vuid
    *
-   * @param array $options
+   * @param \Drupal\visualn\ResourceInterface $resource
+   *
+   * @return \Drupal\visualn\ResourceInterface $resource
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []);
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource);
 
   /**
    * Get plugin jsId.

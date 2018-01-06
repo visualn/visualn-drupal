@@ -11,6 +11,7 @@ namespace Drupal\visualn\Plugin\VisualN\Drawer;
 
 use Drupal\visualn\Plugin\VisualNDrawerWrapperBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides a 'Default Drawer Wrapper' VisualN drawer.
@@ -65,8 +66,8 @@ class DefaultDrawerWrapper extends VisualNDrawerWrapperBase {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
-    $this->subdrawer_base_drawer->prepareBuild($build, $vuid, $options);
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
+    $resource = $this->subdrawer_base_drawer->prepareBuild($build, $vuid, $resource);
 
 
     // @todo: do override here for getConfiguration() because in other places it is used internally
@@ -80,6 +81,8 @@ class DefaultDrawerWrapper extends VisualNDrawerWrapperBase {
 
     //$this->subdrawer_base_drawer->prepareJSConfig($drawer_config);
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['config'] = $drawer_config;
+
+    return $resource;
   }
 
   /**

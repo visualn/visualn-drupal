@@ -2,6 +2,8 @@
 
 namespace Drupal\visualn\Helpers;
 
+use Drupal\visualn\Resource;
+
 class VisualN {
 
   // @todo: inject services as arguments
@@ -32,14 +34,49 @@ class VisualN {
     $build['visualn_build_markup'] = ['#markup' => '<div class="' . $html_selector . '"></div>'];
     $options['html_selector'] = $html_selector;  // where to attach drawing selector
 
+
     // @todo: check if config is needed
     $manager_config = [];
     $manager_plugin = $visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
-    // @todo: get mapping settings from style plugin object and pass to manager
-    $manager_plugin->prepareBuild($build, $vuid, $options);
+    // @todo: get mapping settings from style drawer plugin object and pass to manager
+
+    // @todo: get Resource by options and Drawer data for manager input
+    //    and for chain building
+    $drawing_options = [
+      'style_id' => $options['style_id'],
+      'drawer_config' => $options['drawer_config'],
+      'drawer_fields' => $options['drawer_fields'],
+      'html_selector' => $options['html_selector'],
+    ];
+
+    $resource = static::getResourceByOptions($options);
+
+    $manager_plugin->prepareBuild($build, $vuid, $resource, $drawing_options);
 
 
     return $build;
   }
+
+  // @todo: temporary method
+  public static function getResourceByOptions($options) {
+    $output_type = $options['output_type'];
+    $adapter_settings = $options['adapter_settings'] ?: [];
+    switch ($output_type) {
+      case 'asdf':
+      default:
+        $resource = new Resource();
+        $resource->setResourceType($output_type);
+        $resource->setResourceParams($adapter_settings);
+        break;
+    }
+
+
+    return $resource;
+  }
+
+/*
+  public static function makeBuildByResource($options) {
+  }
+*/
 
 }

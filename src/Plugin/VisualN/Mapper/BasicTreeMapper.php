@@ -3,6 +3,7 @@
 namespace Drupal\visualn\Plugin\VisualN\Mapper;
 
 use Drupal\visualn\Plugin\VisualNMapperBase;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides a 'Basic Tree Mapper' VisualN mapper.
@@ -26,13 +27,14 @@ class BasicTreeMapper extends VisualNMapperBase {
   /**
    * {@inheritdoc}
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // Attach drawer config to js settings
-    parent::prepareBuild($build, $vuid, $options);
+    parent::prepareBuild($build, $vuid, $resource);
+    // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)
 
     // mapper specific js settings
-    $dataKeysMap = $options['drawer_fields'];  // here need both keys and values for remapping values
-    $dataKeysStructure = $options['data_keys_structure'];
+    $dataKeysMap = $this->configuration['drawer_fields'];  // here need both keys and values for remapping values
+    $dataKeysStructure = $this->configuration['data_keys_structure'];
 
     // process data keys structure to attach a cleaner settings tree to js
     $this->prepareJSKeysStructure($dataKeysStructure);
@@ -42,6 +44,8 @@ class BasicTreeMapper extends VisualNMapperBase {
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['mapper']['dataKeysStructure'] = $dataKeysStructure;
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn/basic-tree-mapper';
+
+    return $resource;
   }
 
   /**

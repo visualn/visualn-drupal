@@ -9,6 +9,7 @@ namespace Drupal\visualn\Plugin\VisualN\Drawer;
 
 use Drupal\visualn\Plugin\VisualNDrawerBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides a 'Line Chart' VisualN drawer.
@@ -24,11 +25,15 @@ class LineChartDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // Attach drawer config to js settings
-    parent::prepareBuild($build, $vuid, $options);
+    parent::prepareBuild($build, $vuid, $resource);
+    // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)
+
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn/d3-line-chart';
+
+    return $resource;
   }
 
   /**

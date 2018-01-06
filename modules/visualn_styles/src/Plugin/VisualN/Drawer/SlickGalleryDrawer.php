@@ -9,6 +9,7 @@ namespace Drupal\visualn_styles\Plugin\VisualN\Drawer;
 
 use Drupal\visualn\Plugin\VisualNDrawerBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\visualn\ResourceInterface;
 
 /**
  * Provides a 'SlickGalleryDrawer' VisualN drawer.
@@ -23,11 +24,15 @@ class SlickGalleryDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // Attach drawer config to js settings
-    parent::prepareBuild($build, $vuid, $options);
+    parent::prepareBuild($build, $vuid, $resource);
+    // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)
+
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn_styles/slick-gallery';
+
+    return $resource;
   }
 
   /**

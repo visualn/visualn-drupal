@@ -85,8 +85,8 @@ trait DrawerWrapperTrait {
 
 
 /*
-  public function prepareBuild(array &$build, $vuid, array $options = []) {
-    $this->subdrawer_base_drawer->prepareBuild($build, $vuid, $options);
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
+    return $this->subdrawer_base_drawer->prepareBuild($build, $vuid, $resource);
   }
 */
 
