@@ -6,6 +6,7 @@ use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Provides a 'VisualN Random resource provider' VisualN resource provider.
@@ -36,7 +37,7 @@ class RandomResourceProvider extends VisualNResourceProviderBase {
 
 
   public function getResource() {
-    // @todo: if here is an anknown output_type and chaing can't be build,
+    // @todo: if here is an anknown output_type and chain can't be build,
     //    all drawings on the page do not render (at least block drawings)
     $output_type = 'json_generic';
     $url = Url::fromRoute('visualn_data_sources.resource_provider_controller_data',
@@ -44,20 +45,16 @@ class RandomResourceProvider extends VisualNResourceProviderBase {
     )->setAbsolute()->toString();
     // @todo: build router or link for the data source
     // @todo: review option keys names
-    $output_interface =  [
+
+    $adapter_settings =  [
       'file_url' => $url,
       //'file_mimetype' => 'application/json',
     ];
 
+    // @todo: load resource plugin
+    $resource = VisualN::getResourceByOptions($output_type, $adapter_settings);
 
-    $resource_plugin_id = 'visualn_attached_data';
-    $resource_plugin_config = [];
-    $visualNResourceManager = \Drupal::service('plugin.manager.visualn.resource');
-    $resource_plugin = $visualNResourceManager->createInstance($resource_plugin_id, $resource_plugin_config);
-
-    $resource_plugin->setOutputInfo($output_type, $output_interface);
-
-    return $resource_plugin;
+    return $resource;
   }
 
 

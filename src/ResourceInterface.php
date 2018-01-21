@@ -2,16 +2,18 @@
 
 namespace Drupal\visualn;
 
-interface ResourceInterface {
+use Drupal\Core\TypedData\ComplexDataInterface;
 
+/**
+ * The interface is based on FieldItemInterface methods and structure.
+ */
+interface ResourceInterface extends ComplexDataInterface {
+
+  /**
+   * @todo: remove these methods if not needed
+   */
   public function getResourceType();
 
   public function setResourceType($resource_type);
-
-
-
-  public function getResourceParams();
-
-  public function setResourceParams(array $resource_params);
 
 }

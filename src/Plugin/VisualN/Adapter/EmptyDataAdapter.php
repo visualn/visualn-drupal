@@ -19,9 +19,7 @@ class EmptyDataAdapter extends AttachedJSONDataAdapter {
    * @inheritdoc
    */
   public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
-    $resource_params = $resource->getResourceParams();
-    $resource_params['data'] = [];
-    $resource->setResourceParams($resource_params);
+    $resource->data = [];
 
     // @todo: actually standalone drawers don't need adapters at all though
     //    chain builder will try to build chain depending on the Resource output_type,

@@ -26,9 +26,7 @@ class XMLAdapter extends FileGenericDefaultAdapter {
   public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // This setting is required by the DSV/XML Adapter method
     // @todo: though it should be set in source provder
-    $resource_params = $resource->getResourceParams();
-    $resource_params['file_mimetype'] = 'text/xml';
-    $resource->setResourceParams($resource_params);
+    $resource->file_mimetype = 'text/xml';
 
     // Attach drawer config to js settings
     // Also attach settings from the parent method

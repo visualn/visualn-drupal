@@ -26,9 +26,7 @@ class CSVAdapter extends FileGenericDefaultAdapter {
   public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // This setting is required by the DSV Adapter method
     // @todo: though it should be set in source provder
-    $resource_params = $resource->getResourceParams();
-    $resource_params['file_mimetype'] = 'text/csv';
-    $resource->setResourceParams($resource_params);
+    $resource->file_mimetype = 'text/csv';
 
     // Attach drawer config to js settings
     // Also attach settings from the parent method

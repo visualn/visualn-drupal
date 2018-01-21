@@ -12,10 +12,11 @@ use Drupal\visualn\Plugin\VisualNResourceBase;
  * Provides an 'Attached Data Resource' VisualN resource.
  *
  * @VisualNResource(
- *  id = "visualn_attached_data",
+ *  id = "json_generic_attached",
  *  label = @Translation("Attached Data Resource"),
  *  output = "json_generic_attached",
  * )
  */
 class AttachedDataResource extends VisualNResourceBase {
+  // @todo: output key seems to be not needed here in annotation
 }

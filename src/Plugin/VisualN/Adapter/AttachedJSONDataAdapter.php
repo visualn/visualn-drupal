@@ -21,8 +21,7 @@ class AttachedJSONDataAdapter extends VisualNAdapterBase {
    */
   public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     // Attach the data. Drupal js settings are attached in json format, thus so is the data for the drawing.
-    $resource_params = $resource->getResourceParams();
-    $data = $resource_params['data'];
+    $data = $resource->data;
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['adapterData'] = $data;
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn/adapter-attached-json-data';

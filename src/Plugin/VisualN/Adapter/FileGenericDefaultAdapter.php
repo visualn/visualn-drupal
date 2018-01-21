@@ -27,12 +27,11 @@ class FileGenericDefaultAdapter extends VisualNAdapterBase {
     parent::prepareBuild($build, $vuid, $resource);
     // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)
 
-    $resource_params = $resource->getResourceParams();
-    $url = $resource_params['file_url'];
+    $url = $resource->file_url;
 
     $file_type = '';
-    if (!empty($resource_params['file_mimetype'])) {
-      $file_mimetype = $resource_params['file_mimetype'];
+    if (isset($resource->file_mimetype) && !empty($resource->file_mimetype)) {
+      $file_mimetype = $resource->file_mimetype;
       switch ($file_mimetype) {
         case 'text/tab-separated-values' :
           $file_type = 'tsv';

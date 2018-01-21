@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\Core\Url;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Provides a 'VisualN Generated Resource Provider' VisualN resource provider.
@@ -50,21 +51,14 @@ class GeneratedResourceProvider extends VisualNResourceProviderBase {
       $data = $generator_plugin->generateData();
     }
 
-    $output_interface =  [
+    $adapter_settings =  [
       'data' => $data,
     ];
 
+    // @todo: load resource plugin
+    $resource = VisualN::getResourceByOptions($output_type, $adapter_settings);
 
-    // @todo: maybe use some kind of resource selection by output_type
-    //    could be implemented as a method in VisualNResource manager service
-    $resource_plugin_id = 'visualn_attached_data';
-    $resource_plugin_config = [];
-    $visualNResourceManager = \Drupal::service('plugin.manager.visualn.resource');
-    $resource_plugin = $visualNResourceManager->createInstance($resource_plugin_id, $resource_plugin_config);
-
-    $resource_plugin->setOutputInfo($output_type, $output_interface);
-
-    return $resource_plugin;
+    return $resource;
   }
 
 

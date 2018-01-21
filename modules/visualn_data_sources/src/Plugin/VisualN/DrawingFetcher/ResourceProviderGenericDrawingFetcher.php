@@ -250,26 +250,19 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
       $provider_plugin->setContext('current_entity', $context_current_entity);
       // @todo: see the note regarding setting context in VisualNResourceProviderItem class
 
+      $resource = $provider_plugin->getResource();
+      $visualn_style_id = $options['style_id'];
+      $drawer_config = $options['drawer_config'];
+      $drawer_fields = $options['drawer_fields'];
 
-      $resource_plugin = $provider_plugin->getResource();
-      $options['output_type'] = $resource_plugin->getOutputInfo()['output_type'];
-      // @todo: Previously named adapter_settings but then renamed because it relates to
-      //  the source and data but not the adapter iteself. Other name suggestions: _settings, _info,
-      //  _properties, _deliveries, _information, _descriptors, _aux, _parameters
-      // Every output type may have its different (but generally speaking, fixed) set of interface parameters
-      $options['adapter_settings'] = $resource_plugin->getOutputInfo()['output_interface'];
-      // @todo: when selecting an adapter at chain building stage, it should have
-      //    a method to check if it complies with the output interface
+      // Get drawing build
+      $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
 
+      // Every resource type is a Typed Data object so it may have its own fixed set of propertries and
+      // has validation callback to check if everything is set as expected.
     }
 
     // @todo: maybe use adapter_config instead of adapter_settings for consistency
-
-
-
-    // Get drawing build
-    $build = VisualN::makeBuild($options) + $build;
-
 
 
     $drawing_markup = $build;

@@ -41,7 +41,8 @@ class LineChartDrawer extends VisualNDrawerBase {
    */
   public function defaultConfiguration() {
     $default_config = [
-      'color' => 'steelblue',
+      // set steelblue as default color
+      'color' => '#4682b4',
       'y_label' => 'Y Axis',
     ];
     return $default_config;
@@ -64,11 +65,10 @@ class LineChartDrawer extends VisualNDrawerBase {
     $configuration =  $configuration + $this->configuration;
 
     $form['color'] = [
-      '#type' => 'textfield',
+      '#type' => 'color',
       '#title' => t('Color'),
       '#default_value' => $configuration['color'],
       '#required' => TRUE,
-      '#size' => 10,
     ];
     $form['y_label'] = [
       '#type' => 'textfield',

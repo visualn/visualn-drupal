@@ -35,9 +35,11 @@ class HtmlViewsDefaultAdapter extends VisualNAdapterBase {
     // Attach visualn style libraries
     $build['#attached']['library'][] = 'visualn/adapter-html-views-default';
 
-    $resource_params = $resource->getResourceParams();
-    $views_wrapper_id = $resource_params['views_content_wrapper_selector'];
-    $data_class_suffix = $resource_params['data_class_suffix'];
+
+    // get resource params
+    $views_wrapper_id = $resource->views_content_wrapper_selector;
+    $data_class_suffix = $resource->data_class_suffix;
+
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['viewsContentWrapperSelector'] = $views_wrapper_id;
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['dataClassSuffix'] = $data_class_suffix;
 
