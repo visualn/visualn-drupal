@@ -1,5 +1,5 @@
 // @todo: rename the file into visualn-default-manager.js
-(function ($, Drupal, d3) {
+(function ($, Drupal) {
 window.addEventListener('visualnCoreProcessed', function (e) {
   console.log(JSON.stringify(Drupal.visualnData));
 });
@@ -40,6 +40,10 @@ var settings = e.detail;
             return;
           }
           var drawerId = drawing.drawer.drawerId;
+          // check if drawerId exists
+          if (drawerId == '') {
+            return;
+          }
           if (typeof drawing.adapter != 'undefined') {
             var adapterId = drawing.adapter.adapterId;
             // @todo: maybe pass just a drawing or also a drawing
@@ -77,5 +81,5 @@ var settings = e.detail;
 });
     //}
   //};
-})(jQuery, Drupal, d3);
+})(jQuery, Drupal);
 

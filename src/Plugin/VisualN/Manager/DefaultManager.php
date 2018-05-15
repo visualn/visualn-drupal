@@ -146,9 +146,10 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     // @todo: check VisualDrawerBase::prepareBuild() and remove unused info from $build[#visualn] key,
     //    e.g. data_keys_structure info
 
-    // First drawer plugins are called, so they could set data_keys_structure.
-    // Then adapter plugins since they can provide some data for mappers.
-    $plugin_types = ['drawer', 'adapter', 'mapper'];
+
+    // Serverside drawers need data to be already there when called so drawers are called last ones
+    $plugin_types = ['adapter', 'mapper', 'drawer'];
+
     foreach ($plugin_types as $plugin_type) {
       // generally there is one plugin of each kind
       foreach ($chain[$plugin_type] as $k => $chain_plugin) {
