@@ -48,6 +48,7 @@ function visualn_views_views_pre_build(ViewExecutable $view) {
  * Implements hook_form_alter().
  */
 function visualn_views_form_alter(&$form, $form_state, $form_id) {
+  // @todo: maybe use display extender
   // @todo: this is temporary solution
   // @todo: check style plugin type, should be visualn
   if ($form_id == 'views_exposed_form') {
@@ -84,54 +85,6 @@ function visualn_views_form_alter(&$form, $form_state, $form_id) {
   }
 }
 
-/**
- * Implements hook_preprocess_views_view_fields().
- *
- * @todo: maybe set these classes in Visualization style class itself
- * @todo: maybe even in adapter itself since it wouldn't need a mapper
- * @todo: set theme hook suggestions only for VisualN display type
- */
-function visualn_views_preprocess_views_view_fields(&$variables) {
-  $view = $variables['view'];
-
-  // add mapping classes for Visualization display style
-  if ($view->style_plugin->getPluginId() == 'visualization') {
-    $vuid = $view->style_plugin->getDataClassSuffix();
-    // get mappings from display style settings
-    $options = $view->style_plugin->options;
-    $field_classes = [];
-    if (!empty($options['drawer_fields'])) {
-      foreach ($options['drawer_fields'] as $data_key => $field_name) {
-        // get uuid and append to classes
-        // some fields may have multiple classes if that follows from display style settings
-        $field_classes[$field_name][] = $data_key . '-' . $vuid;
-      }
-    }
-
-    if (!empty($variables['fields'])) {
-      foreach ($variables['fields'] as $id => $field) {
-        if (empty($field_classes[$id])) {
-          continue;
-        }
-        // see template_preprocess_views_view_fields()
-        if (empty($variables['fields'][$id]->element_type)) {
-          $variables['fields'][$id]->element_type = 'div';
-        }
-        if (isset($variables['fields'][$id]->element_attributes)) {
-          $variables['fields'][$id]->element_attributes->addClass($field_classes[$id]);
-        }
-        else {
-          $attributes = [];
-          $attributes['class'] = $field_classes[$id];
-          $variables['fields'][$id]->element_attributes = new Attribute($attributes);
-        }
-      }
-    }
-  }
-
-}
 
 //function template_preprocess_views_view_visualn(&$variables) {}
-
-//function template_preprocess_views_view_visualn_row() {}
 

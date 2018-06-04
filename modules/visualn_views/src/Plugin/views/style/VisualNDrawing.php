@@ -1,24 +1,29 @@
 <?php
 
-/**
- * @file
- * Definition of Drupal\visualn_views\Plugin\views\style\Visualization.
- */
-
 namespace Drupal\visualn_views\Plugin\views\style;
 
-use Drupal\core\form\FormStateInterface;
-use Drupal\Core\Form\SubformState;
-use Drupal\Core\Form\SubformStateInterface;
-use Drupal\views\Plugin\views\style\StylePluginBase;
-use Drupal\Core\Link;
-use Drupal\Core\Url;
+use Drupal\rest\Plugin\views\style\Serializer;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+
+use Symfony\Component\Serializer\SerializerInterface;
+
+use Drupal\core\form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
+
 use Drupal\Core\Render\Element;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\visualn\Helpers\VisualN;
+
+
+
+use Drupal\Core\Render\RenderContext;
+
 
 /**
  * Style plugin to render listing.
@@ -26,31 +31,24 @@ use Drupal\visualn\Helpers\VisualN;
  * @ingroup views_style_plugins
  *
  * @ViewsStyle(
- *   id = "visualization",
- *   title = @Translation("VisualN"),
+ *   id = "visualn_drawing",
+ *   title = @Translation("VisualN Drawing"),
  *   help = @Translation("Render a listing of view data."),
- *   theme = "views_view_visualn",
  *   display_types = { "normal" }
  * )
  *
  */
-class Visualization extends StylePluginBase {
+class VisualNDrawing extends Serializer {
 
   /**
-   * Does the style plugin for itself support to add fields to it's output.
-   *
-   * @var bool
+   * {@inheritdoc}
+   */
+  protected $usesRowPlugin = FALSE;
+
+  /**
+   * {@inheritdoc}
    */
   protected $usesFields = TRUE;
-
-  /**
-   * Specifies if the plugin uses row plugins.
-   *
-   * @todo: disable row plugin
-   *
-   * @var bool
-   */
-  protected $usesRowPlugin = TRUE;
 
   /**
    * The image style entity storage.
@@ -81,10 +79,7 @@ class Visualization extends StylePluginBase {
    */
   protected $vuid;
 
-  // @todo: add an option to filters form to override mappings
 
-  // @todo: add a getVisualNOptions() to get style and drawer settings,
-  //   by default returns $this->options array
 
   /**
    * {@inheritdoc}
@@ -94,26 +89,38 @@ class Visualization extends StylePluginBase {
       $configuration,
       $plugin_id,
       $plugin_definition,
+
+      // services used by serializer
+      $container->get('serializer'), 
+      $container->getParameter('serializer.formats'),
+      $container->getParameter('serializer.format_providers'),
+
+      // services used by visauln_drawing itself
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
       $container->get('plugin.manager.visualn.manager')
     );
   }
 
+
   /**
    * Constructs a Plugin object.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition,
+    SerializerInterface $serializer, array $serializer_formats, array $serializer_format_providers,
+    EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager) {
 
-    $this->definition = $plugin_definition + $configuration;
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer, $serializer_formats, $serializer_format_providers);
+
+    //$this->definition = $plugin_definition + $configuration;  // initialized also in parent::_construct()
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
     $this->visualNManagerManager = $visualn_manager_manager;
   }
 
+
   /**
-   * Set default options
+   * {@inheritdoc}
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
@@ -134,6 +141,7 @@ class Visualization extends StylePluginBase {
    * @todo: add to class interface
    */
   public function getVisualNOptions() {
+    // @todo: is that ok to change $this->options directly instead of copying and changing a new variable?
     // @todo: check exposed mappings and override if any
     // @todo: rename option key
     if ($this->options['expose_keys_mapping']) {
@@ -158,6 +166,9 @@ class Visualization extends StylePluginBase {
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
+
+    // hide Serializer option to select format, only json is used to build Resource
+    $form['formats']['#access'] = FALSE;
 
     //$visualn_styles = visualn_style_options(FALSE);
     $visualn_styles = visualn_style_options();
@@ -193,8 +204,6 @@ class Visualization extends StylePluginBase {
     //    or an option to reset to defaults
     // @todo: add group type of fieldset with info about overriding style drawer config
 
-
-    // @todo: check for #ajax key in the drawer config form tree and add 'url' key (or look for a better solution)
 
 
     $form['expose_keys_mapping'] = [
@@ -341,7 +350,6 @@ class Visualization extends StylePluginBase {
     return $element;
   }
 
-
   /**
    * Process #ajax elements. If drawer configuration form uses #ajax to rebuild elements on cerain events,
    * those calls must use views specific 'url' setting or new elements values won't be saved.
@@ -361,6 +369,8 @@ class Visualization extends StylePluginBase {
    * {@inheritdoc}
    */
   public function submitOptionsForm(&$form, FormStateInterface $form_state) {
+    parent::submitOptionsForm($form, $form_state);
+
     //$drawer_container_key = reset(Element::children($form['drawer_container']));
     $drawer_container_key = Element::children($form['drawer_container'])[0];
     //$base_element_parents = array_slice($element_parents, 0, -1);
@@ -409,11 +419,17 @@ class Visualization extends StylePluginBase {
   }
 
 
+
+
+  // @todo: till this point it is mostly a copy-paste from Visualization style plugin
+  //    with some changes to ::create() and ::__construct() methods
+  //
+
+
   /**
-   * {@inheritdoc}
+   * Prepare drawing complete build
    */
-  public function preRender($result) {
-    parent::preRender($result);
+  protected function doDrawingBuild($json_data) {
 
     // generally this returns $this->options but can overridden
     $style_options = $this->getVisualNOptions();
@@ -427,8 +443,6 @@ class Visualization extends StylePluginBase {
     }
 
 
-    // @todo: actually no need to use data_class_suffix here, any random string is ok
-    $views_content_wrapper_selector = 'visualn-views-html-wrapper--' . $this->getDataClassSuffix();
     $options = [
       'style_id' => $visualn_style_id,
       // @todo: maybe move into 'drawer_settings'
@@ -436,38 +450,130 @@ class Visualization extends StylePluginBase {
       'drawer_config' => $style_options['drawer_config'],
       // @todo: maybe move into 'mapper_settings' (even though used in adapter)
       'drawer_fields' => $style_options['drawer_fields'],  // this setting should be used in adapter
-      'output_type' => 'html_views',
+      'output_type' => 'json_generic_attached',
       'adapter_settings' => [
-        'views_content_wrapper_selector' => $views_content_wrapper_selector,
-        // @todo: the vuid should be kept (see getVuid()) to wrap html data
-        'data_class_suffix' => $this->getDataClassSuffix(),
+        'data' => $json_data,
       ],
     ];
 
     // Get drawing build
     $build = VisualN::makeBuild($options);
 
-    // Attach the build to the view output
-    $this->view->element['visualn_build'] = $build;
+    return $build;
+  }
 
-    // @todo: add wrapper so that adapter could hide the contents with data (so this part of resource actually)
-    $this->view->element['#attributes']['class'][] = $views_content_wrapper_selector;
 
+  /**
+   * Render JSON markup for further processing into a json array to
+   * be used by adapter and optionally shown in views preview
+   */
+  public function renderJSON() {
+    // @note: This is mostly a copy-paste of \Drupal\rest\Plugin\views\style\Serializer::render()
+    // but without using row plugin
+
+    $rows = [];
+
+    // If the Data Entity row plugin is used, this will be an array of entities
+    // which will pass through Serializer to one of the registered Normalizers,
+    // which will transform it to arrays/scalars. If the Data field row plugin
+    // is used, $rows will not contain objects and will pass directly to the
+    // Encoder.
+    foreach ($this->view->result as $row_index => $row) {
+      $this->view->row_index = $row_index;
+      $rows[] = $this->renderRow($row);
+      //$rows[] = $this->view->rowPlugin
+        //->render($row);
+    }
+    unset($this->view->row_index);
+
+    // Get the content type configured in the display or fallback to the
+    // default.
+    if (empty($this->view->live_preview)) {
+      $content_type = !empty($this->options['formats']) ? reset($this->options['formats']) : 'json';
+      // @todo: doesn't work in normal view mode
+      //$content_type = $this->displayHandler
+        //->getContentType();
+    }
+    else {
+      $content_type = !empty($this->options['formats']) ? reset($this->options['formats']) : 'json';
+    }
+    return $this->serializer
+      ->serialize($rows, $content_type, [
+      'views_style_plugin' => $this,
+    ]);
+
+
+  }
+
+
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function render() {
+    // @note: The code is based on \Drupal\rest\Plugin\views\display\RestExport::render()
+
+    // @todo: review this method implementation, it is a quickfix
+    $renderer = \Drupal::service('renderer');
+
+    $build = [];
+    //$build['#markup'] = $this->renderer
+    //$build['#markup'] = $this->view->renderer
+
+
+    $json_markup = $renderer
+      ->executeInRenderContext(new RenderContext(), function () {
+      return $this->renderJSON();
+      //return $this->view->style_plugin
+        //->render();
+    });
+
+    //$json_data = json_decode($json_markup, TRUE);
+    $json_data = json_decode($json_markup);
+
+    if (!empty($this->view->live_preview)) {
+      $build['json_preview']['#markup'] = $json_markup;
+
+      // let visualn-core.js know that it needs to change wrapper selector to process new drawings
+      // retrieved via ajax to make it work in preview mode
+      $build['#attached']['drupalSettings']['visualn']['context_wrapper'] = '.view-content';
+    }
+
+    $drawing_build =  $this->doDrawingBuild($json_data);
+    $build['drawing_build'] = $drawing_build;
+
+    return $build;
   }
 
   /**
-   * Get Visualization vuid value.
+   * {@inheritdoc}
    */
-  public function getDataClassSuffix() {
-    // @todo: rename vuid property to data_class_suffix
-    if (empty($this->vuid)) {
-      $vuid = \Drupal::service('uuid')->generate();
-      $this->vuid = substr($vuid, 0, 4);
+  protected function renderRow($row) {
+    // @note: The code is based on \Drupal\rest\Plugin\views\row\DataFieldRow::render()
+
+    $output = [];
+    foreach ($this->view->field as $id => $field) {
+
+      // @todo: enable raw output option
+      // If the raw output option has been set, just get the raw value.
+      if (FALSE) {
+      //if (!empty($this->rawOutputOptions[$id])) {
+        $value = $field
+          ->getValue($row);
+      }
+      else {
+        $value = $field
+          ->advancedRender($row);
+      }
+
+      // Omit excluded fields from the rendered output.
+      if (empty($field->options['exclude'])) {
+        $output[$id] = $value;
+        //$output[$this
+          //->getFieldKeyAlias($id)] = $value;
+      }
     }
-    return $this->vuid;
+    return $output;
   }
-
-  // @todo: force using fields
-
 }
-

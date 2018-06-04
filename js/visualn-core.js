@@ -11,23 +11,29 @@
 //Listen to your custom event
 /*
 window.addEventListener('visualnCoreProcessed', function (e) {
-    console.log('printer state changed', e.detail);
+    console.log(e.detail);
 });
 */
 
   // @todo: create a custom visualnCoreProcessed event that would trigger other (especially managers) behaviours
   Drupal.behaviors.visualnCoreBehaviour = {
     attach: function (context, settings) {
-      $(context).find('body').once('visualn-core').each(function () {
+      var context_wrapper = 'body';
+      if (typeof settings.visualn.context_wrapper != 'undefined') {
+        // @todo: this is temporary solution to allow building js drawings in views live preview mode
+        context_wrapper = settings.visualn.context_wrapper;
+      }
+      $(context).find(context_wrapper).once('visualn-core').each(function () {
+      //$(context).find('body').once('visualn-core').each(function () {
         Drupal.visualnData.drawings = settings.visualn.drawings;
         // store a reference between handlers (drawers, mappers, adapters, managers) and provided drawings
         Drupal.visualnData.handlerItems = settings.visualn.handlerItems;
         //var arr = Object.keys(obj).map(function (key) { return obj[key]; });
-        console.log(settings);
+        //console.log(settings);
 var event = new CustomEvent('visualnCoreProcessed', { 'detail': settings });
 //Listen to your custom event
 window.addEventListener('visualnCoreProcessed', function (e) {
-    console.log('printer state changed', settings);
+    //console.log('printer state changed', settings);
 });
 window.dispatchEvent(event);
       });
