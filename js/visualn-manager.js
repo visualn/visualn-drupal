@@ -1,12 +1,10 @@
 // @todo: rename the file into visualn-default-manager.js
 (function ($, Drupal) {
 window.addEventListener('visualnCoreProcessed', function (e) {
-  console.log(JSON.stringify(Drupal.visualnData));
+  //console.log(JSON.stringify(Drupal.visualnData));
 });
-  //Drupal.behaviors.visualnDefaultManagerBehaviour = {
-    //attach: function (context, settings) {
+
 window.addEventListener('visualnCoreProcessed', function (e) {
-console.log('some test');
       // @todo: this seems to not work together with ajax
       // @todo: consider implementing updating events and
       // behaviours (e.g. depending on interactions or new data available in the source/resource)
@@ -20,8 +18,8 @@ console.log('some test');
         // manager with its custom arbitrary logic.
 
 var settings = e.detail;
-        console.log(Drupal.visualnData);
-        console.log(settings.visualn.handlerItems);
+        //console.log(Drupal.visualnData);
+        //console.log(settings.visualn.handlerItems);
 
         // @todo: object to array conversion would better be done before sending settings to browser
         var handlerItems = settings.visualn.handlerItems.managers.visualnDefaultManager;
@@ -31,7 +29,8 @@ var settings = e.detail;
         // @todo: process all drawings, managed by the manager
         // @todo: use "vuid" instead of "value" in arguments for better readability
         $(settings.visualn.handlerItems.managers.visualnDefaultManager).each(function(index, value){
-          console.log(Drupal.visualnData.drawings[value]);
+          //console.log(Drupal.visualnData.drawings[value]);
+
           // drawing.drawer is considered to be always set, since there is no need to have a drawing w/o a drawer
           var drawing = Drupal.visualnData.drawings[value];
           // @todo: this is temporary solution to exclude drawers that don't use js,
@@ -50,10 +49,8 @@ var settings = e.detail;
             // @todo: pass also a callback to run when adapter result is ready (e.g. for requesting urls)
             var callback = function(data){
               drawing.adapter.responseData = data;
-              console.log(data);
-              //console.log(drawing);
-              console.log(drawerId);
-              //var drawerId = 'visualnLineChartDrawerBehaviour';
+              //console.log(data);
+              //console.log(drawerId);
 
               // apply mapper if any
               if (typeof drawing.mapper != 'undefined') {
@@ -77,9 +74,7 @@ var settings = e.detail;
 
         });
 
-      //});
 });
-    //}
-  //};
+
 })(jQuery, Drupal);
 

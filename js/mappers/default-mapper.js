@@ -9,8 +9,6 @@
 
     // @todo: return if data is empty
 
-    //console.log(data);
-    //console.log(drawing.mapper);
 
     // @todo: check if needs remapping and remap if true
     // if those that are not empty, have the same key and value, there is no need in remapping
@@ -19,7 +17,7 @@
     // adapter processing
 
     var keysMap = drawing.mapper.dataKeysMap;
-    console.log(keysMap);
+    //console.log(keysMap);
 
     var count = 0;
     var key;
@@ -43,9 +41,9 @@
       // foreach row in data replace keys
       // if a key already exists but it is used in remapping for another key (which is not recommeded),
       // create temporary value for that key
-      console.log(newKeysMap);
+
+      //console.log(newKeysMap);
       data.forEach( function (o) {
-        //console.log(o);
         for (key in newKeysMap) {
           if (newKeysMap.hasOwnProperty(key)) {
             var oldKey = newKeysMap[key];
@@ -60,7 +58,7 @@
         }
       });
     }
-    console.log(data);
+    //console.log(data);
 
     // @todo: since drawers execute after mappers, there should be a way to set that special flag
     // to avoid remapping (or just explicitly disable mapper somewhere else before page rendering,

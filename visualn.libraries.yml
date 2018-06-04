@@ -32,12 +32,6 @@ d3-line-chart:
   dependencies:
     - visualn/d3
 
-adapter-html-views-default:
-  js:
-    js/adapters/html-views-default-adapter.js: {}
-  dependencies:
-    - visualn/d3
-
 # @todo: currently this adapter should always load xml2json library
 #    even if it is not used (e.g. when csv is processed)
 adapter-file-generic-default:

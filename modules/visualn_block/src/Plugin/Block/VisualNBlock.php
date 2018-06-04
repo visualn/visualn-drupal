@@ -162,7 +162,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       // @todo: also maybe disable access to the iframe by url (or add some other access management mechanism)
       $form['enable_share_link'] = [
         '#type' => 'checkbox',
-        '#title' => $this->t('Enable Share link'),
+        '#title' => $this->t('Enable Share link (experimental)'),
         '#default_value' => $this->configuration['enable_share_link'],
         '#weight' => '1',
       ];
