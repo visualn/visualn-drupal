@@ -7,15 +7,15 @@ use Drupal\visualn\ResourceInterface;
 //use Drupal\visualn\Plugin\VisualNAdapterBase;
 
 /**
- * Provides a 'XML Adapter' VisualN adapter.
+ * Provides a 'RemoteXmlToJSArray' VisualN adapter.
  *
  * @VisualNAdapter(
  *  id = "visualn_xml",
- *  label = @Translation("XML Adapter"),
+ *  label = @Translation("Remote XML To JS Array Adapter"),
  *  input = "remote_xml_basic",
  * )
  */
-class XMLAdapter extends FileGenericDefaultAdapter {
+class RemoteXmlToJSArrayAdapter extends RemoteDsvToJSArrayAdapter {
 
   // @todo: generally this is a DSV (delimiter separated values) file
   // @todo: convert it to general purpose adapter for formatted column text

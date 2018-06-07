@@ -7,15 +7,15 @@ use Drupal\visualn\ResourceInterface;
 //use Drupal\visualn\Plugin\VisualNAdapterBase;
 
 /**
- * Provides a 'TSV Adapter' VisualN adapter. Generally this is a wrapper around DSV Adapter.
+ * Provides a 'RemoteTsvToJSArray' VisualN adapter. Generally this is a wrapper around DSV Adapter.
  *
  * @VisualNAdapter(
  *  id = "visualn_tsv",
- *  label = @Translation("TSV Adapter"),
+ *  label = @Translation("Remote TSV To JS Array Adapter"),
  *  input = "remote_generic_tsv",
  * )
  */
-class TSVAdapter extends FileGenericDefaultAdapter {
+class RemoteTsvToJSArrayAdapter extends RemoteDsvToJSArrayAdapter {
 
   // @todo: generally this is a DSV (delimiter separated values) file
   // @todo: convert it to general purpose adapter for formatted column text

@@ -1,5 +1,5 @@
 (function ($, Drupal, d3) {
-  Drupal.visualnData.adapters.visualnAttachedJSONDataAdapter = function(drawings, vuid, managerCallback) {
+  Drupal.visualnData.adapters.visualnDataArrayToJSArrayAdapter = function(drawings, vuid, managerCallback) {
     var drawing = drawings[vuid];
     var html_selector = drawing.html_selector;
 

@@ -34,16 +34,16 @@ d3-line-chart:
 
 # @todo: currently this adapter should always load xml2json library
 #    even if it is not used (e.g. when csv is processed)
-adapter-file-generic-default:
+adapter-remote-dsv-to-js-array:
   js:
-    js/adapters/file-generic-default-adapter.js: {}
+    js/adapters/remote-dsv-to-js-array-adapter.js: {}
   dependencies:
     - visualn/d3
     - visualn/xml2json
 
-adapter-attached-json-data:
+adapter-data-array-to-js-array:
   js:
-    js/adapters/attached-json-data-adapter.js: {}
+    js/adapters/data-array-to-js-array-adapter.js: {}
   dependencies:
     - visualn/d3
 

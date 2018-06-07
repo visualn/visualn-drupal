@@ -6,15 +6,15 @@ use Drupal\visualn\Plugin\VisualNAdapterBase;
 use Drupal\visualn\ResourceInterface;
 
 /**
- * Provides a 'File Generic Default Adapter' VisualN adapter.
+ * Provides a 'RemoteDsvToJSArray' VisualN adapter.
  *
  * @VisualNAdapter(
  *  id = "visualn_file_generic_default",
- *  label = @Translation("File Generic Default Adapter"),
+ *  label = @Translation("Remote DSV To JS Array Adapter"),
  *  input = "remote_generic_dsv",
  * )
  */
-class FileGenericDefaultAdapter extends VisualNAdapterBase {
+class RemoteDsvToJSArrayAdapter extends VisualNAdapterBase {
 
   // @todo: generally this is a DSV (delimiter separated values) file
   // @todo: convert it to general purpose adapter for formatted column text
@@ -55,7 +55,7 @@ class FileGenericDefaultAdapter extends VisualNAdapterBase {
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['fileUrl'] = $url;
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['fileType'] = $file_type;
     // Attach visualn style libraries
-    $build['#attached']['library'][] = 'visualn/adapter-file-generic-default';
+    $build['#attached']['library'][] = 'visualn/adapter-remote-dsv-to-js-array';
 
     return $resource;
   }
@@ -64,7 +64,7 @@ class FileGenericDefaultAdapter extends VisualNAdapterBase {
    * @inheritdoc
    */
   public function jsId() {
-    return 'visualnFileGenericDefaultAdapter';
+    return 'visualnRemoteDsvToJSArrayAdapter';
   }
 
 }

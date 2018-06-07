@@ -7,15 +7,15 @@ use Drupal\visualn\ResourceInterface;
 //use Drupal\visualn\Plugin\VisualNAdapterBase;
 
 /**
- * Provides a 'JSON Adapter' VisualN adapter.
+ * Provides a 'RemoteCsvToJSArray' VisualN adapter. Generally this is a wrapper around DSV Adapter.
  *
  * @VisualNAdapter(
- *  id = "visualn_json",
- *  label = @Translation("JSON Adapter"),
- *  input = "remote_generic_json",
+ *  id = "visualn_csv",
+ *  label = @Translation("Remote cSV To JS Array Adapter"),
+ *  input = "remote_generic_csv",
  * )
  */
-class JSONAdapter extends FileGenericDefaultAdapter {
+class RemoteCsvToJSArrayAdapter extends RemoteDsvToJSArrayAdapter {
 
   // @todo: generally this is a DSV (delimiter separated values) file
   // @todo: convert it to general purpose adapter for formatted column text
@@ -24,9 +24,9 @@ class JSONAdapter extends FileGenericDefaultAdapter {
    * @inheritdoc
    */
   public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
-    // This setting is required by the DSV/JSON Adapter method
+    // This setting is required by the DSV Adapter method
     // @todo: though it should be set in source provder
-    $resource->file_mimetype = 'application/json';
+    $resource->file_mimetype = 'text/csv';
 
     // Attach drawer config to js settings
     // Also attach settings from the parent method

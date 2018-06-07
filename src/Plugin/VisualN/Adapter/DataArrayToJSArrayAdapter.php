@@ -10,12 +10,12 @@ use Drupal\visualn\ResourceInterface;
  *
  * @VisualNAdapter(
  *  id = "visualn_attached_json",
- *  label = @Translation("Attached JSON Data Adapter"),
+ *  label = @Translation("Data Array To JS Array Adapter"),
  *  input = "generic_data_array",
  * )
  */
 // @todo: maybe remove default output type from annotation to avoid confusion and make it more visible
-class AttachedJSONDataAdapter extends VisualNAdapterBase {
+class DataArrayToJSArrayAdapter extends VisualNAdapterBase {
 
   /**
    * @inheritdoc
@@ -25,7 +25,7 @@ class AttachedJSONDataAdapter extends VisualNAdapterBase {
     $data = $resource->data;
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['adapter']['adapterData'] = $data;
     // Attach visualn style libraries
-    $build['#attached']['library'][] = 'visualn/adapter-attached-json-data';
+    $build['#attached']['library'][] = 'visualn/adapter-data-array-to-js-array';
 
     // Attach drawer config to js settings
     // Also attach settings from the parent method
@@ -39,7 +39,7 @@ class AttachedJSONDataAdapter extends VisualNAdapterBase {
    * @inheritdoc
    */
   public function jsId() {
-    return 'visualnAttachedJSONDataAdapter';
+    return 'visualnDataArrayToJSArrayAdapter';
   }
 
 }

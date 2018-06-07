@@ -1,6 +1,6 @@
 // @todo: maybe rename the file (to comply library name) or the library itself
 (function ($, Drupal, d3, xml2json) {
-  Drupal.visualnData.adapters.visualnFileGenericDefaultAdapter = function(drawings, vuid, managerCallback) {
+  Drupal.visualnData.adapters.visualnRemoteDsvToJSArrayAdapter = function(drawings, vuid, managerCallback) {
     var fileType = drawings[vuid].adapter.fileType;
 
     if (typeof(fileType) == 'undefined' || fileType == '') {
