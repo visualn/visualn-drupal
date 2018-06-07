@@ -12,7 +12,7 @@ use Drupal\visualn\ResourceInterface;
  * @VisualNAdapter(
  *  id = "visualn_xml",
  *  label = @Translation("XML Adapter"),
- *  input = "xml_generic",
+ *  input = "remote_xml_basic",
  * )
  */
 class XMLAdapter extends FileGenericDefaultAdapter {

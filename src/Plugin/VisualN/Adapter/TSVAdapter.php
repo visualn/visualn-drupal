@@ -12,7 +12,7 @@ use Drupal\visualn\ResourceInterface;
  * @VisualNAdapter(
  *  id = "visualn_tsv",
  *  label = @Translation("TSV Adapter"),
- *  input = "tsv_generic",
+ *  input = "remote_generic_tsv",
  * )
  */
 class TSVAdapter extends FileGenericDefaultAdapter {

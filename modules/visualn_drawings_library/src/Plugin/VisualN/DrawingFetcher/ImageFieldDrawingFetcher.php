@@ -138,7 +138,7 @@ class ImageFieldDrawingFetcher extends GenericDrawingFetcherBase {
     //$options = $this->getManagerOptions();
 
 
-    $options['output_type'] = 'json_generic_attached';
+    $options['output_type'] = 'generic_data_array';
 
     $urls = [];
     //foreach($field_instance->referencedEntities() as $delta => $image_file) {

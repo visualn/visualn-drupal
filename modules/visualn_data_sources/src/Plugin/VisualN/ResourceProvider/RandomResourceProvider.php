@@ -39,7 +39,7 @@ class RandomResourceProvider extends VisualNResourceProviderBase {
   public function getResource() {
     // @todo: if here is an anknown output_type and chain can't be build,
     //    all drawings on the page do not render (at least block drawings)
-    $output_type = 'json_generic';
+    $output_type = 'remote_generic_json';
     $url = Url::fromRoute('visualn_data_sources.resource_provider_controller_data',
       array('data_type' => $this->configuration['data_type'])
     )->setAbsolute()->toString();

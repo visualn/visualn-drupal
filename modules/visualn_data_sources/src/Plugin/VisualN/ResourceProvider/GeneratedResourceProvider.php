@@ -41,7 +41,7 @@ class GeneratedResourceProvider extends VisualNResourceProviderBase {
 
 
   public function getResource() {
-    $output_type = 'json_generic_attached';
+    $output_type = 'generic_data_array';
     $data = [];
     if ($this->configuration['data_generator_id']) {
       $visualNDataGeneratorManager = \Drupal::service('plugin.manager.visualn.data_generator');

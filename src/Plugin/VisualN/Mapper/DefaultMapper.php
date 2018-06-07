@@ -11,8 +11,8 @@ use Drupal\visualn\ResourceInterface;
  * @VisualNMapper(
  *  id = "visualn_default",
  *  label = @Translation("Default Mapper"),
- *  input =  "visualn_generic_output",
- *  output =  "visualn_generic_input",
+ *  input =  "generic_js_data_array",
+ *  output =  "generic_js_data_array",
  * )
  */
 class DefaultMapper extends VisualNMapperBase {

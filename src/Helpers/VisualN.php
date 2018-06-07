@@ -88,7 +88,7 @@ class VisualN {
 
     $resource_plugin_id = $output_type;
 
-    // @todo: implement VisualN Resources for other output types (not only json_generic_attached)
+    // @todo: implement VisualN Resources for other output types (not only generic_data_array)
 
     $visualNResourceManager = \Drupal::service('plugin.manager.visualn.resource');
     $plugin_definitions = $visualNResourceManager->getDefinitions();

@@ -37,10 +37,10 @@ class StandaloneDrawingFetcher extends GenericDrawingFetcherBase {
       //    add default value into defaultConfiguration()
       'drawer_config' => ($this->configuration['drawer_config'] ?: []),
       'drawer_fields' => $this->configuration['drawer_fields'],
-      'adapter_settings' => [],
+      'adapter_settings' => ['data' => []],
     ];
     // @todo: this will attach some js settings even though drawer may use no js at all
-    $options['output_type'] = 'empty_data_generic';
+    $options['output_type'] = 'generic_data_array';
 
 
 

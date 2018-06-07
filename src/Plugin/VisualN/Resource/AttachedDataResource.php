@@ -12,9 +12,9 @@ use Drupal\visualn\Plugin\VisualNResourceBase;
  * Provides an 'Attached Data Resource' VisualN resource.
  *
  * @VisualNResource(
- *  id = "json_generic_attached",
+ *  id = "generic_data_array",
  *  label = @Translation("Attached Data Resource"),
- *  output = "json_generic_attached",
+ *  output = "generic_data_array",
  * )
  */
 class AttachedDataResource extends VisualNResourceBase {

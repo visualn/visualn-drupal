@@ -64,7 +64,7 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
           'drawer_fields' => $drawer_fields,
           'adapter_settings' => [],
         ];
-        $options['output_type'] = 'file_dsv';
+        $options['output_type'] = 'remote_generic_dsv';
 
 
         // @todo: this is a bit hackish, see GenericFileFormatter::viewElements

@@ -12,7 +12,7 @@ use Drupal\visualn\ResourceInterface;
  * @VisualNAdapter(
  *  id = "visualn_csv",
  *  label = @Translation("CSV Adapter"),
- *  input = "csv_generic",
+ *  input = "remote_generic_csv",
  * )
  */
 class CSVAdapter extends FileGenericDefaultAdapter {

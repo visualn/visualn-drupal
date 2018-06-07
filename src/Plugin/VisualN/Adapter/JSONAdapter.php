@@ -12,7 +12,7 @@ use Drupal\visualn\ResourceInterface;
  * @VisualNAdapter(
  *  id = "visualn_json",
  *  label = @Translation("JSON Adapter"),
- *  input = "json_generic",
+ *  input = "remote_generic_json",
  * )
  */
 class JSONAdapter extends FileGenericDefaultAdapter {

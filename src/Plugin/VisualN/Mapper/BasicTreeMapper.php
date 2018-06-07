@@ -11,7 +11,7 @@ use Drupal\visualn\ResourceInterface;
  * @VisualNMapper(
  *  id = "visualn_basic_tree",
  *  label = @Translation("Basic Tree Mapper"),
- *  input = "visualn_generic_output",
+ *  input = "generic_js_data_array",
  *  output = "visualn_basic_tree_input",
  * )
  */
@@ -22,6 +22,7 @@ class BasicTreeMapper extends VisualNMapperBase {
   //    because this leads to misunderstanding
   // @todo: maybe this should return arrays (optional) to support multiple
   //    input and output format types (e.g. visualn_generic_input and visualn_generic_output for "output" key), or provide groups of formats structures somewhere else
+  //    @note: visualn_generic_input and visualn_generic_output where replaced by generic_js_data_array type
   // @todo: e.g. visualn_plain -> visualn_plain with/without keys remapping/renaming
 
   /**

@@ -15,7 +15,7 @@ use Drupal\visualn\Plugin\VisualNResourceFormatBase;
  * @VisualNResourceFormat(
  *  id = "visualn_json",
  *  label = @Translation("JSON"),
- *  output = "json_generic",
+ *  output = "remote_generic_json",
  * )
  */
 class JSONResourceFormat extends VisualNResourceFormatBase {

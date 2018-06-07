@@ -207,7 +207,7 @@ class VisualNImageFormatter extends ImageFormatter {
     // @todo: maybe just create a resource provider plugin of a certain type that accepts
     //    data in json format as part of its configuration or even context
     $resource = [
-      'output_type' => 'json_generic_attached',
+      'output_type' => 'generic_data_array',
       'output_interface' => [
         'data' => $data,
       ],

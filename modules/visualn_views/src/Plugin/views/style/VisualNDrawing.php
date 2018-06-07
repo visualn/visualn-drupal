@@ -450,7 +450,7 @@ class VisualNDrawing extends Serializer {
       'drawer_config' => $style_options['drawer_config'],
       // @todo: maybe move into 'mapper_settings' (even though used in adapter)
       'drawer_fields' => $style_options['drawer_fields'],  // this setting should be used in adapter
-      'output_type' => 'json_generic_attached',
+      'output_type' => 'generic_data_array',
       'adapter_settings' => [
         'data' => $json_data,
       ],
@@ -529,8 +529,8 @@ class VisualNDrawing extends Serializer {
         //->render();
     });
 
-    //$json_data = json_decode($json_markup, TRUE);
-    $json_data = json_decode($json_markup);
+    // decode into an array
+    $json_data = json_decode($json_markup, TRUE);
 
     if (!empty($this->view->live_preview)) {
       $build['json_preview']['#markup'] = $json_markup;

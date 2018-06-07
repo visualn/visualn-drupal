@@ -156,7 +156,7 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
   }
 
   public function visualnViewElementsOptionsAll($elements, array $options) {
-    $options['output_type'] = 'file_dsv';  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
+    $options['output_type'] = 'remote_generic_dsv';  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
     return $options;
   }
 
@@ -171,7 +171,7 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
       // @todo: By default use DSV Generic Resource Format
       // @todo: load resource format plugin and get resource form by plugin id
       // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
-      $options['output_type'] = 'file_dsv';
+      $options['output_type'] = 'remote_generic_dsv';
 
       // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
       $options['adapter_settings']['file_mimetype'] = 'text/tab-separated-values';

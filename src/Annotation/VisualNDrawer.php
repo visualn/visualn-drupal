@@ -43,8 +43,7 @@ class VisualNDrawer extends Plugin {
    *
    * @var string
    */
-  public $input = 'visualn_generic_input';
-  //public $input = 'visualn_generic';
+  public $input = 'generic_js_data_array';
 
   /**
    * The data output type of the plugin. Generally, not used.
@@ -52,6 +51,8 @@ class VisualNDrawer extends Plugin {
    * @var string
    */
   public $output = '';
+  // @todo: should drawers return any resource by default?
+  //public $output = 'generic_js_data_array';
 
   /**
    * The role type of the plugin.

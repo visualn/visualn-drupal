@@ -15,7 +15,7 @@ use Drupal\visualn\Plugin\VisualNResourceFormatBase;
  * @VisualNResourceFormat(
  *  id = "visualn_csv",
  *  label = @Translation("CSV"),
- *  output = "csv_generic",
+ *  output = "remote_generic_csv",
  * )
  */
 class CSVResourceFormat extends VisualNResourceFormatBase {

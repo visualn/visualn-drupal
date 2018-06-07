@@ -15,7 +15,7 @@ use Drupal\visualn\Plugin\VisualNResourceFormatBase;
  * @VisualNResourceFormat(
  *  id = "visualn_tsv",
  *  label = @Translation("TSV"),
- *  output = "tsv_generic",
+ *  output = "remote_generic_tsv",
  * )
  */
 class TSVResourceFormat extends VisualNResourceFormatBase {

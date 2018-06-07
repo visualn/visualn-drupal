@@ -12,7 +12,7 @@ use Drupal\visualn\Plugin\VisualNResourceBase;
  * @VisualNResource(
  *  id = "visualn_url_generic",
  *  label = @Translation("Url Generic Resource"),
- *  output = "file_dsv",
+ *  output = "remote_generic_dsv",
  * )
  */
 class UrlGenericResource extends VisualNResourceBase {

@@ -43,7 +43,6 @@ class VisualNAdapter extends Plugin {
    *
    * @var string
    */
-  public $output = 'visualn_generic_output';
-  //public $output = 'visualn_generic_unmapped';
+  public $output = 'generic_js_data_array';
 
 }

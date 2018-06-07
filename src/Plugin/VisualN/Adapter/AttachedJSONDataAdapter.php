@@ -11,9 +11,10 @@ use Drupal\visualn\ResourceInterface;
  * @VisualNAdapter(
  *  id = "visualn_attached_json",
  *  label = @Translation("Attached JSON Data Adapter"),
- *  input = "json_generic_attached",
+ *  input = "generic_data_array",
  * )
  */
+// @todo: maybe remove default output type from annotation to avoid confusion and make it more visible
 class AttachedJSONDataAdapter extends VisualNAdapterBase {
 
   /**

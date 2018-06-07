@@ -16,6 +16,24 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'Default Manager' VisualN manager.
  *
+ * @todo: add description here
+ *
+ * Manager makes chain from Chain plugins (see @link chain_plugins Chain plugins @endlink topic)
+ *
+ * Default Manager supposes that Resource has at least one of keys filled-up: base_type or type.
+ * The 'type' key is a required one, base_type may be empty.
+ *
+ *
+ * - base_type
+ * Can be used by developers to group multiple resource types into groups.
+ * This allows to create adapters that handle multiple resouce types by checking 'base_type' key.
+ *
+ * - type
+ * The type uniquely identifies a resource type with its properties and structure.
+ * For each resource type a Resource plugin should be implemented.
+ *
+ * @ingroup manager_plugins
+ *
  * @VisualNManager(
  *  id = "visualn_default",
  *  label = @Translation("Default Manager"),
@@ -93,9 +111,11 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     $options = $drawing_options;
     $output_type = $resource->getResourceType();
 
+    // @todo: attach js scripts only if there is at least one drawer (or handler) with non-empty jsId (in handlers list)
 
-    // @todo: visualn-core.js should be attached before other visualn js scripts (drawers, mappers, adapters, managers)
-    // @todo: move into base class or even into dependencies for manager js script and attach it here instead of end of method function
+    // @todo: visualn-core.js must be attached before other visualn js scripts (drawers, mappers, adapters, managers)
+    // @todo: move into base class or even into dependencies for manager js script and attach it there instead of end of method function
+    // @todo: maybe pass VisualN variable to drawer scpripts as it is done for Drupal global variable
     $build['#attached']['library'][] = 'visualn/visualn-core';
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
     // @todo: check the way it is used, add a comment
@@ -121,7 +141,8 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     $drawer = $visualn_style->getDrawerPlugin()->setConfiguration($options['drawer_config']);
 
     //$chain = $this->composePluginsChain($drawer, $input_type, $input_data);
-    $chain = $this->composePluginsChain($drawer, $output_type, []); // $drawer, $input_type, $input_options
+    // @todo: $additional_options
+    $chain = $this->composePluginsChain($drawer, $output_type, ['drawer_fields' => $options['drawer_fields']]); // $drawer, $input_type, $input_options
     //$chain = $this->composePluginsChain($drawer, $resource, $drawing_options);
     // @todo: review this interface, additional data may be used e.g. to alter chain building (vuid, drawing_options etc.)
     //$chain = $this->composePluginsChain($drawer, $resource);
@@ -215,7 +236,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
    *
    * @todo: move to interface and maybe rename
    */
-  protected function composePluginsChain(VisualNDrawerInterface $drawer, $input_type, array $input_options) {
+  protected function composePluginsChain(VisualNDrawerInterface $drawer, $input_type, array $input_options, $input_base_type = '') {
     // The arrays are used to allow multiple plugins of each type in the chain
     // though generally this isn't used and wasn't tested. In most cases
     // this seems to have no sense (at least for drawer plugins).
@@ -231,6 +252,26 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
         $matched_adapters[$adapter_id] = $definition['output'];
       }
     }
+
+
+    // no need to get mappers if drawer keys mapping configuration is empty
+    //    and chain can be built using only adapters
+    $mapper_required = count(array_filter($input_options['drawer_fields']));
+    if (!$mapper_required) {
+      // try to build a no-mapper chain
+      foreach ($matched_adapters as $adapter_id => $adapter_output_type) {
+        if ($adapter_output_type == $drawer_input) {
+          $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
+
+          // return chain if matching adapter found
+          return $chain;
+        }
+      }
+      // Sometimes, when keys mapping itself is not needed, a mapper may still be used
+      // e.g.  when it provides some features which is usually done by adapters
+      // i.e. changes resource type
+    }
+
 
     // get all mapper candidates
     $matched_mappers = [];
@@ -276,11 +317,39 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     // else empty the chain (no drawing will be drawn)
     if (empty($chain['adapter']) && empty($chain['mapper']) && $drawer_input != $input_type) {
       $chain = ['drawer' => [], 'mapper' => [], 'adapter' => []];
+
+      // @todo: check base type and try to compose chain base on it
+      if (!$input_base_type) {
+        $input_base_type = $this->getBaseTypeByType($input_type);
+      }
+
+      if ($input_base_type) {
+      }
     }
 
     // @todo: cache chains
 
     return $chain;
+  }
+
+  /**
+   * @inheritdoc
+   *
+   * @todo: move to interface and maybe rename
+   */
+  protected function getBaseTypeByType($input_type) {
+
+    $input_base_type = '';
+
+
+    // @todo: try to define base type by input (generally, resouce) type
+    //    maybe this should use some kind of external service since refers
+    //    to resources by not chains themselves.
+    //    Also such a service could scan certain yml files or allow other modules
+    //    to alter info about which resource types belong to which resource base types.
+
+
+    return $input_base_type;
   }
 
 }
