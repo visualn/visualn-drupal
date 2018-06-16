@@ -10,6 +10,9 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 interface VisualNResourceFormatInterface extends PluginInspectionInterface {
 
 
-  // Add get/set methods for your plugin type here.
+  /**
+   * Create resource object based on raw resource input values/parameters.
+   */
+  public function buildResource(array $raw_input);
 
 }

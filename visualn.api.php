@@ -34,6 +34,7 @@
  * - @link visualn_fields Fields @endlink
  * - @link visualn_blocks Blocks @endlink
  * - @link visualn_views Views integration @endlink
+ * - @link resource_formats Resource format plugins @endlink
  *
  * @section data_sources Data sources
  *
@@ -81,8 +82,107 @@
 /**
  * @defgroup manager_plugins Manager plugins
  * @{
- * Some test title here
+ * Managers are used to compose chain of plugins and create drawing build.
  *
  * Some test content here
+ * Manager plugins main purpose is to compose a chain from adapter, mapper and
+ * drawer plugins and apply it to the input resource object to get a drawing
+ * build as a result.
+ * Developers can create custom managers that would implement custom logic
+ * if DefaultManager doesn't fit their needs.
  * @}
  */
+
+/**
+ * @defgroup resource_formats Raw Resource Format plugins
+ * @{
+ * Raw Resource Formats describe real physical resources used.
+ *
+ * Raw resources are the real "stuff" which is converted/translated into a resource object
+ * to be used to build a drawing.
+ * Due to arbitrary nature of possible physical resources no strict assumptions can be made
+ * about their structure, origin or location that would be common
+ * for all possible physical (real) resources.
+ *
+ * Though every real resource has some common features, namely a set of comprised/provided
+ * values/parameters of some nature, expected type of resultant resource object and
+ * the way (logic) to convert those input values/parameters into a resource object.
+ * These features constitute real resource formats which are implemented
+ * in form of Raw Resource Format plugins.
+ *
+ * The plugins are commonly used as an entry point into drawing building chain. They are
+ * used by VisualN fields to let user explicitly select the format of file or url resource
+ * or seamlessly when resource object is created.
+ *
+ * Raw Resource Format plugins have "group" key to let modules group formats by some criteria.
+ * The "default" group tells that the format should be used to create a resource object
+ * of a given type by default. See VisualN::getResourceByOptions() helper.
+ *
+ * Each format plugin must have "output" key set in its annotation. It defines the type
+ * of resultant resource object produced by the plugin.
+ * @}
+ */
+
+/**
+ * @defgroup resource_proivder_plugins Resource providers
+ * @{
+ * Provide Resource objects objects to create drawings.
+ *
+ * Resource providers are typically used by Drawing Fetchers or Data Set entities
+ * via Resource provider field type.
+ * @}
+ */
+
+/**
+ * Provide adapters subchain suggestions to be used by DefaultManager chain builder
+ *
+ * The 'adapters' items should correspond to the order adapters should be called in.
+ *
+ * @todo: this hook later may be changed or removed
+ *
+ * @param array $subchain_suggestions
+ *   An of adapter subchains suggested by modules.
+ *
+ * @ingroup manager_plugins
+ */
+function hook_visualn_adapter_subchains_alter(&$subchain_suggestions) {
+
+  // @todo: maybe use associative keys to uniquely identify a given suggestion
+  $subchain_suggestions[] = [
+    'adapters' => [
+      'adapter_id_1',
+      'adapter_id_2',
+    ],
+    'input' => 'custom_input_type',
+    'output' => 'generic_data_array',
+  ];
+}
+
+// @todo: add other similar hooks from other managers
+
+/**
+ * Alter ResourceFormat plugins definitions
+ *
+ * In particular, the hook is used to set/alter resource format 'groups' property
+ *
+ * @todo: this hook later may be changed or removed
+ *
+ * @todo: mention where the code is taken from (visualn.module)
+ *
+ * @todo: add a link to the ResourceFormat manager class
+ *
+ * @ingroup resource_formats
+ */
+function hook_visualn_resource_format_info_alter(&$definitions) {
+
+  // VisualN Resource field widget allows to select Raw Resource Format to be used
+  // for input urls. It uses Raw Resource Format plugin annotation "groups" property
+  // to filter only relative ones.
+  $ids = ['visualn_json', 'visualn_csv', 'visualn_tsv', 'visualn_xml'];
+  // @todo: maybe set group directly in plugins annotation
+  foreach ($definitions as $k => $definition) {
+    if (in_array($definition['id'], $ids)) {
+      $definitions[$k]['groups'][] = 'visualn_resource_widget';
+    }
+  }
+}

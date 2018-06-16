@@ -1,5 +1,7 @@
 <?php
 
+// @todo: rename to DefaultJsMapper
+
 namespace Drupal\visualn\Plugin\VisualN\Mapper;
 
 use Drupal\visualn\Plugin\VisualNMapperBase;

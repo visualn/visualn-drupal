@@ -28,6 +28,8 @@ use Drupal\visualn\ResourceInterface;
  * Can be used by developers to group multiple resource types into groups.
  * This allows to create adapters that handle multiple resouce types by checking 'base_type' key.
  *
+ * Base types may serve different purposes with no strict limits or considerations on this subject.
+ *
  * - type
  * The type uniquely identifies a resource type with its properties and structure.
  * For each resource type a Resource plugin should be implemented.
@@ -244,24 +246,61 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
 
     $drawer_input = $drawer->getPluginDefinition()['input'];
 
+    $mapper_required = count(array_filter($input_options['drawer_fields']));
+    // return chain if drawer doesn't need adapters or mappers
+    if ($drawer_input == $input_type) {
+      return $chain;
+    }
+
+
+
     // get all adapter candidates
-    $matched_adapters = [];
+    $matched_adapter_groups = [];
     $adapterDefinitions = $this->visualNAdapterManager->getDefinitions();
     foreach ($adapterDefinitions as $adapter_id => $definition) {
       if ($definition['input'] == $input_type) {
-        $matched_adapters[$adapter_id] = $definition['output'];
+        $matched_adapter_groups[] = [
+          'adapters' => [$adapter_id],
+          'output' => $definition['output'],
+          // actually input type is not used anywhere below but keep it for consistency
+          // with suggestested subchains structure
+          'input' => $definition['input'],
+        ];
       }
     }
 
 
+    // get suggested adapter subchains
+    $subchain_suggestions = [];
+    // Call modules that implement the hook, and let them add items.
+    // @todo: add hook description into api documentation
+    \Drupal::moduleHandler()->alter('visualn_adapter_subchains', $subchain_suggestions);
+    // @todo: maybe pass additional data to the hook or cached the info (maybe statically)
+    //    if moduleHandler doesn't do it itself
+
+    $adapter_subchain_candidates = [];
+    foreach ($subchain_suggestions as $subchain_suggestion) {
+      if ($subchain_suggestion['input'] == $input_type) {
+        $adapter_subchain_candidates[] = $subchain_suggestion;
+      }
+    }
+    // @todo: then compare as it was done for generic adapters
+    //    if a subchain fits into conditions, use it instead of single adapter
+    //    or even attach subchains to the adapters list and check the altogether
+
+    $matched_adapter_groups = array_merge($matched_adapter_groups, $adapter_subchain_candidates);
+
+
     // no need to get mappers if drawer keys mapping configuration is empty
     //    and chain can be built using only adapters
-    $mapper_required = count(array_filter($input_options['drawer_fields']));
+
     if (!$mapper_required) {
       // try to build a no-mapper chain
-      foreach ($matched_adapters as $adapter_id => $adapter_output_type) {
-        if ($adapter_output_type == $drawer_input) {
-          $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
+      foreach ($matched_adapter_groups as $adapters_group) {
+        if ($adapters_group['output'] == $drawer_input) {
+          foreach ($adapters_group['adapters'] as $adapter_id) {
+            $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
+          }
 
           // return chain if matching adapter found
           return $chain;
@@ -271,6 +310,16 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
       // e.g.  when it provides some features which is usually done by adapters
       // i.e. changes resource type
     }
+
+
+    // get the list of adapter groups output types, intup type is already all the same
+
+    // @todo: There may be multiple adapters (groups) with the same input and output types
+    //   so priorities should be set. Only the first one is used (see array_search below).
+    $adapters_subchain_lst = array_column($matched_adapter_groups, 'output');
+
+
+
 
 
     // get all mapper candidates
@@ -283,42 +332,73 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     }
 
     // choose matching adapters and mappers for the chain
-    $adapter_id = $mapper_id = NULL;
-    $array_intersect = array_unique(array_values(array_intersect($matched_adapters, $matched_mappers)));
-    if (!empty($array_intersect)) {
-      // @todo: there should be some criteria to choose an optimal chain but not just the first matched
-      $join_type = $array_intersect[0];
-      $adapter_id  = array_search($join_type, $matched_adapters);
+    $join_types = array_intersect($adapters_subchain_lst, $matched_mappers);
+
+
+    if (!empty($join_types)) {
+      // @todo: Multiple different join types are possible here that
+      //   define in result multiple chains. There should be some criteria to choose
+      //   an optimal chain but not just the first matched.
+      $join_type = reset($join_types);
+      $adapters_group_key = array_search($join_type, array_column($matched_adapter_groups, 'output'));
+      // @todo: move into method ::loadGroup($group, $chain_plugin_type)
+      $adapters_group = $matched_adapter_groups[$adapters_group_key];
+      foreach ($adapters_group['adapters'] as $adapter_id) {
+        $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
+      }
+
       $mapper_id = array_search($join_type, $matched_mappers);
-      $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
       $chain['mapper'][] = $this->visualNMapperManager->createInstance($mapper_id, []);
     }
     else {
-      if (!empty($matched_adapters) || !empty($matched_mappers)) {
+      if (!empty($matched_adapter_groups) || !empty($matched_mappers)) {
         // @todo: there is a question which one to choose
         //  here we may have two possibilities: an adapter or a mapper serves as both, adapter and mapper
-        //  first check adapters
-        $result_adapters = array_keys($matched_adapters, $drawer_input);
-        if (!empty($result_adapters)) {
-          $adapter_id = $result_adapters[0];
-          $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
+        //  @todo: first check mappers since no much sense in checking adapters (see comment below)
+
+
+        $result_mappers = array_keys($matched_mappers, $drawer_input);
+        $result_adapters = array_keys(array_column($matched_adapter_groups, 'output'), $drawer_input);
+        if (!empty($result_mappers)) {
+          $mapper_id = $result_mappers[0];
+          $chain['mapper'][] = $this->visualNMapperManager->createInstance($mapper_id, []);
         }
-        else {
-          $result_mappers = array_keys($matched_mappers, $drawer_input);
-          if (!empty($result_mappers)) {
-            $mapper_id = $result_mappers[0];
-            $chain['mapper'][] = $this->visualNMapperManager->createInstance($mapper_id, []);
-          }
+        elseif (!empty($result_adapters)) {
+          // @todo: Do not rely on adapters when mapping is required since adapters don't have to
+          //   do it and there is no flag that would show whether adapters do remapping or not
+          //   and the result of using the chain for building drawing would become unpredictable
+          //   which is wrong for the point of view of chain builder concept where
+          //   it MUST return a valid chain or an empty chain.
+          //
+          //   Though it is ok to use mappers without adapters (see the code below)
+          //   because it is seen from mapper plugins annotation.
+          /*
+            $adapters_group_key = reset($result_adapters);
+            $adapters_group = $matched_adapter_groups[$adapters_group_key];
+            foreach ($adapters_group['adapters'] as $adapter_id) {
+              $chain['adapter'][] = $this->visualNAdapterManager->createInstance($adapter_id, []);
+            }
+          */
         }
+
       }
     }
 
+
+
     // if source output is equal to drawer input (e.g. no need in mapper or adapter)
     // else empty the chain (no drawing will be drawn)
-    if (empty($chain['adapter']) && empty($chain['mapper']) && $drawer_input != $input_type) {
+    if (empty($chain['adapter']) && empty($chain['mapper'])) {
+      // @todo: Exclude case when mapping is requried but only drawer is used
+      //   since the result of the drawing building would become unpredictable,
+      //   see the same notice for adapters above.
+      /*
+        if (empty($chain['adapter']) && empty($chain['mapper']) && $drawer_input != $input_type) {
+      */
       $chain = ['drawer' => [], 'mapper' => [], 'adapter' => []];
 
-      // @todo: check base type and try to compose chain base on it
+      // @todo: check base type and try to compose chain based on it, currently it is
+      //   accomplished using suggested subchains mechanism
       if (!$input_base_type) {
         $input_base_type = $this->getBaseTypeByType($input_type);
       }
@@ -330,6 +410,10 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     // @todo: cache chains
 
     return $chain;
+  }
+
+  // @todo:
+  protected function composeSuggestedPluginsChain(VisualNDrawerInterface $drawer, $input_type, array $input_options, $input_base_type = '') {
   }
 
   /**

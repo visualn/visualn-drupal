@@ -38,4 +38,11 @@ class VisualNResourceFormat extends Plugin {
    */
   public $output = '';
 
+  /**
+   * The resource format group e.g. 'default' or 'visualn_file_widget'.
+   *
+   * @var array
+   */
+  public $groups = [];
+
 }

@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Plugin implementation of the 'visualn_resource' widget.
@@ -29,6 +30,8 @@ use Drupal\visualn\Helpers\VisualNFormsHelper;
  * )
  */
 class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPluginInterface {
+
+  const RAW_RESOURCE_FORMAT_GROUP = 'visualn_resource_widget';
 
   // @todo: implement defaultSettings() method
 
@@ -86,8 +89,9 @@ class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPlugin
     $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
     $visualn_data['resource_format'] = !empty($visualn_data['resource_format']) ? $visualn_data['resource_format'] : '';
 
-    // @todo: move into a function (since resource format selection is used in many places)
-    $definitions = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinitions();
+    $definitions = VisualN::getRawResourceFormatsByGroup(self::RAW_RESOURCE_FORMAT_GROUP);
+
+
     // @todo: there should be some default behaviour for the 'None' choice (actually, this refers to formatter)
     $resource_formats = ['' => $this->t('- None -')];
     foreach ($definitions as $definition) {

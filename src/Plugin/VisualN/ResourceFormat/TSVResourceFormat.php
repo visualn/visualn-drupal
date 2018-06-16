@@ -19,4 +19,8 @@ use Drupal\visualn\Plugin\VisualNResourceFormatBase;
  * )
  */
 class TSVResourceFormat extends VisualNResourceFormatBase {
+
+  // @todo: plugins could also have configuration forms,
+  //   e.g. for csv delimiter property
+
 }

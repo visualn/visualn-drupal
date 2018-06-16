@@ -266,10 +266,17 @@ trait VisualNFormatterSettingsTrait {
     $options['adapter_settings']['file_url'] = $url;
     $options['adapter_settings']['file_mimetype'] = $file->getMimeType();
     $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
+
+    // if resource not empty, generate resource using raw resource format plugin
     if (!empty($visualn_data['resource_format'])) {
       $resource_format_plugin_id = $visualn_data['resource_format'];
+      // @todo: actually output_type is not needed here any more
+      //   since it will be taken from raw_resource_format plugin annotation
+      //   in VisualN::makeBuild()
       $options['output_type'] = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinition($resource_format_plugin_id)['output'];
+      $options['raw_resource_format_id'] = $visualn_data['resource_format'];
     }
+
 
     return $options;
   }

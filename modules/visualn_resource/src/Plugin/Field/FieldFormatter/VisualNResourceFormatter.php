@@ -165,7 +165,11 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
     $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
     if (!empty($visualn_data['resource_format'])) {
       $resource_format_plugin_id = $visualn_data['resource_format'];
+      // @todo: actually output_type is not needed here any more
+      //   since it will be taken from raw_resource_format plugin annotation
+      //   in VisualN::makeBuild()
       $options['output_type'] = $this->visualNResourceFormatManager->getDefinition($resource_format_plugin_id)['output'];
+      $options['raw_resource_format_id'] = $visualn_data['resource_format'];
     }
     else {
       // @todo: By default use DSV Generic Resource Format

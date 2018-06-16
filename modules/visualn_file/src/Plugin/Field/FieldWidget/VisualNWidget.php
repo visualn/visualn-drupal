@@ -19,6 +19,7 @@ use Drupal\visualn_file\Plugin\FileWidgetWrapper;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\Core\Field\WidgetBase;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Plugin implementation of the 'visualn_visualn' widget.
@@ -33,6 +34,8 @@ use Drupal\Core\Field\WidgetBase;
  */
 //class VisualNWidget extends FileWidget {
 class VisualNWidget extends FileWidgetWrapper {
+
+  const RAW_RESOURCE_FORMAT_GROUP = 'visualn_file_widget';
 
   /**
    * {@inheritdoc}
@@ -147,8 +150,9 @@ class VisualNWidget extends FileWidgetWrapper {
     //    also here visualn_style_id is used from original value which resembles actual state of the
     //    form. For more detail see FileWidget::submit().
 
-    // @todo: move into a function (since resource format selection is used in many places)
-    $definitions = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinitions();
+    $definitions = VisualN::getRawResourceFormatsByGroup(self::RAW_RESOURCE_FORMAT_GROUP);
+
+
     // @todo: there should be some default behaviour for the 'None' choice (actually, this refers to formatter)
     $resource_formats = ['' => $this->t('- None -')];
     foreach ($definitions as $definition) {
