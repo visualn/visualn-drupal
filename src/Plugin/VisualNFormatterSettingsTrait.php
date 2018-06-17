@@ -273,7 +273,7 @@ trait VisualNFormatterSettingsTrait {
       // @todo: actually output_type is not needed here any more
       //   since it will be taken from raw_resource_format plugin annotation
       //   in VisualN::makeBuild()
-      $options['output_type'] = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinition($resource_format_plugin_id)['output'];
+      $options['output_type'] = \Drupal::service('plugin.manager.visualn.raw_resource_format')->getDefinition($resource_format_plugin_id)['output'];
       $options['raw_resource_format_id'] = $visualn_data['resource_format'];
     }
 

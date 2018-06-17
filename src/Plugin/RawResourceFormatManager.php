@@ -7,13 +7,13 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * Provides the VisualN Resource Format plugin manager.
+ * Provides the Raw Resource Format plugin manager.
  */
-class VisualNResourceFormatManager extends DefaultPluginManager {
+class RawResourceFormatManager extends DefaultPluginManager {
 
 
   /**
-   * Constructs a new VisualNResourceFormatManager object.
+   * Constructs a new RawResourceFormatManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -24,10 +24,10 @@ class VisualNResourceFormatManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/VisualN/ResourceFormat', $namespaces, $module_handler, 'Drupal\visualn\Plugin\VisualNResourceFormatInterface', 'Drupal\visualn\Annotation\VisualNResourceFormat');
+    parent::__construct('Plugin/VisualN/RawResourceFormat', $namespaces, $module_handler, 'Drupal\visualn\Plugin\RawResourceFormatInterface', 'Drupal\visualn\Annotation\VisualNRawResourceFormat');
 
-    $this->alterInfo('visualn_resource_format_info');
-    $this->setCacheBackend($cache_backend, 'visualn_resource_format_plugins');
+    $this->alterInfo('visualn_raw_resource_format_info');
+    $this->setCacheBackend($cache_backend, 'visualn_raw_resource_format_plugins');
   }
 
 }

@@ -85,9 +85,9 @@ function visualn_setup_options($include_empty = TRUE) {
 }
 
 /**
- * Implements hook_visualn_resource_format_info_alter().
+ * Implements hook_visualn_raw_resource_format_info_alter().
  */
-function visualn_visualn_resource_format_info_alter(&$definitions) {
+function visualn_visualn_raw_resource_format_info_alter(&$definitions) {
   // @todo: Temporarily add all plugins to "defaut" group. This should
   //   be set in each specific plugin annotation.
   foreach ($definitions as $k => $definition) {

@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
-use Drupal\visualn\Plugin\VisualNResourceFormatManager;
+use Drupal\visualn\Plugin\RawResourceFormatManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Form\SubformStateInterface;
@@ -33,6 +33,8 @@ use Drupal\visualn\Helpers\VisualN;
 //class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase implements ContainerFactoryPluginInterface {
 class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
 
+  const RAW_RESOURCE_FORMAT_GROUP = 'visualn_resource_widget';
+
   // @todo: this is to avoid the error: "LogicException: The database connection is not serializable.
   // This probably means you are serializing an object that has an indirect reference to the database connection.
   // Adjust your code so that is not necessary. Alternatively, look at DependencySerializationTrait
@@ -43,7 +45,7 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNResourceFormatManager
+   * @var \Drupal\visualn\Plugin\RawResourceFormatManager
    */
   protected $visualNResourceFormatManager;
 
@@ -59,7 +61,7 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
       $container->get('plugin.manager.visualn.manager'),
-      $container->get('plugin.manager.visualn.resource_format')
+      $container->get('plugin.manager.visualn.raw_resource_format')
     );
   }
 
@@ -81,10 +83,10 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
    *   The visualn drawer manager service.
    * @param \Drupal\visualn\Plugin\VisualNManagerManager $visualn_manager_manager
    *   The visualn manager manager service.
-   * @param \Drupal\visualn\Plugin\VisualNResourceFormatManager $visualn_resource_format_manager
+   * @param \Drupal\visualn\Plugin\RawResourceFormatManager $visualn_resource_format_manager
    *   The visualn resource format manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceFormatManager $visualn_resource_format_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, RawResourceFormatManager $visualn_resource_format_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_manager_manager);
 
     $this->visualNResourceFormatManager = $visualn_resource_format_manager;
@@ -124,7 +126,7 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
 
     // Get resource formats plugins list for the resource formats select.
     $resource_formats = [];
-    $definitions = $this->visualNResourceFormatManager->getDefinitions();
+    $definitions = VisualN::getRawResourceFormatsByGroup(self::RAW_RESOURCE_FORMAT_GROUP);
     foreach ($definitions as $definition) {
       $resource_formats[$definition['id']] = $definition['label'];
     }

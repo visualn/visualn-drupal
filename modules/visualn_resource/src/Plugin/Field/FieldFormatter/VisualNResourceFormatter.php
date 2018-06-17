@@ -13,7 +13,7 @@ use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
-use Drupal\visualn\Plugin\VisualNResourceFormatManager;
+use Drupal\visualn\Plugin\RawResourceFormatManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\visualn\Plugin\VisualNFormatterSettingsTrait;
@@ -59,7 +59,7 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNResourceFormatManager
+   * @var \Drupal\visualn\Plugin\RawResourceFormatManager
    */
   protected $visualNResourceFormatManager;
 
@@ -79,7 +79,7 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
     $container->get('entity_type.manager')->getStorage('visualn_style'),
     $container->get('plugin.manager.visualn.drawer'),
     $container->get('plugin.manager.visualn.manager'),
-    $container->get('plugin.manager.visualn.resource_format')
+    $container->get('plugin.manager.visualn.raw_resource_format')
     );
   }
 
@@ -103,7 +103,7 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, PathValidatorInterface $path_validator, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceFormatManager $visualn_resource_format_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, PathValidatorInterface $path_validator, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, RawResourceFormatManager $visualn_resource_format_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, $path_validator);
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;

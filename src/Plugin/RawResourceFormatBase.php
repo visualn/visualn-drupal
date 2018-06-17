@@ -5,9 +5,9 @@ namespace Drupal\visualn\Plugin;
 use Drupal\Component\Plugin\PluginBase;
 
 /**
- * Base class for VisualN Resource Format plugins.
+ * Base class for Raw Resource Format plugins.
  */
-abstract class VisualNResourceFormatBase extends PluginBase implements VisualNResourceFormatInterface {
+abstract class RawResourceFormatBase extends PluginBase implements RawResourceFormatInterface {
 
   /**
    * {@inheritdoc}

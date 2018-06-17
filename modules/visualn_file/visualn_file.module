@@ -44,9 +44,9 @@ function template_preprocess_visualn_image_formatter(&$variables, $hook) {
 }
 
 /**
- * Implements hook_visualn_resource_format_info_alter().
+ * Implements hook_visualn_raw_resource_format_info_alter().
  */
-function visualn_file_visualn_resource_format_info_alter(&$definitions) {
+function visualn_file_visualn_raw_resource_format_info_alter(&$definitions) {
   // @todo: disable visualn_xml (at least temporarily until fixed)
   $ids = ['visualn_json', 'visualn_csv', 'visualn_tsv', 'visualn_xml'];
   // @todo: maybe add directly to plugins annotation

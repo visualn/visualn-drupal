@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 //use Drupal\Core\Entity\EntityStorageInterface;
 //use Drupal\visualn\Plugin\VisualNDrawerManager;
 //use Drupal\visualn\Plugin\VisualNManagerManager;
-//use Drupal\visualn\Plugin\VisualNResourceFormatManager;
 use Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;

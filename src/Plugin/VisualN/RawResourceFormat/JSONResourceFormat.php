@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Conatins JSONResourceFormat
+ */
+
+namespace Drupal\visualn\Plugin\VisualN\RawResourceFormat;
+
+use Drupal\visualn\Plugin\RawResourceFormatBase;
+
+/**
+ * Provides a 'JSON' VisualN raw resource format.
+ *
+ * @VisualNRawResourceFormat(
+ *  id = "visualn_json",
+ *  label = @Translation("JSON"),
+ *  output = "remote_generic_json",
+ * )
+ */
+class JSONResourceFormat extends RawResourceFormatBase {
+}

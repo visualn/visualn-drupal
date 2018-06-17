@@ -75,7 +75,7 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
         $options['adapter_settings']['file_mimetype'] = $file->getMimeType();
         if (!empty($visualn_data['resource_format'])) {
           $resource_format_plugin_id = $visualn_data['resource_format'];
-          $options['output_type'] = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinition($resource_format_plugin_id)['output'];
+          $options['output_type'] = \Drupal::service('plugin.manager.visualn.raw_resource_format')->getDefinition($resource_format_plugin_id)['output'];
         }
 
 

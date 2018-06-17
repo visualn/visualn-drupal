@@ -5,14 +5,14 @@ namespace Drupal\visualn\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a VisualN Resource Format item annotation object.
+ * Defines a Raw Resource Format item annotation object.
  *
- * @see \Drupal\visualn\Plugin\VisualNResourceFormatManager
+ * @see \Drupal\visualn\Plugin\RawResourceFormatManager
  * @see plugin_api
  *
  * @Annotation
  */
-class VisualNResourceFormat extends Plugin {
+class VisualNRawResourceFormat extends Plugin {
 
 
   /**

@@ -99,6 +99,7 @@ class VisualN {
     //    maybe use a service for that, see TypedDataManager::create for example
 
 
+    $raw_resource_format_plugin_id = '';
     $raw_resource_format_plugin = NULL;
 
     // Use Raw Resource Formats (from "default" group) to create resource objects (if implemented)
@@ -114,7 +115,7 @@ class VisualN {
     if ($raw_resource_format_plugin_id) {
       // @todo: should some values  be passed as plugin configuration?
       //   e.g. delimiter for csv files from configuration form (when implemented)
-      $raw_resource_format_plugin = \Drupal::service('plugin.manager.visualn.resource_format')
+      $raw_resource_format_plugin = \Drupal::service('plugin.manager.visualn.raw_resource_format')
         ->createInstance($raw_resource_format_plugin_id, []);
 
       $raw_input = $adapter_settings;
@@ -169,7 +170,7 @@ class VisualN {
   public static function getResourceByFormat($raw_resource_format_id, array $adapter_settings) {
 
     // load raw resource format plugin
-    $raw_resource_format_plugin = \Drupal::service('plugin.manager.visualn.resource_format')
+    $raw_resource_format_plugin = \Drupal::service('plugin.manager.visualn.raw_resource_format')
       ->createInstance($raw_resource_format_id, []);
 
 
@@ -188,7 +189,7 @@ class VisualN {
    */
   public static function getRawResourceFormatsByGroup($group) {
 
-    $definitions = \Drupal::service('plugin.manager.visualn.resource_format')->getDefinitions();
+    $definitions = \Drupal::service('plugin.manager.visualn.raw_resource_format')->getDefinitions();
     if (!empty($group)) {
       $definitions = array_filter($definitions, function($definition, $k) use($group) {
         return in_array($group, $definition['groups']);

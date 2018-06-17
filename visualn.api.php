@@ -34,7 +34,7 @@
  * - @link visualn_fields Fields @endlink
  * - @link visualn_blocks Blocks @endlink
  * - @link visualn_views Views integration @endlink
- * - @link resource_formats Resource format plugins @endlink
+ * - @link raw_resource_formats Resource format plugins @endlink
  *
  * @section data_sources Data sources
  *
@@ -84,7 +84,6 @@
  * @{
  * Managers are used to compose chain of plugins and create drawing build.
  *
- * Some test content here
  * Manager plugins main purpose is to compose a chain from adapter, mapper and
  * drawer plugins and apply it to the input resource object to get a drawing
  * build as a result.
@@ -94,7 +93,7 @@
  */
 
 /**
- * @defgroup resource_formats Raw Resource Format plugins
+ * @defgroup raw_resource_formats Raw Resource Format plugins
  * @{
  * Raw Resource Formats describe real physical resources used.
  *
@@ -169,11 +168,11 @@ function hook_visualn_adapter_subchains_alter(&$subchain_suggestions) {
  *
  * @todo: mention where the code is taken from (visualn.module)
  *
- * @todo: add a link to the ResourceFormat manager class
+ * @todo: add a link to the RawResourceFormat manager class
  *
- * @ingroup resource_formats
+ * @ingroup raw_resource_formats
  */
-function hook_visualn_resource_format_info_alter(&$definitions) {
+function hook_visualn_raw_resource_format_info_alter(&$definitions) {
 
   // VisualN Resource field widget allows to select Raw Resource Format to be used
   // for input urls. It uses Raw Resource Format plugin annotation "groups" property
