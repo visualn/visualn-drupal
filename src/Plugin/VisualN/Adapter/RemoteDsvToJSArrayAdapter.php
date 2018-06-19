@@ -8,6 +8,8 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'RemoteDsvToJSArray' VisualN adapter.
  *
+ * @ingroup adapter_plugins
+ *
  * @VisualNAdapter(
  *  id = "visualn_file_generic_default",
  *  label = @Translation("Remote DSV To JS Array Adapter"),

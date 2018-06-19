@@ -9,6 +9,8 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'RemoteXmlToJSArray' VisualN adapter.
  *
+ * @ingroup adapter_plugins
+ *
  * @VisualNAdapter(
  *  id = "visualn_xml",
  *  label = @Translation("Remote XML To JS Array Adapter"),

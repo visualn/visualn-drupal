@@ -9,6 +9,8 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'RemoteTsvToJSArray' VisualN adapter. Generally this is a wrapper around DSV Adapter.
  *
+ * @ingroup adapter_plugins
+ *
  * @VisualNAdapter(
  *  id = "visualn_tsv",
  *  label = @Translation("Remote TSV To JS Array Adapter"),

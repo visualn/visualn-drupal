@@ -12,6 +12,8 @@ use Drupal\visualn\Plugin\RawResourceFormatBase;
 /**
  * Provides a 'JSON' VisualN raw resource format.
  *
+ * @ingroup raw_resource_formats
+ *
  * @VisualNRawResourceFormat(
  *  id = "visualn_json",
  *  label = @Translation("JSON"),

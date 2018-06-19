@@ -34,7 +34,7 @@
  * - @link visualn_fields Fields @endlink
  * - @link visualn_blocks Blocks @endlink
  * - @link visualn_views Views integration @endlink
- * - @link raw_resource_formats Resource format plugins @endlink
+ * - @link raw_resource_formats Raw Resource Format plugins @endlink
  *
  * @section data_sources Data sources
  *
@@ -73,9 +73,13 @@
 /**
  * @defgroup chain_plugins Workflows mechanics
  * @{
- * Some test title here
+ * Chain plugins are base elements that compose a drawing building chain.
  *
- * Some test content here
+ * Drawers, Adapters and Mappers are examples of chain plugins. They are
+ * used by Mangers to build a chain that is used to create a drawing
+ * based on a given resource. All chain plugins implement a common
+ * method ::prepareBuild() that allows each plugin to modify $build and $resource
+ * and transfer it further down the chain to finally get a ready drawing build.
  * @}
  */
 
@@ -89,6 +93,31 @@
  * build as a result.
  * Developers can create custom managers that would implement custom logic
  * if DefaultManager doesn't fit their needs.
+ * @}
+ */
+
+/**
+ * @defgroup adapter_plugins Adapter plugins
+ * @{
+ * Adapters convert resources from one type to another.
+ *
+ * Adapter plugins allow to make drawers resource agnostic, i.e. they allow
+ * to use the same drawer plugin with any resource type: from views output
+ * to uploaded files or remote resources available over http or other protocols.
+ *
+ * Adapters are the key part of the VisualN which provides its flexibility
+ * and integration with other Drupal UIs such as fields, blocks or views
+ * without coding.
+ * @}
+ */
+
+/**
+ * @defgroup mapper_plugins Mapper plugins
+ * @{
+ * Mappers change data keys to ones used by drawers.
+ *
+ * Mapper plugins allow users to set key mapping from ones used in resource
+ * to ones expected by drawers.
  * @}
  */
 
@@ -129,6 +158,12 @@
  *
  * Resource providers are typically used by Drawing Fetchers or Data Set entities
  * via Resource provider field type.
+ * There is not limit on type or types of resources that a given Resource provider
+ * may return. It is more about contents of the resource returned (information)
+ * than about its type. In this point it differs from Raw Resource Format plugins
+ * which also return a resource but are more about format of *raw* resources trying
+ * to describe real envorinment than about contents of that raw resources. And also
+ * being limited to one specific resource type.
  * @}
  */
 

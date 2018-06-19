@@ -9,6 +9,8 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'RemoteCsvToJSArray' VisualN adapter. Generally this is a wrapper around DSV Adapter.
  *
+ * @ingroup adapter_plugins
+ *
  * @VisualNAdapter(
  *  id = "visualn_csv",
  *  label = @Translation("Remote cSV To JS Array Adapter"),

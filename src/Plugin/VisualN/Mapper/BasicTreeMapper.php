@@ -8,6 +8,10 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'Basic Tree Mapper' VisualN mapper.
  *
+ * @todo: the mapper may be later removed
+ *
+ * @ingroup mapper_plugins
+ *
  * @VisualNMapper(
  *  id = "visualn_basic_tree",
  *  label = @Translation("Basic Tree Mapper"),

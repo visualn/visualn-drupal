@@ -9,6 +9,8 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'RemoteJsonToJSArray' VisualN adapter.
  *
+ * @ingroup adapter_plugins
+ *
  * @VisualNAdapter(
  *  id = "visualn_json",
  *  label = @Translation("Remote jSON To JS Array Adapter"),

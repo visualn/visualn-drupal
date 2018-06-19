@@ -8,6 +8,8 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides an 'Attached JSON Data Adapter' VisualN adapter.
  *
+ * @ingroup adapter_plugins
+ *
  * @VisualNAdapter(
  *  id = "visualn_attached_json",
  *  label = @Translation("Data Array To JS Array Adapter"),

@@ -8,6 +8,8 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'Default Serverside' VisualN mapper.
  *
+ * @ingroup mapper_plugins
+ *
  * @VisualNMapper(
  *  id = "visualn_default_serverside",
  *  label = @Translation("Default Serverside Mapper"),

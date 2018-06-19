@@ -10,6 +10,8 @@ use Drupal\visualn\ResourceInterface;
 /**
  * Provides a 'Default Mapper' VisualN mapper.
  *
+ * @ingroup mapper_plugins
+ *
  * @VisualNMapper(
  *  id = "visualn_default",
  *  label = @Translation("Default Mapper"),

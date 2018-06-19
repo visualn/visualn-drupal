@@ -12,6 +12,8 @@ use Drupal\visualn\Plugin\RawResourceFormatBase;
 /**
  * Provides a 'XML' VisualN raw resource format.
  *
+ * @ingroup raw_resource_formats
+ *
  * @VisualNRawResourceFormat(
  *  id = "visualn_xml",
  *  label = @Translation("XML (not working)"),
