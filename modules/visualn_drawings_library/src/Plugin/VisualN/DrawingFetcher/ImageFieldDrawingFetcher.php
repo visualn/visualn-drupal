@@ -9,6 +9,8 @@ use Drupal\visualn\Helpers\VisualN;
 /**
  * Provides a 'Image field drawing fetcher' VisualN drawing fetcher.
  *
+ * @ingroup fetcher_plugins
+ *
  * @VisualNDrawingFetcher(
  *  id = "visualn_image_field",
  *  label = @Translation("Image field drawing fetcher"),

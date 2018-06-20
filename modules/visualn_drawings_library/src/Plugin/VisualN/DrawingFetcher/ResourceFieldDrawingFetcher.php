@@ -8,6 +8,10 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Provides a 'VisualN Resource field drawing fetcher' VisualN drawing fetcher.
  *
+ * @todo: implement fetcher logic
+ *
+ * @ingroup fetcher_plugins
+ *
  * @VisualNDrawingFetcher(
  *  id = "visualn_resource_field",
  *  label = @Translation("VisualN Resource field drawing fetcher"),

@@ -13,7 +13,7 @@ use Drupal\visualn\ResourceInterface;
  *
  * @VisualNAdapter(
  *  id = "visualn_csv",
- *  label = @Translation("Remote cSV To JS Array Adapter"),
+ *  label = @Translation("Remote CSV To JS Array Adapter"),
  *  input = "remote_generic_csv",
  * )
  */

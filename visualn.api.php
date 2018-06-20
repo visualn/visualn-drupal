@@ -122,6 +122,18 @@
  */
 
 /**
+ * @defgroup fetcher_plugins Fetcher plugins
+ * @{
+ * Fetchers create drawings built on the fetchers custom logic.
+ *
+ * Fecher plugins allow to implement an alternative logic to create drawings
+ * even without relying on chain plugins, even without drawers as an edge case.
+ * Fetchers are commonly used by VisualN blocks to create drawings as blocks,
+ * and by Drawing entities and to embed them into content via tokens or iframes.
+ * @}
+ */
+
+/**
  * @defgroup raw_resource_formats Raw Resource Format plugins
  * @{
  * Raw Resource Formats describe real physical resources used.

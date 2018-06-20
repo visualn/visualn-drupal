@@ -8,6 +8,10 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Provides a 'VisualN Views drawing fetcher' VisualN drawing fetcher.
  *
+ * @todo: implement fetcher logic
+ *
+ * @ingroup fetcher_plugins
+ *
  * @VisualNDrawingFetcher(
  *  id = "visualn_views",
  *  label = @Translation("VisualN Views drawing fetcher")

@@ -16,6 +16,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides a 'VisualN Resource Provider generic drawing fetcher' VisualN drawing fetcher.
  *
+ * @ingroup fetcher_plugins
+ *
  * @VisualNDrawingFetcher(
  *  id = "visualn_data_source_generic",
  *  label = @Translation("VisualN Data Source generic drawing fetcher")

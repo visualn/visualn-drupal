@@ -8,6 +8,8 @@ use Drupal\visualn\Helpers\VisualN;
 /**
  * Provides a 'VisualN Standalone drawing fetcher' VisualN drawing fetcher.
  *
+ * @ingroup fetcher_plugins
+ *
  * @VisualNDrawingFetcher(
  *  id = "visualn_standalone",
  *  label = @Translation("VisualN Standalone drawing fetcher")

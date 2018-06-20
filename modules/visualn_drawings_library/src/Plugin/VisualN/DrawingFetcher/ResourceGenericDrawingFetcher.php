@@ -25,6 +25,8 @@ use Drupal\visualn\Helpers\VisualN;
 /**
  * Provides a 'VisualN Resource generic drawing fetcher' VisualN drawing fetcher.
  *
+ * @ingroup fetcher_plugins
+ *
  * @VisualNDrawingFetcher(
  *  id = "visualn_resource_generic",
  *  label = @Translation("VisualN Resource generic drawing fetcher")

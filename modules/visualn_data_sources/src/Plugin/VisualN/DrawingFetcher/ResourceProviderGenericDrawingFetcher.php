@@ -26,6 +26,8 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
 /**
  * Provides a 'VisualN Resource Provider generic drawing fetcher' VisualN drawing fetcher.
  *
+ * @ingroup fetcher_plugins
+ *
  * @VisualNDrawingFetcher(
  *  id = "visualn_resource_provider_generic",
  *  label = @Translation("VisualN Resource Provider generic drawing fetcher"),
