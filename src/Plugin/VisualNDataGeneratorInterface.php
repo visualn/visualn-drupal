@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_data_sources\Plugin;
+namespace Drupal\visualn\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
@@ -26,7 +26,7 @@ interface VisualNDataGeneratorInterface extends PluginInspectionInterface, Confi
    * return e.g. nested array. For that case a different resource
    * and thus a different raw resource format should be used.
    *
-   * @see \Drupal\visualn_data_sources\Annotation\VisualNDataGenerator
+   * @see \Drupal\visualn\Annotation\VisualNDataGenerator
    *
    * @return \Drupal\visualn\Plugin\VisualNResourceInterface
    */

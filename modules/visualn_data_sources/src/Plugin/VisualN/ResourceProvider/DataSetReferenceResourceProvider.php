@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_data_sources\Plugin\VisualN\ResourceProvider;
 
-use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderBase;
+use Drupal\visualn\Plugin\VisualNResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 

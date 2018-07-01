@@ -7,7 +7,7 @@ use Drupal\visualn_drawings_library\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
-use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager;
+use Drupal\visualn\Plugin\VisualNResourceProviderManager;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
@@ -44,7 +44,7 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager
+   * @var \Drupal\visualn\Plugin\VisualNResourceProviderManager
    */
   protected $visualNResourceProviderManager;
 
@@ -82,7 +82,7 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
    *   The visualn drawer manager service.
    * @param \Drupal\visualn\Plugin\VisualNManagerManager $visualn_manager_manager
    *   The visualn manager manager service.
-   * @param \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager $visualn_resource_provider_manager
+   * @param \Drupal\visualn\Plugin\VisualNResourceProviderManager $visualn_resource_provider_manager
    *   The visualn resource provider manager service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceProviderManager $visualn_resource_provider_manager) {

@@ -6,8 +6,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager;
-use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager;
+use Drupal\visualn\Plugin\VisualNDataGeneratorManager;
+use Drupal\visualn\Plugin\VisualNResourceProviderManager;
 use Drupal\Core\Form\SubformState;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\Context\Context;
@@ -186,6 +186,7 @@ class DrawerPreviewForm extends FormBase {
     $provider_plugin = $form['resource_provider_config']['#resource_provider_plugin'];
     $provider_config = $form_state->getValue('resource_provider_config');
     $provider_plugin->setConfiguration($provider_config);
+    // @todo: draw drawing in pre_render callback otherwise it is called twice
     $resource = $provider_plugin->getResource();
 
 

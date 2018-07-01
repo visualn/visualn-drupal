@@ -2,15 +2,15 @@
 
 // @todo: rename class to GeneratedDataResourceProvider
 
-namespace Drupal\visualn_data_sources\Plugin\VisualN\ResourceProvider;
+namespace Drupal\visualn\Plugin\VisualN\ResourceProvider;
 
-use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderBase;
+use Drupal\visualn\Plugin\VisualNResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager;
+use Drupal\visualn\Plugin\VisualNDataGeneratorManager;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\Core\Url;
 use Drupal\visualn\Helpers\VisualN;
@@ -26,9 +26,9 @@ use Drupal\visualn\Helpers\VisualN;
 class GeneratedResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
 
   /**
-   * Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager definition.
+   * Drupal\visualn\Plugin\VisualNDataGeneratorManager definition.
    *
-   * @var \Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager
+   * @var \Drupal\visualn\Plugin\VisualNDataGeneratorManager
    */
   protected $visualNDataGeneratorManager;
 

@@ -4,7 +4,7 @@ namespace Drupal\visualn_data_sources\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager;
+use Drupal\visualn\Plugin\VisualNResourceProviderManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
@@ -13,9 +13,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ResourceProviderController extends ControllerBase {
 
   /**
-   * Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager definition.
+   * Drupal\visualn\Plugin\VisualNResourceProviderManager definition.
    *
-   * @var \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager
+   * @var \Drupal\visualn\Plugin\VisualNResourceProviderManager
    */
   protected $pluginManagerVisualnResourceProvider;
 

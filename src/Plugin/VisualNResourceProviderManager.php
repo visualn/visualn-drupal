@@ -1,19 +1,19 @@
 <?php
 
-namespace Drupal\visualn_data_sources\Plugin;
+namespace Drupal\visualn\Plugin;
 
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * Provides the VisualN Data Generator plugin manager.
+ * Provides the VisualN Resource Provider plugin manager.
  */
-class VisualNDataGeneratorManager extends DefaultPluginManager {
+class VisualNResourceProviderManager extends DefaultPluginManager {
 
 
   /**
-   * Constructs a new VisualNDataGeneratorManager object.
+   * Constructs a new VisualNResourceProviderManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -24,10 +24,10 @@ class VisualNDataGeneratorManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/VisualN/DataGenerator', $namespaces, $module_handler, 'Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorInterface', 'Drupal\visualn_data_sources\Annotation\VisualNDataGenerator');
+    parent::__construct('Plugin/VisualN/ResourceProvider', $namespaces, $module_handler, 'Drupal\visualn\Plugin\VisualNResourceProviderInterface', 'Drupal\visualn\Annotation\VisualNResourceProvider');
 
-    $this->alterInfo('visualn_data_generator_info');
-    $this->setCacheBackend($cache_backend, 'visualn_data_generator_plugins');
+    $this->alterInfo('visualn_resource_provider_info');
+    $this->setCacheBackend($cache_backend, 'visualn_resource_provider_plugins');
   }
 
 }

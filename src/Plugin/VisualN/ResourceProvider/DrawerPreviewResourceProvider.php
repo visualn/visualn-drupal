@@ -11,7 +11,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Render\Element;
-use Drupal\visualn_data_sources\Plugin\VisualN\ResourceProvider\GeneratedResourceProvider;
 
 /**
  * Provides a 'Drawer Preview Resource Provider' VisualN resource provider.

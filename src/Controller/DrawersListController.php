@@ -5,7 +5,7 @@ namespace Drupal\visualn\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager;
+use Drupal\visualn\Plugin\VisualNDataGeneratorManager;
 use Drupal\Core\Link;
 
 /**
@@ -23,7 +23,7 @@ class DrawersListController extends ControllerBase {
   /**
    * Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager definition.
    *
-   * @var \Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager
+   * @var \Drupal\visualn\Plugin\VisualNDataGeneratorManager
    */
   protected $visualNDataGeneratorManager;
 

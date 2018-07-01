@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_data_sources\Plugin;
+namespace Drupal\visualn\Plugin;
 
 use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Form\FormStateInterface;

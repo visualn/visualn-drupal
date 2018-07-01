@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_data_sources\Annotation;
+namespace Drupal\visualn\Annotation;
 
 use Drupal\Component\Annotation\Plugin;
 
