@@ -129,6 +129,10 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
     $options += [
       'drawer_config' => [],  // optional (drawer default config is considered)
     ];
+
+
+
+/*
     // @todo: do we really need style_id here? maybe just pass drawer_plugin_id or both
     //  manager needs to know nothing about the visualn style
     $visualn_style_id = $options['style_id'];
@@ -137,10 +141,30 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
       return;
     }
 
-    // @todo: there may be different input_options required for different adapters (and other plugin types)
     // @todo: do we have chain_plugins_configs here? i.e. in case chain is built for the first time
     //    is chain stored anywhere (in config settings)?
     $drawer = $visualn_style->getDrawerPlugin()->setConfiguration($options['drawer_config']);
+*/
+
+
+    if (!empty($options['style_id'])) {
+      $visualn_style_id = $options['style_id'];
+      $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
+      if (empty($visualn_style)) {
+        return;
+      }
+      $drawer = $visualn_style->getDrawerPlugin()->setConfiguration($options['drawer_config']);
+    }
+    elseif (!empty($options['base_drawer_id'])) {
+      $drawer_plugin_id = $options['base_drawer_id'];
+      $drawer = $this->visualNDrawerManager->createInstance($drawer_plugin_id, $options['drawer_config']);
+      if (empty($drawer)) {
+        return;
+      }
+    }
+    else {
+      return;
+    }
 
     //$chain = $this->composePluginsChain($drawer, $input_type, $input_data);
     // @todo: $additional_options

@@ -29,3 +29,21 @@ visualn.drawer.modifier_delete:
     _title: 'Delete drawer modifier'
   requirements:
     _permission: 'administer user-defined drawers'
+
+# @todo: set correct permissions
+visualn.drawers_list_controller_page:
+  path: '/admin/config/media/visualn/preview'
+  defaults:
+    _controller: '\Drupal\visualn\Controller\DrawersListController::page'
+    _title: 'Available Drawers Preview'
+  requirements:
+    _permission: 'access administration pages'
+
+# @todo: set correct permissions
+visualn.drawer_preview_controller_page:
+  path: '/admin/config/media/visualn/preview/{id}'
+  defaults:
+    _controller: '\Drupal\visualn\Controller\DrawerPreviewController::page'
+    _title_callback: '\Drupal\visualn\Controller\DrawerPreviewController::title'
+  requirements:
+    _permission: 'access administration pages'

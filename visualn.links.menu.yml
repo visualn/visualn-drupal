@@ -3,6 +3,11 @@ visualn.admin_config_visualn:
   parent: system.admin_config_media
   title: Visualization
   weight: 0
+visualn.drawers_list_controller_page:
+  route_name: visualn.drawers_list_controller_page
+  parent: visualn.admin_config_visualn
+  title: Available Drawers Preview
+  weight: 0
 entity.visualn_style.collection:
   title: 'Visualization styles'
   route_name: entity.visualn_style.collection

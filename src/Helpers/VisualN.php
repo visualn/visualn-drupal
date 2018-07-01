@@ -38,18 +38,28 @@ class VisualN {
    *
    * @todo: convert into a service, then services used could be injected as arguments via service tags
    */
-  public static function makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields) {
+  public static function makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields, $base_drawer_id = '') {
     $build = [];
 
     $visualNStyleStorage = \Drupal::service('entity_type.manager')->getStorage('visualn_style');
     $visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
     $visualNManagerManager = \Drupal::service('plugin.manager.visualn.manager');
 
-    // load style and get drawer manager from plugin definition
-    $visualn_style = $visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin_id = $visualn_style->getDrawerPlugin()->getPluginId();
-    $manager_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
-    // @todo: pass options as part of $manager_config (?)
+
+    if (!empty($visualn_style_id)) {
+      // load style and get drawer manager from plugin definition
+      $visualn_style = $visualNStyleStorage->load($visualn_style_id);
+      $drawer_plugin_id = $visualn_style->getDrawerPlugin()->getPluginId();
+      $manager_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
+      // @todo: pass options as part of $manager_config (?)
+    }
+    elseif (!empty($base_drawer_id)) {
+      $drawer_plugin_id = $base_drawer_id;
+      $manager_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
+    }
+    else {
+      return $build;
+    }
 
 
     // generate vuid for the drawing
@@ -75,6 +85,8 @@ class VisualN {
       'drawer_config' => $drawer_config,
       'drawer_fields' => $drawer_fields,
       'html_selector' => $html_selector,
+      // @todo: this was introduced later, for drawer preview page
+      'base_drawer_id' => $base_drawer_id,
     ];
 
 

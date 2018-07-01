@@ -1,12 +1,16 @@
 <?php
 
+// @todo: rename class to GeneratedDataResourceProvider
+
 namespace Drupal\visualn_data_sources\Plugin\VisualN\ResourceProvider;
 
 use Drupal\visualn_data_sources\Plugin\VisualNResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\HttpFoundation\Request;
-//use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\Core\Url;
 use Drupal\visualn\Helpers\VisualN;
@@ -19,8 +23,35 @@ use Drupal\visualn\Helpers\VisualN;
  *  label = @Translation("VisualN Generated Resource Provider"),
  * )
  */
-//class GeneratedResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
-class GeneratedResourceProvider extends VisualNResourceProviderBase {
+class GeneratedResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager definition.
+   *
+   * @var \Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager
+   */
+  protected $visualNDataGeneratorManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('plugin.manager.visualn.data_generator')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, VisualNDataGeneratorManager $plugin_manager_visualn_data_generator) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->visualNDataGeneratorManager = $plugin_manager_visualn_data_generator;
+  }
 
   /**
    * {@inheritdoc}
@@ -44,10 +75,9 @@ class GeneratedResourceProvider extends VisualNResourceProviderBase {
     $output_type = 'generic_data_array';
     $data = [];
     if ($this->configuration['data_generator_id']) {
-      $visualNDataGeneratorManager = \Drupal::service('plugin.manager.visualn.data_generator');
       $data_generator_id = $this->configuration['data_generator_id'];
       $data_generator_config = $this->configuration['data_generator_config'];
-      $generator_plugin = $visualNDataGeneratorManager->createInstance($data_generator_id, $data_generator_config);
+      $generator_plugin = $this->visualNDataGeneratorManager->createInstance($data_generator_id, $data_generator_config);
       $data = $generator_plugin->generateData();
     }
 
@@ -67,8 +97,7 @@ class GeneratedResourceProvider extends VisualNResourceProviderBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $visualNDataGeneratorManager = \Drupal::service('plugin.manager.visualn.data_generator');
-    $definitions = $visualNDataGeneratorManager->getDefinitions();
+    $definitions = $this->visualNDataGeneratorManager->getDefinitions();
     $data_generators = [];
     foreach ($definitions as $definition) {
       $data_generators[$definition['id']] = $definition['label'];

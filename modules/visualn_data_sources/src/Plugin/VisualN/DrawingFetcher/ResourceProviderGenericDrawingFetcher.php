@@ -114,7 +114,7 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
     $resource_providers = [];
     foreach ($definitions as $definition) {
 
-      // Exclude providers with which have at least one required context scince here no context is provided.
+      // Exclude providers which have at least one required context since here no context is provided.
       if (!empty($definition['context'])) {
         foreach ($definition['context'] as $name => $context_definition) {
           // @todo: Here we check only contexts required for the form (e.g. we don't check "current_entity" context)
@@ -123,6 +123,9 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
           //    Also the "current_entity" context seems to not being checked anywhere and is supposed to work
           //    by convention.
           if (!in_array($name, array('entity_type', 'bundle'))) {
+            if ($context_definition->isRequired() && $name != 'current_entity') {
+              continue 2;
+            }
             continue;
           }
           elseif ($context_definition->isRequired() && !$this->getContextValue($name)) {

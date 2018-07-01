@@ -4,6 +4,11 @@ admin:
     theme:
       css/visualn.admin.css: {}
 
+visualn-drawer-preview:
+  css:
+    theme:
+      css/forms/visualn-drawer-preview.css: {}
+
 xml2json:
   remote: http://goessner.net/download/prj/jsonxml/
   version: v0.9
