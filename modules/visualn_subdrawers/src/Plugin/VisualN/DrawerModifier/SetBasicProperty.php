@@ -5,7 +5,7 @@
  * Conatins SetBasicProperty class.
  */
 
-namespace Drupal\visualn\Plugin\VisualN\DrawerModifier;
+namespace Drupal\visualn_subdrawers\Plugin\VisualN\DrawerModifier;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\Plugin\VisualNDrawerModifierBase;
