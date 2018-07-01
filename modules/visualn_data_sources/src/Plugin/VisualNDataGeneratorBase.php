@@ -4,6 +4,7 @@ namespace Drupal\visualn_data_sources\Plugin;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Base class for VisualN Data Generator plugins.
@@ -23,6 +24,27 @@ abstract class VisualNDataGeneratorBase extends PluginBase implements VisualNDat
    */
   abstract public function generateData();
 
+  /**
+   * {@inheritdoc}
+   */
+  public function generateResource() {
+    $data = $this->generateData();
+    $raw_input = [
+      'data' => $data,
+    ];
+
+    // get resource from raw resource format plugin
+    $definition = $this->getPluginDefinition();
+    $raw_resource_format_id = $definition['raw_resource_format'];
+
+    // no plugin config needed here though custom method implementation may use some
+    $raw_resource_format_plugin = \Drupal::service('plugin.manager.visualn.raw_resource_format')
+      ->createInstance($raw_resource_format_id, []);
+
+    $resource = $raw_resource_format_plugin->buildResource($raw_input);
+
+    return $resource;
+  }
 
 
   /**

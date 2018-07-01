@@ -72,21 +72,27 @@ class GeneratedResourceProvider extends VisualNResourceProviderBase implements C
 
 
   public function getResource() {
-    $output_type = 'generic_data_array';
-    $data = [];
     if ($this->configuration['data_generator_id']) {
       $data_generator_id = $this->configuration['data_generator_id'];
       $data_generator_config = $this->configuration['data_generator_config'];
       $generator_plugin = $this->visualNDataGeneratorManager->createInstance($data_generator_id, $data_generator_config);
-      $data = $generator_plugin->generateData();
+      $resource = $generator_plugin->generateResource();
+    }
+    else {
+      // @todo: or return NULL or FASLE if data generator not defined
+      //   or an "empty" resource
+      // @todo: maybe use raw resource format to get resource
+      $output_type = 'generic_data_array';
+
+      $data = [];
+      $adapter_settings =  [
+        'data' => $data,
+      ];
+
+      // @todo: load resource plugin
+      $resource = VisualN::getResourceByOptions($output_type, $adapter_settings);
     }
 
-    $adapter_settings =  [
-      'data' => $data,
-    ];
-
-    // @todo: load resource plugin
-    $resource = VisualN::getResourceByOptions($output_type, $adapter_settings);
 
     return $resource;
   }

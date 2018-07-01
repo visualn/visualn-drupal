@@ -18,4 +18,18 @@ interface VisualNDataGeneratorInterface extends PluginInspectionInterface, Confi
    */
   public function generateData();
 
+  /**
+   * Generate resource object based on generated data.
+   *
+   * Usually generateData() is expected to generate plain array
+   * though there may be cases when some other structure will be
+   * return e.g. nested array. For that case a different resource
+   * and thus a different raw resource format should be used.
+   *
+   * @see \Drupal\visualn_data_sources\Annotation\VisualNDataGenerator
+   *
+   * @return \Drupal\visualn\Plugin\VisualNResourceInterface
+   */
+  public function generateResource();
+
 }
