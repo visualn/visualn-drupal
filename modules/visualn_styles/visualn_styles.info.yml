@@ -1,7 +1,0 @@
-name: VisualN Styles
-type: module
-description: VisualN ready to use styles.
-core: 8.x
-package: VisualN
-dependencies:
-  - visualn
