@@ -1,5 +1,5 @@
 // @todo: maybe rename the file (to comply library name) or the library itself
-(function ($, Drupal, d3, xml2json) {
+(function ($, Drupal, d3) {
   Drupal.visualnData.adapters.visualnRemoteDsvToJSArrayAdapter = function(drawings, vuid, managerCallback) {
     var fileType = drawings[vuid].adapter.fileType;
 
@@ -25,8 +25,9 @@
             managerCallback(data);
           });
           break;
-        // @todo: currently this adapter should always load xml2json library
-        //    even if it is not used (e.g. when csv is processed)
+        // @todo: the code moved into xml remote-xml-to-js-array-adapter.js
+        //   to avoid loading xml2json library even when not needed (e.g. when csv is processed)
+        //   so not used any more and can be removed
         case 'xml' :
           //mimeType = 'text/xml';
           var sourceD3 = d3.xml(drawings[vuid].adapter.fileUrl, function(error, data) {
@@ -63,5 +64,5 @@
     //return sourceD3;
   };
 
-})(jQuery, Drupal, d3, xml2json);
+})(jQuery, Drupal, d3);
 

@@ -28,11 +28,15 @@ d3:
   js:
     /libraries/d3/d3.min.js: {}
 
-# @todo: currently this adapter should always load xml2json library
-#    even if it is not used (e.g. when csv is processed)
 adapter-remote-dsv-to-js-array:
   js:
     js/adapters/remote-dsv-to-js-array-adapter.js: {}
+  dependencies:
+    - visualn/d3
+
+adapter-remote-xml-to-js-array:
+  js:
+    js/adapters/remote-xml-to-js-array-adapter.js: {}
   dependencies:
     - visualn/d3
     - visualn/xml2json
