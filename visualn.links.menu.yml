@@ -1,7 +1,8 @@
 visualn.admin_config_visualn:
   route_name: visualn.admin_config_visualn
-  parent: system.admin_config_media
-  title: Visualization
+  parent: 'system.admin'
+  #parent: system.admin_config_media
+  title: 'VisualN'
   weight: 0
 visualn.drawers_list_controller_page:
   route_name: visualn.drawers_list_controller_page
