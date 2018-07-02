@@ -138,9 +138,10 @@ class VisualNFormatter extends GenericFileFormatter implements ContainerFactoryP
     $elements = $this->visualnViewElements($items, $langcode);
     if ($this->getSetting('show_file_link') == 0) {
       foreach ($elements as $delta => $element) {
-        $elements[$delta]['#type'] = '#markup';
-        unset($elements[$delta]['#theme']);
-        //unset($elements[$delta]['#file']);
+        //$elements[$delta]['#type'] = '#markup';
+        //unset($elements[$delta]['#theme']);
+
+        unset($elements[$delta]['#context']['element_build']);
       }
     }
     return $elements;

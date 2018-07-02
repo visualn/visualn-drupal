@@ -38,6 +38,7 @@
             // pass data to manager callback when request successfully finished
             managerCallback(data);
           });
+          break;
         case 'json' :
           //mimeType = 'application/json';
           var sourceD3 = d3.json(drawings[vuid].adapter.fileUrl, function(error, data) {

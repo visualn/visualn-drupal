@@ -149,7 +149,8 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
     $elements = $this->visualnViewElements($items, $langcode);
     if ($this->getSetting('show_resource_link') == 0) {
       foreach ($elements as $delta => $element) {
-        $elements[$delta]['#type'] = '#markup';
+        //$elements[$delta]['#type'] = '#markup';
+        unset($elements[$delta]['#context']['element_build']);
       }
     }
     return $elements;

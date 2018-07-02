@@ -48,6 +48,7 @@ var settings = e.detail;
             var adapterId = drawing.adapter.adapterId;
             // @todo: maybe pass just a drawing or also a drawing
             // @todo: pass also a callback to run when adapter result is ready (e.g. for requesting urls)
+            // @todo: use js Promises feature
             var callback = function(data){
               drawing.adapter.responseData = data;
               //console.log(data);

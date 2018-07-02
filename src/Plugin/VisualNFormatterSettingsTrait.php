@@ -244,11 +244,22 @@ trait VisualNFormatterSettingsTrait {
 
       // Get drawing build
       $build = VisualN::makeBuild($options);
-      //$elements[$delta]['visualn_drawing'] = $build;
 
-      // @todo: this is a temporary solution, should be used custom theme template
-      $elements[$delta]['#suffix'] = isset($elements[$delta]['#suffix']) ? $elements[$delta]['#suffix'] : '';
-      $elements[$delta]['#suffix'] .= \Drupal::service('renderer')->render($build);
+      // Drawing build can't just be attached to #suffix as rendered markup
+      // i.e. using \Drupal::service('renderer')->render($build) since it may do
+      // unwanted preprocessing, i.e. vue.js tag attributes
+      // such as src=":some_var" will be converted to src="some_var".
+
+      // @todo: maybe use a stand-alone template instead of inline template
+      // @todo: check for possible security issues of this approach
+      $elements[$delta] = [
+        '#type' => 'inline_template',
+        '#template' => "{{element_build}} {{drawing_build}}",
+        '#context' => [
+          'element_build' => $elements[$delta],
+          'drawing_build' => $build,
+        ],
+      ];
     }
     return $elements;
   }
