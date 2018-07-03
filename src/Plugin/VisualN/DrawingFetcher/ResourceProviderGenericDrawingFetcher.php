@@ -1,9 +1,8 @@
 <?php
 
-namespace Drupal\visualn_data_sources\Plugin\VisualN\DrawingFetcher;
+namespace Drupal\visualn\Plugin\VisualN\DrawingFetcher;
 
-use Drupal\visualn_drawings_library\Plugin\GenericDrawingFetcherBase;
-//use Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherBase;
+use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Drupal\visualn_drawings_library\Plugin;
+namespace Drupal\visualn\Plugin;
 
-use Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherBase;
+use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Link;

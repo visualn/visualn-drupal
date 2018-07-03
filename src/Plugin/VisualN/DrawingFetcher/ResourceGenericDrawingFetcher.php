@@ -1,9 +1,8 @@
 <?php
 
-namespace Drupal\visualn_drawings_library\Plugin\VisualN\DrawingFetcher;
+namespace Drupal\visualn\Plugin\VisualN\DrawingFetcher;
 
-use Drupal\visualn_drawings_library\Plugin\GenericDrawingFetcherBase;
-use Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherBase;
+use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Link;
@@ -32,7 +31,6 @@ use Drupal\visualn\Helpers\VisualN;
  *  label = @Translation("VisualN Resource generic drawing fetcher")
  * )
  */
-//class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase implements ContainerFactoryPluginInterface {
 class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
 
   const RAW_RESOURCE_FORMAT_GROUP = 'visualn_resource_widget';

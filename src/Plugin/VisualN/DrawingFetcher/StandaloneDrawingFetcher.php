@@ -1,8 +1,8 @@
 <?php
 
-namespace Drupal\visualn_drawings_library\Plugin\VisualN\DrawingFetcher;
+namespace Drupal\visualn\Plugin\VisualN\DrawingFetcher;
 
-use Drupal\visualn_drawings_library\Plugin\GenericDrawingFetcherBase;
+use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\visualn\Helpers\VisualN;
 
 /**

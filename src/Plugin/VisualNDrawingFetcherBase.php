@@ -1,10 +1,9 @@
 <?php
 
-namespace Drupal\visualn_drawings_library\Plugin;
+namespace Drupal\visualn\Plugin;
 
 use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\visualn_drawings_library\Entity\VisualNDrawing;
 
 /**
  * Base class for VisualN Drawing Fetcher plugins.

@@ -23,6 +23,9 @@ services:
   plugin.manager.visualn.resource:
     class: Drupal\visualn\Plugin\VisualNResourceManager
     parent: default_plugin_manager
+  plugin.manager.visualn.drawing_fetcher:
+    class: Drupal\visualn\Plugin\VisualNDrawingFetcherManager
+    parent: default_plugin_manager
   plugin.manager.visualn.resource_provider:
     class: Drupal\visualn\Plugin\VisualNResourceProviderManager
     parent: default_plugin_manager

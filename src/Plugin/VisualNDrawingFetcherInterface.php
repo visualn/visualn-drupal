@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_drawings_library\Plugin;
+namespace Drupal\visualn\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_drawings_library\Plugin;
+namespace Drupal\visualn\Plugin;
 
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -24,7 +24,7 @@ class VisualNDrawingFetcherManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/VisualN/DrawingFetcher', $namespaces, $module_handler, 'Drupal\visualn_drawings_library\Plugin\VisualNDrawingFetcherInterface', 'Drupal\visualn_drawings_library\Annotation\VisualNDrawingFetcher');
+    parent::__construct('Plugin/VisualN/DrawingFetcher', $namespaces, $module_handler, 'Drupal\visualn\Plugin\VisualNDrawingFetcherInterface', 'Drupal\visualn\Annotation\VisualNDrawingFetcher');
 
     $this->alterInfo('visualn_drawing_fetcher_info');
     $this->setCacheBackend($cache_backend, 'visualn_drawing_fetcher_plugins');
