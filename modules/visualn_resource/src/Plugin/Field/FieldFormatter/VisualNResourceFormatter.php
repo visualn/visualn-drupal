@@ -149,52 +149,20 @@ class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactor
     $elements = $this->visualnViewElements($items, $langcode);
     if ($this->getSetting('show_resource_link') == 0) {
       foreach ($elements as $delta => $element) {
-        //$elements[$delta]['#type'] = '#markup';
         unset($elements[$delta]['#context']['element_build']);
       }
     }
     return $elements;
   }
 
-  public function visualnViewElementsOptionsAll($elements, array $options) {
-    $options['output_type'] = 'remote_generic_dsv';  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
-    return $options;
-  }
 
-  // @todo: define $item class type (and also in the VisualNFomratterSettingsTrait.php)
-  public function visualnViewElementsOptionsEach($element, array $options, $item) {
-    $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
-    if (!empty($visualn_data['resource_format'])) {
-      $resource_format_plugin_id = $visualn_data['resource_format'];
-      // @todo: actually output_type is not needed here any more
-      //   since it will be taken from raw_resource_format plugin annotation
-      //   in VisualN::makeBuild()
-      $options['output_type'] = $this->visualNResourceFormatManager->getDefinition($resource_format_plugin_id)['output'];
-      $options['raw_resource_format_id'] = $visualn_data['resource_format'];
-    }
-    else {
-      // @todo: By default use DSV Generic Resource Format
-      // @todo: load resource format plugin and get resource form by plugin id
-      // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
-      $options['output_type'] = 'remote_generic_dsv';
+  public function getRawInput($element, $item) {
+    $url = $this->buildUrl($item)->toString();
+    $raw_input = [
+      'file_url' => $url,
+    ];
 
-      // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
-      $options['adapter_settings']['file_mimetype'] = 'text/tab-separated-values';
-    }
-
-    // see LinkFormatter::viewElements
-    if (!empty($settings['url_only']) && !empty($settings['url_plain'])) {
-      $url = $element['#plain_text'];
-    }
-    else {
-      $url = $element['#url']->toString();
-    }
-    //$file = $element['#file'];
-    //$url = $file->url();
-    $options['adapter_settings']['file_url'] = $url;
-    //$options['adapter_settings']['file_mimetype'] = $file->getMimeType();
-
-    return $options;
+    return $raw_input;
   }
 
 }

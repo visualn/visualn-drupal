@@ -63,7 +63,7 @@ trait VisualNFormatterSettingsTrait {
       '#title' => t('VisualN style'),
       '#type' => 'select',
       '#default_value' => $this->getSetting('visualn_style_id'),
-      '#empty_option' => t('None (original image)'),
+      '#empty_option' => t('None (raw data)'),
       '#options' => $visualn_styles,
       // @todo: add permission check for current user
       '#description' => $description_link->toRenderable() + [
@@ -168,82 +168,61 @@ trait VisualNFormatterSettingsTrait {
     // @todo: since this can be cached it could not take style changes (i.e. made in style
     //   configuration interface) into consideration, so a cache tag may be needed.
 
-    // @todo: check if visualn style settings are overridden
-    //   and use those if true
 
-    $visualn_style_id = $this->getSetting('visualn_style_id');
-    if (empty($visualn_style_id)) {
-      return $elements;
+    // @todo: if visualn style not selected (e.g. user didn't select or not allowed to)
+    //   use style from formatter settings
+
+    // get default visualn style from formatter settings
+    $default_visualn_style_id = $this->getSetting('visualn_style_id');
+    if (!empty($default_visualn_style_id)) {
+      $visualn_style = $this->visualNStyleStorage->load($default_visualn_style_id);
+      $drawer_plugin = $visualn_style->getDrawerPlugin();
+      // @todo: why not get configuration for getSetting() without loading style?
+      //   useful only if there is an option to not override config in formatter settings
+      $default_drawer_config = $this->getSetting('drawer_config');
+      //$default_drawer_config = $drawer_plugin->getConfiguration() + $this->getSetting('drawer_config');
+      $default_drawer_fields = $this->getSetting('drawer_fields');
     }
 
-    // load style and get drawer manager from plugin definition
-    $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
-    $drawer_plugin = $visualn_style->getDrawerPlugin();
-    $drawer_plugin_id = $drawer_plugin->getPluginId();
-    $manager_plugin_id = $this->visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
-
-    // @todo: check if config is needed
-    $manager_config = [];
-    $manager_plugin = $this->visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
-    // @todo: pass options as part of $manager_config (?)
-    $options = [
-      'style_id' => $visualn_style_id,
-      // @todo: getConfiguration() here isn't needed since configuration is taken from setConfiguration()
-      //    in __construct() of the drawer
-      'drawer_config' => $drawer_plugin->getConfiguration() + $this->getSetting('drawer_config'),
-      // @todo: use another name for adapter group
-      // delimiter separated values file
-      /*'output_type' => 'remote_generic_dsv',  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)*/
-      // @todo: maybe rename to mapper_settings (though it is used in adapter in views display style)
-      //   so can be used both in mapper and in adapter (or even in drawer, if it does remapping by itself)
-      'drawer_fields' => $this->getSetting('drawer_fields'),
-      'adapter_settings' => [],
-    ];
-
-    // set additional options for the formatter type (can be overridden by the formatter)
-    $options = $this->visualnViewElementsOptionsAll($elements, $options);
-    // @todo: formatter settings should be restructured before saving
-    //foreach ($options['drawer_fields'] as $k => $v) {
-      //$options['drawer_fields'][$k] = $v['field'];
-    //}
-
+    // create drawing for each delta
     foreach ($elements as $delta => $element) {
-      // @todo: is it ok to access item this way?
-      // @todo: this is a temporary solution
       $item = $items[$delta];
-      if ($items[$delta]->visualn_style_id) {
-        $visualn_style_id = $items[$delta]->visualn_style_id;
-
-        $visualn_data = !empty($items[$delta]->visualn_data) ? unserialize($items[$delta]->visualn_data) : [];
-        $drawer_config = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
-
-        // don't use getSetting() if visualn_style is different from the one in formatter settings
-        if ($visualn_style_id == $this->getSetting('visualn_style_id')) {
-          $drawer_config += $this->getSetting('drawer_config');
-        }
-        $options = [
-          'style_id' => $visualn_style_id,
-          'drawer_config' => $drawer_config,
-          // @todo: use another name for adapter group
-          // delimiter separated values file
-          // @todo: xml or json can't be considered dsv a file
-          'output_type' => 'remote_generic_dsv',  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
-          //'output_info' => ['mimetype' => ''],  // currently it is passed via 'adapter_settings'
-          // @todo: maybe rename to mapper_settings (though it is used in adapter in views display style)
-          //   so can be used both in mapper and in adapter (or even in drawer, if it does remapping by itself)
-          'drawer_fields' => !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [],
-          // @todo: rename to ouput_info/output_data or something like that
-          'adapter_settings' => [],
-        ];
+      $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
+      $raw_resource_format_id = $visualn_data['resource_format'];
+      if (empty($raw_resource_format_id)) {
+        continue;
       }
 
-
-      // set additional options for the formatter type for each single delta (can be overridden by the formatter)
-      $options = $this->visualnViewElementsOptionsEach($element, $options, $item);
-
+      if ($items[$delta]->visualn_style_id) {
+        $visualn_style_id = $items[$delta]->visualn_style_id;
+        $drawer_config = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
+        $drawer_fields = !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [];
+      }
+      elseif (!empty($default_visualn_style_id)) {
+        $visualn_style_id = $default_visualn_style_id;
+        $drawer_config = $default_drawer_config;
+        // @todo: user could still override drawer fields even if visualn style override is not allowed
+        $drawer_fields = $default_drawer_fields;
+      }
+      else {
+        $visualn_style_id = '';
+        $drawer_config = [];
+        $drawer_fields = [];
+      }
 
       // Get drawing build
-      $build = VisualN::makeBuild($options);
+      if ($visualn_style_id) {
+        $raw_input = $this->getRawInput($element, $item);
+        // @todo: config may be required for some formats, though then a subform should be shown
+        //   and configuration saved in visualn_data (e.g. quotes type for csv files)
+        $raw_resource_format_plugin
+          = $this->visualNResourceFormatManager->createInstance($raw_resource_format_id, []);
+        $resource = $raw_resource_format_plugin->buildResource($raw_input);
+        $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+      }
+      else {
+        $build = [];
+      }
 
       // Drawing build can't just be attached to #suffix as rendered markup
       // i.e. using \Drupal::service('renderer')->render($build) since it may do
@@ -261,35 +240,8 @@ trait VisualNFormatterSettingsTrait {
         ],
       ];
     }
+
     return $elements;
-  }
-
-  // @todo: currently these settings are added for visualn_file formatter so should be moved there
-  public function visualnViewElementsOptionsAll($elements, array $options) {
-    $options['output_type'] = 'remote_generic_dsv';  // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
-    return $options;
-  }
-
-  // @todo: currently these settings are added for visualn_file formatter so should be moved there
-  public function visualnViewElementsOptionsEach($element, array $options, $item) {
-    $file = $element['#file'];
-    $url = $file->url();
-    $options['adapter_settings']['file_url'] = $url;
-    $options['adapter_settings']['file_mimetype'] = $file->getMimeType();
-    $visualn_data = !empty($item->visualn_data) ? unserialize($item->visualn_data) : [];
-
-    // if resource not empty, generate resource using raw resource format plugin
-    if (!empty($visualn_data['resource_format'])) {
-      $resource_format_plugin_id = $visualn_data['resource_format'];
-      // @todo: actually output_type is not needed here any more
-      //   since it will be taken from raw_resource_format plugin annotation
-      //   in VisualN::makeBuild()
-      $options['output_type'] = \Drupal::service('plugin.manager.visualn.raw_resource_format')->getDefinition($resource_format_plugin_id)['output'];
-      $options['raw_resource_format_id'] = $visualn_data['resource_format'];
-    }
-
-
-    return $options;
   }
 
 }

@@ -15,6 +15,7 @@ use Drupal\file\Plugin\Field\FieldFormatter\GenericFileFormatter;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
+use Drupal\visualn\Plugin\RawResourceFormatManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\visualn\Plugin\VisualNFormatterSettingsTrait;
@@ -57,6 +58,13 @@ class VisualNFormatter extends GenericFileFormatter implements ContainerFactoryP
   protected $visualNManagerManager;
 
   /**
+   * The visualn resource format manager service.
+   *
+   * @var \Drupal\visualn\Plugin\RawResourceFormatManager
+   */
+  protected $visualNResourceFormatManager;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -70,7 +78,8 @@ class VisualNFormatter extends GenericFileFormatter implements ContainerFactoryP
     $configuration['third_party_settings'],
     $container->get('entity_type.manager')->getStorage('visualn_style'),
     $container->get('plugin.manager.visualn.drawer'),
-    $container->get('plugin.manager.visualn.manager')
+    $container->get('plugin.manager.visualn.manager'),
+    $container->get('plugin.manager.visualn.raw_resource_format')
     );
   }
 
@@ -94,11 +103,12 @@ class VisualNFormatter extends GenericFileFormatter implements ContainerFactoryP
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, RawResourceFormatManager $visualn_resource_format_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
     $this->visualNManagerManager = $visualn_manager_manager;
+    $this->visualNResourceFormatManager = $visualn_resource_format_manager;
   }
 
   /**
@@ -138,13 +148,21 @@ class VisualNFormatter extends GenericFileFormatter implements ContainerFactoryP
     $elements = $this->visualnViewElements($items, $langcode);
     if ($this->getSetting('show_file_link') == 0) {
       foreach ($elements as $delta => $element) {
-        //$elements[$delta]['#type'] = '#markup';
-        //unset($elements[$delta]['#theme']);
-
         unset($elements[$delta]['#context']['element_build']);
       }
     }
     return $elements;
+  }
+
+  public function getRawInput($element, $item) {
+    $file = $element['#file'];
+    $url = $file->url();
+    $raw_input = [
+      'file_url' => $url,
+      'file_mimetype' => $file->getMimeType(),
+    ];
+
+    return $raw_input;
   }
 
 }
