@@ -7,20 +7,16 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\ResourceInterface;
 
 /**
- * Provides a 'Html Table' VisualN drawer.
- *
- * @todo: maybe rename to better resemble the fact that it is
- *   a serverside drawer, not js
- *   e.g. TableHtmlBasicDrawer (so use Html or JS as a convention of what is delivered to the clientside)
+ * Provides a 'Table Html Basic' VisualN drawer.
  *
  * @ingroup drawer_plugins
  *
  * @VisualNDrawer(
- *  id = "visualn_html_table_basic",
- *  label = @Translation("Html Table Basic"),
+ *  id = "visualn_table_html_basic",
+ *  label = @Translation("Table Html Basic"),
  * )
  */
-class HtmlTableBasicDrawer extends VisualNDrawerBase {
+class TableHtmlBasicDrawer extends VisualNDrawerBase {
 
   /**
    * @inheritdoc

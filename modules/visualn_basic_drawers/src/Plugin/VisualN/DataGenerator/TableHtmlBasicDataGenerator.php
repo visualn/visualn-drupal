@@ -6,19 +6,19 @@ use Drupal\visualn\Plugin\VisualNDataGeneratorBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides an 'Html Table Basic' VisualN data generator.
+ * Provides an 'Table Html Basic' VisualN data generator.
  *
  * @ingroup data_generator_plugins
  *
  * @VisualNDataGenerator(
- *  id = "visualn_html_table_basic",
- *  label = @Translation("Html Table Basic Data Generator"),
+ *  id = "visualn_table_html_basic",
+ *  label = @Translation("Table Html Basic"),
  *  compatible_drawers = {
- *    "visualn_html_table_basic"
+ *    "visualn_table_html_basic"
  *  }
  * )
  */
-class HtmlTableBasicDataGenerator extends VisualNDataGeneratorBase {
+class TableHtmlBasicDataGenerator extends VisualNDataGeneratorBase {
 
   /**
    * {@inheritdoc}

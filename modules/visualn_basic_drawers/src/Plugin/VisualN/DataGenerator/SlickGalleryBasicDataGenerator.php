@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @VisualNDataGenerator(
  *  id = "visualn_slick_gallery_basic",
- *  label = @Translation("Slick Gallery Basic Data Generator"),
+ *  label = @Translation("Slick Gallery Basic"),
  *  compatible_drawers = {
  *    "visualn_slick_gallery_basic"
  *  }

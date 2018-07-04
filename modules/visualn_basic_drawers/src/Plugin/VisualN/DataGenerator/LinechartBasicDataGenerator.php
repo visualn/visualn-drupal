@@ -15,7 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @VisualNDataGenerator(
  *  id = "visualn_linechart_basic",
- *  label = @Translation("Linechart Basic Data Generator"),
+ *  label = @Translation("Linechart Basic"),
  *  compatible_drawers = {
  *    "visualn_linechart_basic"
  *  }

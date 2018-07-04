@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @VisualNDataGenerator(
  *  id = "visualn_leaflet_map_basic",
- *  label = @Translation("Leaflet Map Basic Data Generator"),
+ *  label = @Translation("Leaflet Map Basic"),
  *  compatible_drawers = {
  *    "visualn_leaflet_map_basic"
  *  }
