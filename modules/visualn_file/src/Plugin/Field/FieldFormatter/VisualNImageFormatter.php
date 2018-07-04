@@ -30,8 +30,10 @@ use Drupal\visualn\Helpers\VisualN;
  *   }
  * )
  */
-//class VisualNImageFormatter extends FormatterBase {
 class VisualNImageFormatter extends ImageFormatter {
+//class VisualNImageFormatter extends FormatterBase {
+
+  const RAW_RESOURCE_FORMAT = 'visualn_generic_data_array';
 
   /**
    * {@inheritdoc}
@@ -191,46 +193,33 @@ class VisualNImageFormatter extends ImageFormatter {
       $urls[$delta] = $url;
     }
 
-    // @todo: here $data is attached to the drupal settings by the adapter
-    //    though a router could be also used instead of this with a generic resource adapter
-    $data = [
-      'urls' => $urls,
-    ];
     $data = [];
     foreach ($urls as $url) {
       $data[] = ['url' => $url];
     }
 
-    // @todo: prepare output type and output interface, attach manager build
+    $drawer_config = $this->getSetting('drawer_config');
+    $drawer_fields = $this->getSetting('drawer_fields');
 
-    // @todo: prepare Resource object
-    // @todo: maybe just create a resource provider plugin of a certain type that accepts
-    //    data in json format as part of its configuration or even context
-    $resource = [
-      'output_type' => 'generic_data_array',
-      'output_interface' => [
-        'data' => $data,
-      ],
+    $raw_resource_plugin_id = static::RAW_RESOURCE_FORMAT;
+    $raw_input = [
+      'data' => $data,
     ];
-
-
-    $options = [
-      'style_id' => $visualn_style_id,
-      'drawer_config' => $this->getSetting('drawer_config'),
-      'drawer_fields' => $this->getSetting('drawer_fields'),
-      'adapter_settings' => [],
-      'output_type' => $resource['output_type'],
-    ];
-    $options['adapter_settings']['data'] = $resource['output_interface']['data'];
+    // @todo: add service in ::create() method
+    $resource =
+      \Drupal::service('plugin.manager.visualn.raw_resource_format')
+      ->createInstance($raw_resource_plugin_id, [])
+      ->buildResource($raw_input);
 
     // Get drawing build
-    $build = VisualN::makeBuild($options);
+    $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
 
     // @todo: html_selector should be connected inside '.field__items' in order
     //    to be able to use quick edit feature
 
 
     // field template seems to ignore anything added to the $elements and renders only items (see field.html.twig)
+    // @todo: check inline_template solution implemented for other visualn fields formatters
 
 
 

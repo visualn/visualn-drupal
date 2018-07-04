@@ -59,32 +59,27 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
         $drawer_config = !empty($visualn_data['drawer_config']) ? $visualn_data['drawer_config'] : [];
         $drawer_fields = !empty($visualn_data['drawer_fields']) ? $visualn_data['drawer_fields'] : [];
 
-
-        $options = [
-          'style_id' => $visualn_style_id,
-          'drawer_config' => $drawer_config,
-          'drawer_fields' => $drawer_fields,
-          'adapter_settings' => [],
-        ];
-        $options['output_type'] = 'remote_generic_dsv';
-
-
         // @todo: this is a bit hackish, see GenericFileFormatter::viewElements
         $file = $first_delta->entity;
 
-        $url = $file->url();
-        $options['adapter_settings']['file_url'] = $url;
-        $options['adapter_settings']['file_mimetype'] = $file->getMimeType();
+        // get resource and the drawing, else return empty drawing_markup
         if (!empty($visualn_data['resource_format'])) {
           $resource_format_plugin_id = $visualn_data['resource_format'];
-          $options['output_type'] = \Drupal::service('plugin.manager.visualn.raw_resource_format')->getDefinition($resource_format_plugin_id)['output'];
+          $raw_input = [
+            'file_url' => $file->url(),
+            'file_mimetype' => $file->getMimeType(),
+          ];
+          // @todo: config may be needed for some raw resources
+          // @todo: add service in ::create() method
+          $resource = \Drupal::service('plugin.manager.visualn.raw_resource_format')
+                        ->createInstance($resource_format_plugin_id, [])
+                        ->buildResource($raw_input);
+
+          // Get drawing build
+          $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+          $drawing_markup = $build;
         }
 
-
-
-        // Get drawing build
-        $build = VisualN::makeBuild($options);
-        $drawing_markup = $build;
 
 
         // @todo: this doesn't take into consideration formatter settings if visualn style is the same,

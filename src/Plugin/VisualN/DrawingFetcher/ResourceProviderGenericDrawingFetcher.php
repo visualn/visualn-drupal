@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Render\Element;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\visualn\Helpers\VisualN;
 
@@ -37,8 +36,7 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
  *  }
  * )
  */
-// @todo: GenericDrawingFetcherBase already implements ContainerFactoryPluginInterface interface
-class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase implements ContainerFactoryPluginInterface {
+class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
 
   /**
    * The visualn resource format manager service.
@@ -50,7 +48,6 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
   /**
    * {@inheritdoc}
    */
-
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
@@ -216,35 +213,14 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
 
     // @todo:
 
-    // @todo: the vuid here isn't the same as used in VisualN::makeBuild()
+    // @todo: the vuid here isn't the same as used in VisualN::makeBuildByResource()
     $vuid = \Drupal::service('uuid')->generate();
-    // Add drawer info before calling resource provider in case it uses it. E.g. it can use
-    // these options to create demo data sets depending on the drawer and its config.
-    $options = [
-      'style_id' => $visualn_style_id,
-      'drawer_config' => $this->configuration['drawer_config'],
-      'drawer_fields' => $this->configuration['drawer_fields'],
-      'output_type' => '',
-      'adapter_settings' => [],
-    ];
 
 
     if (!empty($resource_provider_id)) {
       $provider_plugin = $this->visualNResourceProviderManager->createInstance($resource_provider_id, $resource_provider_config);
-      // @todo:
-      //  Provider plugin may return attachments:
-      //  - js script that dynamically generates data
-      //  - js settings for the script
-      //  - even html markup to be parsed on client side to get data
-      //  Provider should return output_type to be used by manager to build chain
-      //  Provider may return additional adapter_settings or maybe resource_settings
-      //    that could be taken into consideration by manager when defining adapter used
-      // @todo: review the decision to add an 'resource_provider' subelement
-      //    though at this stage $build is empty anyway and resource provider can make not so much use of it
-      $build['resource_provider'] = [];
-      // @todo: maybe allow resource to attach libraries or even get a resource_build
-      $provider_plugin->prepareBuildByOptions($build['resource_provider'], $vuid, $options);
-      // @todo: maybe in a similar way $build['drawing'] should be passed to manager but not the $build itself
+
+      // @todo: maybe $build['drawing'] should be passed to manager but not the $build itself
 
       $current_entity = $this->getContextValue('current_entity');
 
@@ -254,22 +230,21 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase im
       $provider_plugin->setContext('current_entity', $context_current_entity);
       // @todo: see the note regarding setting context in VisualNResourceProviderItem class
 
+      $drawer_config = $this->configuration['drawer_config'];
+      $drawer_fields = $this->configuration['drawer_fields'];
+
       $resource = $provider_plugin->getResource();
-      $visualn_style_id = $options['style_id'];
-      $drawer_config = $options['drawer_config'];
-      $drawer_fields = $options['drawer_fields'];
 
       // Get drawing build
       $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+
+      $drawing_markup = $build;
 
       // Every resource type is a Typed Data object so it may have its own fixed set of propertries and
       // has validation callback to check if everything is set as expected.
     }
 
-    // @todo: maybe use adapter_config instead of adapter_settings for consistency
 
-
-    $drawing_markup = $build;
 
     return $drawing_markup;
   }

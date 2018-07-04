@@ -17,6 +17,8 @@ use Drupal\visualn\Helpers\VisualN;
  */
 class StandaloneDrawingFetcher extends GenericDrawingFetcherBase {
 
+  const RAW_RESOURCE_FORMAT = 'visualn_generic_data_array';
+
   // @todo: add an option to show only styles using standalone drawers
 
   /**
@@ -31,28 +33,27 @@ class StandaloneDrawingFetcher extends GenericDrawingFetcherBase {
       return parent::fetchDrawing();
     }
 
+    // @todo: unsupported operand types error
+    //    add default value into defaultConfiguration()
+    // todo: should be array by default already, the check shouldn't be requried
+    $drawer_config = $this->configuration['drawer_config'] ?: [];
+    $drawer_fields = $this->configuration['drawer_fields'];
 
-    // @todo: pass options as part of $manager_config (?)
-    $options = [
-      'style_id' => $visualn_style_id,
-      // @todo: unsupported operand types error
-      //    add default value into defaultConfiguration()
-      'drawer_config' => ($this->configuration['drawer_config'] ?: []),
-      'drawer_fields' => $this->configuration['drawer_fields'],
-      'adapter_settings' => ['data' => []],
+    $raw_resource_plugin_id = static::RAW_RESOURCE_FORMAT;
+    $raw_input = [
+      'data' => [],
     ];
-    // @todo: this will attach some js settings even though drawer may use no js at all
-    $options['output_type'] = 'generic_data_array';
-
-
-
+    // @todo: add service in ::create() method
+    $resource =
+      \Drupal::service('plugin.manager.visualn.raw_resource_format')
+      ->createInstance($raw_resource_plugin_id, [])
+      ->buildResource($raw_input);
 
     // Get drawing build
-    $build = VisualN::makeBuild($options);
-
-    // @todo: attach drawer markup
+    $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
 
     $drawing_markup = $build;
+
 
     return $drawing_markup;
   }

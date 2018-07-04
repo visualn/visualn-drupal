@@ -10,7 +10,10 @@ class VisualN {
 
   const RAW_RESOURCE_FORMAT_GROUP = 'default';
 
-  // @todo: replace the method
+
+  // @todo: the method isn't used any more
+  //   ::getResourceByFormat() also not used
+/*
   public static function makeBuild($options) {
     $output_type = $options['output_type'];
     $adapter_settings = $options['adapter_settings'] ?: [];
@@ -32,6 +35,7 @@ class VisualN {
 
     return static::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
   }
+*/
 
   /**
    * Standard entry point to create drawerings based on resource and configuration data.

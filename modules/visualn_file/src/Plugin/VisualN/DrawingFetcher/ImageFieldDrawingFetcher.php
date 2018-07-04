@@ -27,6 +27,9 @@ class ImageFieldDrawingFetcher extends GenericDrawingFetcherBase {
   // @todo: add 'current view mode' context' for the case when user doesn't select a visualn style
   //    or add 'default view mode' select into configuration form (or just leave visualn style required)
 
+  const RAW_RESOURCE_FORMAT = 'visualn_generic_data_array';
+
+
   /**
    * {@inheritdoc}
    */
@@ -126,21 +129,11 @@ class ImageFieldDrawingFetcher extends GenericDrawingFetcherBase {
     // @todo: get image files list
 
 
-    // @todo: pass options as part of $manager_config (?)
-    $options = [
-      'style_id' => $visualn_style_id,
       // @todo: unsupported operand types error
       //    add default value into defaultConfiguration()
-      'drawer_config' => ($this->configuration['drawer_config'] ?: []),
-      'drawer_fields' => $this->configuration['drawer_fields'],
-      'adapter_settings' => [],
-    ];
+    $drawer_config = $this->configuration['drawer_config'] ?: [];
+    $drawer_fields = $this->configuration['drawer_fields'];
 
-    // @todo:
-    //$options = $this->getManagerOptions();
-
-
-    $options['output_type'] = 'generic_data_array';
 
     $urls = [];
     //foreach($field_instance->referencedEntities() as $delta => $image_file) {
@@ -157,18 +150,28 @@ class ImageFieldDrawingFetcher extends GenericDrawingFetcherBase {
     $data = [
       'urls' => $urls,
     ];
+
+    // @todo: since data is always keyed by url, maybe resemble it in formatter
+    //   keys mapping settings
     $data = [];
     foreach ($urls as $url) {
       $data[] = ['url' => $url];
     }
 
 
-    $options['adapter_settings']['data'] = $data;
-
-
+    $raw_resource_plugin_id = static::RAW_RESOURCE_FORMAT;
+    $raw_input = [
+      'data' => $data,
+    ];
+    // @todo: add service in ::create() method
+    $resource =
+      \Drupal::service('plugin.manager.visualn.raw_resource_format')
+      ->createInstance($raw_resource_plugin_id, [])
+      ->buildResource($raw_input);
 
     // Get drawing build
-    $build = VisualN::makeBuild($options);
+    $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+
 
     $drawing_markup = $build;
 

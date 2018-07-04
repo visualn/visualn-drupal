@@ -19,7 +19,6 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-//class DataSetReferenceResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
 class DataSetReferenceResourceProvider extends VisualNResourceProviderBase {
 
   /**
@@ -29,11 +28,6 @@ class DataSetReferenceResourceProvider extends VisualNResourceProviderBase {
     return [
       'entity_reference_field' => '',
     ] + parent::defaultConfiguration();
- }
-
-  // @todo: add to interface
-  // @todo: maybe rename the method e.g. to attachResourceProviderData() or smth else
-  public function prepareBuildByOptions(&$build, $vuid, $options) {
   }
 
 

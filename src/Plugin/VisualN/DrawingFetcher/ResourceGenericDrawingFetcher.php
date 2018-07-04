@@ -158,41 +158,31 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
     $url = $this->configuration['resource_url'];
     $visualn_style_id = $this->configuration['visualn_style_id'];
     if (empty($visualn_style_id)) {
-      return parent::fetchDrawing();
+      return $drawing_markup;
     }
 
-
-    // @todo: pass options as part of $manager_config (?)
-    $options = [
-      'style_id' => $visualn_style_id,
-      // @todo: unsupported operand types error
-      //    add default value into defaultConfiguration()
-      'drawer_config' => ($this->configuration['drawer_config'] ?: []),
-      'drawer_fields' => $this->configuration['drawer_fields'],
-      'adapter_settings' => [],
-    ];
 
     if (!empty($this->configuration['resource_format'])) {
-      $resource_format_plugin_id = $this->configuration['resource_format'];
-      $options['output_type'] = $this->visualNResourceFormatManager->getDefinition($resource_format_plugin_id)['output'];
+      // @todo: unsupported operand types error
+      //    add default value into defaultConfiguration()
+      $drawer_config = $this->configuration['drawer_config'] ?: [];
+      $drawer_fields = $this->configuration['drawer_fields'];
+
+      $raw_resource_plugin_id = $this->configuration['resource_format'];
+      $raw_input = [
+        'file_url' => $this->configuration['resource_url'],
+        // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
+        //'file_mimetype' => 'text/tab-separated-values',
+      ];
+      $resource =
+        $this->visualNResourceFormatManager->createInstance($raw_resource_plugin_id, [])
+        ->buildResource($raw_input);
+
+      // Get drawing build
+      $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+
+      $drawing_markup = $build;
     }
-    else {
-      // @todo: By default use DSV Generic Resource Format
-      // @todo: load resource format plugin and get resource form by plugin id
-      // @todo: for each delta output_type can be different (e.g. csv, tsv, json, xml)
-      $options['output_type'] = 'remote_generic_dsv';
-
-      // @todo: this should be detected dynamically depending on reousrce type, headers, file extension
-      $options['adapter_settings']['file_mimetype'] = 'text/tab-separated-values';
-    }
-
-    $options['adapter_settings']['file_url'] = $this->configuration['resource_url'];
-
-
-    // Get drawing build
-    $build = VisualN::makeBuild($options);
-
-    $drawing_markup = $build;
 
     return $drawing_markup;
   }

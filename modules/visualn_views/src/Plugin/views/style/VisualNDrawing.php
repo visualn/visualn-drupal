@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNManagerManager;
+use Drupal\visualn\Plugin\RawResourceFormatManager;
 
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -39,6 +40,8 @@ use Drupal\Core\Render\RenderContext;
  *
  */
 class VisualNDrawing extends Serializer {
+
+  const RAW_RESOURCE_FORMAT = 'visualn_generic_data_array';
 
   /**
    * {@inheritdoc}
@@ -72,6 +75,13 @@ class VisualNDrawing extends Serializer {
   protected $visualNManagerManager;
 
   /**
+   * The visualn resource format manager service.
+   *
+   * @var \Drupal\visualn\Plugin\RawResourceFormatManager
+   */
+  protected $visualNResourceFormatManager;
+
+  /**
    * The visualn unique identifier. Used for fields mapping and html_selector
    *   to distinguish from other drawings.
    *
@@ -98,7 +108,8 @@ class VisualNDrawing extends Serializer {
       // services used by visauln_drawing itself
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
-      $container->get('plugin.manager.visualn.manager')
+      $container->get('plugin.manager.visualn.manager'),
+      $container->get('plugin.manager.visualn.raw_resource_format')
     );
   }
 
@@ -108,7 +119,7 @@ class VisualNDrawing extends Serializer {
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition,
     SerializerInterface $serializer, array $serializer_formats, array $serializer_format_providers,
-    EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager) {
+    EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, RawResourceFormatManager $visualn_resource_format_manager) {
 
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer, $serializer_formats, $serializer_format_providers);
 
@@ -116,6 +127,7 @@ class VisualNDrawing extends Serializer {
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
     $this->visualNManagerManager = $visualn_manager_manager;
+    $this->visualNResourceFormatManager = $visualn_resource_format_manager;
   }
 
 
@@ -443,21 +455,19 @@ class VisualNDrawing extends Serializer {
     }
 
 
-    $options = [
-      'style_id' => $visualn_style_id,
-      // @todo: maybe move into 'drawer_settings'
-      // @todo: compare with the same row in VisualNFormatterSettingsTrait::visualnViewElements()
-      'drawer_config' => $style_options['drawer_config'],
-      // @todo: maybe move into 'mapper_settings' (even though used in adapter)
-      'drawer_fields' => $style_options['drawer_fields'],  // this setting should be used in adapter
-      'output_type' => 'generic_data_array',
-      'adapter_settings' => [
-        'data' => $json_data,
-      ],
+    $drawer_config = $style_options['drawer_config'];
+    $drawer_fields = $style_options['drawer_fields'];
+
+    $raw_resource_plugin_id = static::RAW_RESOURCE_FORMAT;
+    $raw_input = [
+      'data' => $json_data,
     ];
+    $resource =
+      $this->visualNResourceFormatManager->createInstance($raw_resource_plugin_id, [])
+      ->buildResource($raw_input);
 
     // Get drawing build
-    $build = VisualN::makeBuild($options);
+    $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
 
     return $build;
   }

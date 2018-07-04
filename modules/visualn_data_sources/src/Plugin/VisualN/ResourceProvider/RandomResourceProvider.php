@@ -16,7 +16,6 @@ use Drupal\visualn\Helpers\VisualN;
  *  label = @Translation("VisualN Random resource provider (*** DO NOT USE ***)"),
  * )
  */
-//class RandomResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
 class RandomResourceProvider extends VisualNResourceProviderBase {
 
   /**
@@ -27,14 +26,7 @@ class RandomResourceProvider extends VisualNResourceProviderBase {
       'data_type' => '',
     ] + parent::defaultConfiguration();
 
- }
-
-  // @todo: add to interface
-  // @todo: maybe rename the method e.g. to attachResourceProviderData() or smth else
-  public function prepareBuildByOptions(&$build, $vuid, $options) {
   }
-
-
 
   public function getResource() {
     // @todo: if here is an anknown output_type and chain can't be build,

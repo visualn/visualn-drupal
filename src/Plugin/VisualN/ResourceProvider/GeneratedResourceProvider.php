@@ -62,14 +62,7 @@ class GeneratedResourceProvider extends VisualNResourceProviderBase implements C
       'data_generator_config' => [],
     ] + parent::defaultConfiguration();
 
- }
-
-  // @todo: add to interface
-  // @todo: maybe rename the method e.g. to attachResourceProviderData() or smth else
-  public function prepareBuildByOptions(&$build, $vuid, $options) {
   }
-
-
 
   public function getResource() {
     if ($this->configuration['data_generator_id']) {
