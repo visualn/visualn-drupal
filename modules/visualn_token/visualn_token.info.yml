@@ -1,4 +1,4 @@
-name: VisualN Embed Token
+name: VisualN Token
 type: module
 description: Embed VisualN Drawings into site content via tokens.
 core: 8.x

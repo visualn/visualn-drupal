@@ -11,7 +11,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 /**
  * Implements hook_token_info().
  */
-function visualn_embed_token_token_info() {
+function visualn_token_token_info() {
   $info = array();
   $info['types']['visualn'] = array(
     'name' => t('VisualN'),
@@ -31,7 +31,7 @@ function visualn_embed_token_token_info() {
 /**
  * Implements hook_tokens().
  */
-function visualn_embed_token_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+function visualn_token_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = array();
   if ($type == 'visualn') {
     foreach ($tokens as $name => $original) {
