@@ -25,6 +25,8 @@ use Drupal\visualn\Helpers\VisualN;
  */
 class GeneratedResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
 
+  const RAW_RESOURCE_FORMAT = 'visualn_generic_data_array';
+
   /**
    * Drupal\visualn\Plugin\VisualNDataGeneratorManager definition.
    *
@@ -74,16 +76,14 @@ class GeneratedResourceProvider extends VisualNResourceProviderBase implements C
     else {
       // @todo: or return NULL or FASLE if data generator not defined
       //   or an "empty" resource
-      // @todo: maybe use raw resource format to get resource
-      $output_type = 'generic_data_array';
-
       $data = [];
-      $adapter_settings =  [
+      $raw_resource_plugin_id = static::RAW_RESOURCE_FORMAT;
+      $raw_input = [
         'data' => $data,
       ];
-
-      // @todo: load resource plugin
-      $resource = VisualN::getResourceByOptions($output_type, $adapter_settings);
+      $resource = \Drupal::service('plugin.manager.visualn.raw_resource_format')
+        ->createInstance($raw_resource_plugin_id, [])
+        ->buildResource($raw_input);
     }
 
 

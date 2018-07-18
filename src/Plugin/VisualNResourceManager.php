@@ -52,7 +52,7 @@ class VisualNResourceManager extends DefaultPluginManager {
     $typedDataManager = \Drupal::service('typed_data_manager');
 
     $definition = ResourceDataDefinition::create("visualn_resource:$resource_type");
-    $definition->setInitialParams($configuration['adapter_settings']);
+    $definition->setInitialParams($configuration['raw_input']);
 
     // @todo: see https://www.drupal.org/project/drupal/issues/2874458
     // @todo: if definition is created for othe type i.e. MapDataDefinition::create(), the returned class will be Map but not plugin one, that is weird, explore
@@ -77,7 +77,7 @@ class VisualNResourceManager extends DefaultPluginManager {
     // @todo: values are passed as array and then transformed into data definition in a similar method as getItemDefinition()
 
     //$configuration['data_definition'] = $configuration['resource_definition'];
-    $adapter_settings = $configuration['resource_definition'];
+    $raw_input = $configuration['resource_definition'];
     $output_type = $resource_type;
 */
 

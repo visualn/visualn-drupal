@@ -12,21 +12,26 @@ class VisualN {
 
 
   // @todo: the method isn't used any more
-  //   ::getResourceByFormat() also not used
 /*
   public static function makeBuild($options) {
     $output_type = $options['output_type'];
-    $adapter_settings = $options['adapter_settings'] ?: [];
+    $raw_input = $options['raw_input'] ?: [];
 
     // VisualN files should use selected raw resource format directly (if any)
     // since those formats may belong to field widget group but not to be in "default" group
     // and thus perform different from fall-back (or default) logic to create resource from raw input.
     if (!empty($options['raw_resource_format_id'])) {
+
       $raw_resource_format_id = $options['raw_resource_format_id'];
-      $resource = static::getResourceByFormat($raw_resource_format_id, $adapter_settings);
+
+      // load raw resource format plugin
+      $raw_resource_format_plugin = \Drupal::service('plugin.manager.visualn.raw_resource_format')
+        ->createInstance($raw_resource_format_id, []);
+      // get resource object from raw_input
+      $resource = $raw_resource_format_plugin->buildResource($raw_input);
     }
     else {
-      $resource = static::getResourceByOptions($output_type, $adapter_settings);
+      $resource = static::getResourceByOptions($output_type, $raw_input);
     }
 
     $visualn_style_id = $options['style_id'];
@@ -109,7 +114,7 @@ class VisualN {
    * - how is it connected with ResourceFormat plugins? also how the case is processed when an
    *   external server suddenly enables authorization?
    */
-  public static function getResourceByOptions($output_type, array $adapter_settings) {
+  public static function getResourceByOptions($output_type, array $raw_input) {
 
     // @todo: review the code here
     //    maybe use a service for that, see TypedDataManager::create for example
@@ -134,7 +139,6 @@ class VisualN {
       $raw_resource_format_plugin = \Drupal::service('plugin.manager.visualn.raw_resource_format')
         ->createInstance($raw_resource_format_plugin_id, []);
 
-      $raw_input = $adapter_settings;
       $resource = $raw_resource_format_plugin->buildResource($raw_input);
     }
     else {
@@ -151,11 +155,11 @@ class VisualN {
         $resource_plugin_id = 'generic';
       }
 
-      $resource_plugin_config = ['adapter_settings' => $adapter_settings];
+      $resource_plugin_config = ['raw_input' => $raw_input];
       $resource = $visualNResourceManager->createInstance($resource_plugin_id, $resource_plugin_config);
 
       // @todo: see TypedDataManager::create
-      $resource->setValue($adapter_settings);
+      $resource->setValue($raw_input);
       // @todo: decide how setValue() should be used
 
       // @todo: needed at least for 'generic' type
@@ -178,21 +182,6 @@ class VisualN {
     if (count($violations)) {
       // @todo: set error messages
     }
-
-    return $resource;
-  }
-
-  // no need in output_type here since it is contained in $raw_resource_format plugin annotation
-  public static function getResourceByFormat($raw_resource_format_id, array $adapter_settings) {
-
-    // load raw resource format plugin
-    $raw_resource_format_plugin = \Drupal::service('plugin.manager.visualn.raw_resource_format')
-      ->createInstance($raw_resource_format_id, []);
-
-
-    // get resource object from adapter_settings
-    $raw_input = $adapter_settings;
-    $resource = $raw_resource_format_plugin->buildResource($raw_input);
 
     return $resource;
   }

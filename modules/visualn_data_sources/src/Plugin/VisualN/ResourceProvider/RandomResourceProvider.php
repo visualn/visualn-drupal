@@ -18,6 +18,8 @@ use Drupal\visualn\Helpers\VisualN;
  */
 class RandomResourceProvider extends VisualNResourceProviderBase {
 
+  const RAW_RESOURCE_FORMAT = 'visualn_json';
+
   /**
    * {@inheritdoc}
    */
@@ -31,20 +33,20 @@ class RandomResourceProvider extends VisualNResourceProviderBase {
   public function getResource() {
     // @todo: if here is an anknown output_type and chain can't be build,
     //    all drawings on the page do not render (at least block drawings)
-    $output_type = 'remote_generic_json';
     $url = Url::fromRoute('visualn_data_sources.resource_provider_controller_data',
       array('data_type' => $this->configuration['data_type'])
     )->setAbsolute()->toString();
     // @todo: build router or link for the data source
     // @todo: review option keys names
 
-    $adapter_settings =  [
+    $raw_resource_plugin_id = static::RAW_RESOURCE_FORMAT;
+    $raw_input = [
       'file_url' => $url,
       //'file_mimetype' => 'application/json',
     ];
-
-    // @todo: load resource plugin
-    $resource = VisualN::getResourceByOptions($output_type, $adapter_settings);
+    $resource = \Drupal::service('plugin.manager.visualn.raw_resource_format')
+      ->createInstance($raw_resource_plugin_id, [])
+      ->buildResource($raw_input);
 
     return $resource;
   }

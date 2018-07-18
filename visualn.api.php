@@ -30,7 +30,7 @@
  *
  * - @link visualn_styles Visualization styles @endlink
  * - @link setup_baker_plugins Setup Bakers @endlink
- * - @link fetcher_plugins Fetchers @endlink
+ * - @link fetcher_plugins Drawing Fetchers @endlink
  * - @link visualn_fields Fields @endlink
  * - @link visualn_blocks Blocks @endlink
  * - @link visualn_views Views integration @endlink
@@ -42,6 +42,7 @@
  * - @link resource_proivder_plugins Resource providers @endlink
  * - @link data_generator_plugins Data generators @endlink
  * - @link data_set_entities Data Set entities @endlink
+ * - @link data_sources Data Sources @endlink
  *
  * @section embedding_drawings Embedding drawings
  *
@@ -122,12 +123,12 @@
  */
 
 /**
- * @defgroup fetcher_plugins Fetcher plugins
+ * @defgroup fetcher_plugins Drawing Fetcher plugins
  * @{
- * Fetchers create drawings built on the fetchers custom logic.
+ * Drawing Fetchers implement some arbitrary logic to deliver a drawing build.
  *
  * Fecher plugins allow to implement an alternative logic to create drawings
- * even without relying on chain plugins, even without drawers as an edge case.
+ * even without relying on chain plugins, even without drawers (as an edge case).
  * Fetchers are commonly used by VisualN blocks to create drawings as blocks,
  * and by Drawing entities and to embed them into content via tokens or iframes.
  * @}

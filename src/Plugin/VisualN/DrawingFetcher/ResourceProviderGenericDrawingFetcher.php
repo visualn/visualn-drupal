@@ -111,6 +111,14 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
     foreach ($definitions as $definition) {
 
       // Exclude providers which have at least one required context since here no context is provided.
+
+      // Resource providers may have required contexts some of which are requried only when showing configuration
+      // form and some are requried when creating a resource object or both.
+      // This means that fetcher may allow user to select such resource providers even if resource generation
+      // level required contexts are not there at configuration form level.
+      // @todo: Though fetcher can't guess which contexts will be provided by environment when generating
+      //   a resource. This issue should be sorted out.
+      //   Maybe add a method that would provide the environment with info about optional and required contexts.
       if (!empty($definition['context'])) {
         foreach ($definition['context'] as $name => $context_definition) {
           // @todo: Here we check only contexts required for the form (e.g. we don't check "current_entity" context)
@@ -130,6 +138,9 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
         }
       }
 
+      // Use only providers that have matching contexts or the contexts that are expected
+      // to be there when generating a resource.
+      // See the notice in @todo: above.
       $resource_providers[$definition['id']] = $definition['label'];
     }
 
