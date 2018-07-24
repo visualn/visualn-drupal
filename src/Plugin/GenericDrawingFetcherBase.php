@@ -11,7 +11,6 @@ use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNManagerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Form\SubformStateInterface;
@@ -44,13 +43,6 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
   protected $visualNDrawerManager;
 
   /**
-   * The visualn manager manager service.
-   *
-   * @var \Drupal\visualn\Plugin\VisualNManagerManager
-   */
-  protected $visualNManagerManager;
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -59,8 +51,7 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager')->getStorage('visualn_style'),
-      $container->get('plugin.manager.visualn.drawer'),
-      $container->get('plugin.manager.visualn.manager')
+      $container->get('plugin.manager.visualn.drawer')
     );
   }
 
@@ -80,15 +71,12 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
    *   The visualn style entity storage service.
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
-   * @param \Drupal\visualn\Plugin\VisualNManagerManager $visualn_manager_manager
-   *   The visualn manager manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
-    $this->visualNManagerManager = $visualn_manager_manager;
   }
 
   /**

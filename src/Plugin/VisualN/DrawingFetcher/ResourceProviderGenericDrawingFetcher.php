@@ -5,7 +5,6 @@ namespace Drupal\visualn\Plugin\VisualN\DrawingFetcher;
 use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNManagerManager;
 use Drupal\visualn\Plugin\VisualNResourceProviderManager;
 
 use Drupal\Core\Form\FormStateInterface;
@@ -55,7 +54,6 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
       $plugin_definition,
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
-      $container->get('plugin.manager.visualn.manager'),
       $container->get('plugin.manager.visualn.resource_provider')
     );
   }
@@ -76,13 +74,11 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
    *   The visualn style entity storage service.
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
-   * @param \Drupal\visualn\Plugin\VisualNManagerManager $visualn_manager_manager
-   *   The visualn manager manager service.
    * @param \Drupal\visualn\Plugin\VisualNResourceProviderManager $visualn_resource_provider_manager
    *   The visualn resource provider manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, VisualNResourceProviderManager $visualn_resource_provider_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_manager_manager);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNResourceProviderManager $visualn_resource_provider_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager);
 
     $this->visualNResourceProviderManager = $visualn_resource_provider_manager;
   }

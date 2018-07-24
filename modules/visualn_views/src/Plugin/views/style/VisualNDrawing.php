@@ -8,7 +8,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNManagerManager;
 use Drupal\visualn\Plugin\RawResourceFormatManager;
 
 use Symfony\Component\Serializer\SerializerInterface;
@@ -68,13 +67,6 @@ class VisualNDrawing extends Serializer {
   protected $visualNDrawerManager;
 
   /**
-   * The visualn manager manager service.
-   *
-   * @var \Drupal\visualn\Plugin\VisualNManagerManager
-   */
-  protected $visualNManagerManager;
-
-  /**
    * The visualn resource format manager service.
    *
    * @var \Drupal\visualn\Plugin\RawResourceFormatManager
@@ -108,7 +100,6 @@ class VisualNDrawing extends Serializer {
       // services used by visauln_drawing itself
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
-      $container->get('plugin.manager.visualn.manager'),
       $container->get('plugin.manager.visualn.raw_resource_format')
     );
   }
@@ -119,14 +110,13 @@ class VisualNDrawing extends Serializer {
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition,
     SerializerInterface $serializer, array $serializer_formats, array $serializer_format_providers,
-    EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, RawResourceFormatManager $visualn_resource_format_manager) {
+    EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, RawResourceFormatManager $visualn_resource_format_manager) {
 
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer, $serializer_formats, $serializer_format_providers);
 
     //$this->definition = $plugin_definition + $configuration;  // initialized also in parent::_construct()
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
-    $this->visualNManagerManager = $visualn_manager_manager;
     $this->visualNResourceFormatManager = $visualn_resource_format_manager;
   }
 

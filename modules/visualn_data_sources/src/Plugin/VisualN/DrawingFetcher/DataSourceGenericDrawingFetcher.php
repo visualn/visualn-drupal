@@ -5,7 +5,6 @@ namespace Drupal\visualn_data_sources\Plugin\VisualN\DrawingFetcher;
 use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNManagerManager;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
@@ -43,7 +42,6 @@ class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
       $plugin_definition,
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
-      $container->get('plugin.manager.visualn.manager'),
       $container->get('entity_type.manager')->getStorage('visualn_data_source')
     );
   }
@@ -64,13 +62,11 @@ class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
    *   The visualn style entity storage service.
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
-   * @param \Drupal\visualn\Plugin\VisualNManagerManager $visualn_manager_manager
-   *   The visualn manager manager service.
    * @param \Drupal\Core\Entity\EntityStorageInterface $visualn_data_source_storage
    *   The visualn data source storage service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, EntityStorageInterface $visualn_data_source_storage) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_manager_manager);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, EntityStorageInterface $visualn_data_source_storage) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager);
 
     $this->visualNDataSourceStorage = $visualn_data_source_storage;
   }

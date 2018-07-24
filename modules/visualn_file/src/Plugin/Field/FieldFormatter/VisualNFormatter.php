@@ -14,7 +14,6 @@ use Drupal\file\Plugin\Field\FieldFormatter\GenericFileFormatter;
 //use Drupal\file\Plugin\Field\FieldFormatter\UrlPlainFormatter;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNManagerManager;
 use Drupal\visualn\Plugin\RawResourceFormatManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -51,13 +50,6 @@ class VisualNFormatter extends GenericFileFormatter implements ContainerFactoryP
   protected $visualNDrawerManager;
 
   /**
-   * The visualn manager manager service.
-   *
-   * @var \Drupal\visualn\Plugin\VisualNManagerManager
-   */
-  protected $visualNManagerManager;
-
-  /**
    * The visualn resource format manager service.
    *
    * @var \Drupal\visualn\Plugin\RawResourceFormatManager
@@ -78,7 +70,6 @@ class VisualNFormatter extends GenericFileFormatter implements ContainerFactoryP
     $configuration['third_party_settings'],
     $container->get('entity_type.manager')->getStorage('visualn_style'),
     $container->get('plugin.manager.visualn.drawer'),
-    $container->get('plugin.manager.visualn.manager'),
     $container->get('plugin.manager.visualn.raw_resource_format')
     );
   }
@@ -103,11 +94,10 @@ class VisualNFormatter extends GenericFileFormatter implements ContainerFactoryP
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNManagerManager $visualn_manager_manager, RawResourceFormatManager $visualn_resource_format_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, RawResourceFormatManager $visualn_resource_format_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
-    $this->visualNManagerManager = $visualn_manager_manager;
     $this->visualNResourceFormatManager = $visualn_resource_format_manager;
   }
 
