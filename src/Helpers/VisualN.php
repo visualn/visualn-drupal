@@ -54,6 +54,7 @@ class VisualN {
     $visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
     $visualNManagerManager = \Drupal::service('plugin.manager.visualn.manager');
 
+    // @todo: move manager id discovery for the drawer into DefaultManager::prepareBuild()?
 
     if (!empty($visualn_style_id)) {
       // load style and get drawer manager from plugin definition
@@ -81,16 +82,9 @@ class VisualN {
     //$build['#attributes']['class'][] = $html_selector;
     $build['visualn_build_markup'] = ['#markup' => '<div class="' . $html_selector . '"></div>'];
 
-
-    // @todo: check if config is needed
-    $manager_config = [];
-    $manager_plugin = $visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
-    // @todo: get mapping settings from style drawer plugin object and pass to manager
-
-    // @todo: get Resource by options and Drawer data for manager input
-    //    and for chain building
-    $drawing_options = [
-      'style_id' => $visualn_style_id,
+    // get manager configuration, load manager plugin and prepare drawing build
+    $manager_config = [
+      'visualn_style_id' => $visualn_style_id,
       'drawer_config' => $drawer_config,
       'drawer_fields' => $drawer_fields,
       'html_selector' => $html_selector,
@@ -98,8 +92,8 @@ class VisualN {
       'base_drawer_id' => $base_drawer_id,
     ];
 
-
-    $manager_plugin->prepareBuild($build, $vuid, $resource, $drawing_options);
+    $manager_plugin = $visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
+    $manager_plugin->prepareBuild($build, $vuid, $resource);
 
     return $build;
   }

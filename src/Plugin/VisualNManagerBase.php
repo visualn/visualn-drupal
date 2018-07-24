@@ -7,9 +7,20 @@ use Drupal\Component\Plugin\PluginBase;
 /**
  * Base class for VisualN Manager plugins.
  */
-abstract class VisualNManagerBase extends PluginBase implements VisualNManagerInterface {
+abstract class VisualNManagerBase extends VisualNPluginBase implements VisualNManagerInterface {
 
-
-  // Add common methods and abstract methods for your plugin type here.
+  /**
+   * @inheritdoc
+   */
+  public function defaultConfiguration() {
+    return [
+      'visualn_style_id' => '',
+      'drawer_config' => [],
+      'drawer_fields' => [],
+      'html_selector' => '',
+      // @todo: this was introduced later, for drawer preview page
+      'base_drawer_id' => '',
+    ];
+  }
 
 }

@@ -107,10 +107,11 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
    * @todo: some or all options should be passed as part of manager_config (at least visualn_style_id)
    *  at plugin object instatiation
    */
-  // @todo: pass drawing_options and its components as manager config
-  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource, $drawing_options) {
+  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
+    //$drawing_options = $this->getConfiguration();
+
     // @todo: add this to the VisualNPluginBase method
-    $options = $drawing_options;
+    $options = $this->getConfiguration();
     $output_type = $resource->getResourceType();
 
     // @todo: attach js scripts only if there is at least one drawer (or handler) with non-empty jsId (in handlers list)
@@ -147,8 +148,8 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
 */
 
 
-    if (!empty($options['style_id'])) {
-      $visualn_style_id = $options['style_id'];
+    if (!empty($options['visualn_style_id'])) {
+      $visualn_style_id = $options['visualn_style_id'];
       $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
       if (empty($visualn_style)) {
         return;
