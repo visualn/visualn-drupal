@@ -32,11 +32,11 @@ class VisualNDrawer extends Plugin {
   public $label;
 
   /**
-   * The manager plugin id  of the plugin.
+   * The builder plugin id  of the plugin.
    *
    * @var string
    */
-  public $manager = 'visualn_default';
+  public $builder = 'visualn_default';
 
   /**
    * The data input type of the plugin.

@@ -5,9 +5,9 @@ namespace Drupal\visualn\Plugin;
 use Drupal\Component\Plugin\PluginBase;
 
 /**
- * Base class for VisualN Manager plugins.
+ * Base class for VisualN Builder plugins.
  */
-abstract class VisualNManagerBase extends VisualNPluginBase implements VisualNManagerInterface {
+abstract class VisualNBuilderBase extends VisualNPluginBase implements VisualNBuilderInterface {
 
   /**
    * @inheritdoc

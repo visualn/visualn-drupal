@@ -20,11 +20,10 @@ abstract class VisualNPluginBase extends PluginBase implements VisualNPluginInte
 
   /**
    * @inheritdoc
+   *
+   * @todo: maybe remove this abstract method since already contained in the interface
    */
-  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
-    // @todo: maybe make this method abstract or even remove since the class is abstract itself
-    return $resource;
-  }
+  //abstract public function prepareBuild(array &$build, $vuid, ResourceInterface $resource);
 
   /**
    * @inheritdoc

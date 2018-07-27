@@ -1,8 +1,8 @@
 <?php
 
-namespace Drupal\visualn\Plugin\VisualN\Manager;
+namespace Drupal\visualn\Plugin\VisualN\Builder;
 
-use Drupal\visualn\Plugin\VisualNManagerBase;
+use Drupal\visualn\Plugin\VisualNBuilderBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -14,13 +14,13 @@ use Drupal\visualn\Plugin\VisualNDrawerInterface;
 use Drupal\visualn\ResourceInterface;
 
 /**
- * Provides a 'Default Manager' VisualN manager.
+ * Provides a 'Default Builder' VisualN builder.
  *
  * @todo: add description here
  *
- * Manager makes chain from Chain plugins (see @link chain_plugins Chain plugins @endlink topic)
+ * Builder makes chain from Chain plugins (see @link chain_plugins Chain plugins @endlink topic)
  *
- * Default Manager supposes that Resource has at least one of keys filled-up: base_type or type.
+ * Default Builder supposes that Resource has at least one of keys filled-up: base_type or type.
  * The 'type' key is a required one, base_type may be empty.
  *
  *
@@ -34,14 +34,14 @@ use Drupal\visualn\ResourceInterface;
  * The type uniquely identifies a resource type with its properties and structure.
  * For each resource type a Resource plugin should be implemented.
  *
- * @ingroup manager_plugins
+ * @ingroup builder_plugins
  *
- * @VisualNManager(
+ * @VisualNBuilder(
  *  id = "visualn_default",
- *  label = @Translation("Default Manager"),
+ *  label = @Translation("Default Builder"),
  * )
  */
-class DefaultManager extends VisualNManagerBase implements ContainerFactoryPluginInterface {
+class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPluginInterface {
 
   /**
    * The image style entity storage.
@@ -102,10 +102,6 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
 
   /**
    * @inheritdoc
-   *
-   * @todo: add into interface and Base class
-   * @todo: some or all options should be passed as part of manager_config (at least visualn_style_id)
-   *  at plugin object instatiation
    */
   public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
     //$drawing_options = $this->getConfiguration();
@@ -116,14 +112,14 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
 
     // @todo: attach js scripts only if there is at least one drawer (or handler) with non-empty jsId (in handlers list)
 
-    // @todo: visualn-core.js must be attached before other visualn js scripts (drawers, mappers, adapters, managers)
-    // @todo: move into base class or even into dependencies for manager js script and attach it there instead of end of method function
+    // @todo: visualn-core.js must be attached before other visualn js scripts (drawers, mappers, adapters, builders)
+    // @todo: move into base class or even into dependencies for builder js script and attach it there instead of end of method function
     // @todo: maybe pass VisualN variable to drawer scpripts as it is done for Drupal global variable
     $build['#attached']['library'][] = 'visualn/visualn-core';
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
     // @todo: check the way it is used, add a comment
-    $manager_id = 'visualnDefaultManager';
-    $build['#attached']['drupalSettings']['visualn']['handlerItems']['managers'][$manager_id][$vuid] = $vuid;
+    $builder_id = 'visualnDefaultManager';
+    $build['#attached']['drupalSettings']['visualn']['handlerItems']['managers'][$builder_id][$vuid] = $vuid;
 
     // required options: style_id, html_selector
     // add optional options
@@ -135,7 +131,7 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
 
 /*
     // @todo: do we really need style_id here? maybe just pass drawer_plugin_id or both
-    //  manager needs to know nothing about the visualn style
+    //  builder needs to know nothing about the visualn style
     $visualn_style_id = $options['style_id'];
     $visualn_style = $this->visualNStyleStorage->load($visualn_style_id);
     if (empty($visualn_style)) {
@@ -249,9 +245,9 @@ class DefaultManager extends VisualNManagerBase implements ContainerFactoryPlugi
 */
 
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['html_selector'] = $options['html_selector'];
-    // Attach visualn manager js script.
+    // Attach visualn builder js script.
     // @todo: move this to a method in a base abstract class
-    $build['#attached']['library'][] = 'visualn/visualn-manager';
+    $build['#attached']['library'][] = 'visualn/builder-default';
 
     // @todo: set visualn/core library as a dependency (?)
 

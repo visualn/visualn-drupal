@@ -61,9 +61,9 @@ basic-tree-mapper:
     - core/jquery
 
 
-visualn-manager:
+builder-default:
   js:
-    js/visualn-manager.js: {}
+    js/builders/default-builder.js: {}
   dependencies:
     - core/jquery
 

@@ -7,13 +7,13 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * Provides the VisualN Manager plugin manager.
+ * Provides the VisualN Builder plugin manager.
  */
-class VisualNManagerManager extends DefaultPluginManager {
+class VisualNBuilderManager extends DefaultPluginManager {
 
 
   /**
-   * Constructor for VisualNManagerManager objects.
+   * Constructor for VisualNBuilderManager objects.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -24,10 +24,10 @@ class VisualNManagerManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/VisualN/Manager', $namespaces, $module_handler, 'Drupal\visualn\Plugin\VisualNManagerInterface', 'Drupal\visualn\Annotation\VisualNManager');
+    parent::__construct('Plugin/VisualN/Builder', $namespaces, $module_handler, 'Drupal\visualn\Plugin\VisualNBuilderInterface', 'Drupal\visualn\Annotation\VisualNBuilder');
 
-    $this->alterInfo('visualn_manager_info');
-    $this->setCacheBackend($cache_backend, 'visualn_manager_plugins');
+    $this->alterInfo('visualn_builder_info');
+    $this->setCacheBackend($cache_backend, 'visualn_builder_plugins');
   }
 
 }

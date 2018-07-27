@@ -8,8 +8,8 @@ services:
   plugin.manager.visualn.adapter:
     class: Drupal\visualn\Plugin\VisualNAdapterManager
     parent: default_plugin_manager
-  plugin.manager.visualn.manager:
-    class: Drupal\visualn\Plugin\VisualNManagerManager
+  plugin.manager.visualn.builder:
+    class: Drupal\visualn\Plugin\VisualNBuilderManager
     parent: default_plugin_manager
   plugin.manager.visualn.raw_resource_format:
     class: Drupal\visualn\Plugin\RawResourceFormatManager

@@ -21,7 +21,7 @@
  * @section workflow_mechanics Workflow mechanics
  *
  * - @link chain_plugins Chain plugins @endlink
- * - @link manager_plugins Managers @endlink
+ * - @link builder_plugins Builders @endlink
  * - @link drawer_plugins Drawers @endlink
  * - @link adapter_plugins Adapters @endlink
  * - @link mapper_plugins Mappers @endlink
@@ -85,15 +85,15 @@
  */
 
 /**
- * @defgroup manager_plugins Manager plugins
+ * @defgroup builder_plugins Builder plugins
  * @{
- * Managers are used to compose chain of plugins and create drawing build.
+ * Builders are used to compose chain of plugins and create drawing build.
  *
- * Manager plugins main purpose is to compose a chain from adapter, mapper and
+ * Builder plugins main purpose is to compose a chain from adapter, mapper and
  * drawer plugins and apply it to the input resource object to get a drawing
  * build as a result.
- * Developers can create custom managers that would implement custom logic
- * if DefaultManager doesn't fit their needs.
+ * Developers can create custom builders that would implement custom logic
+ * if DefaultBuilder doesn't fit their needs.
  * @}
  */
 
@@ -190,7 +190,7 @@
  * @param array $subchain_suggestions
  *   An of adapter subchains suggested by modules.
  *
- * @ingroup manager_plugins
+ * @ingroup builder_plugins
  */
 function hook_visualn_adapter_subchains_alter(&$subchain_suggestions) {
 

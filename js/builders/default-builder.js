@@ -1,4 +1,3 @@
-// @todo: rename the file into visualn-default-manager.js
 // @todo: use js Promises feature
 (function ($, Drupal) {
 window.addEventListener('visualnCoreProcessed', function (e) {

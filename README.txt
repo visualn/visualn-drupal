@@ -1,7 +1,7 @@
 VisualN Style
 Config entity that attaches drawer plugins to fields and views.
 
-There are four types of components: Drawer, Mapper, Adapter and Manager. Drawer can be considered the central place where visualization drawing occurs.
+There are four types of components: Drawer, Mapper, Adapter and Builder. Drawer can be considered the central place where visualization drawing occurs.
 Each component generally consists of two files - a drupal plugin of a certain type and a js file. If needed, css files and other media may be included.
 The logic is as follows: first, plugins prepare/modify html markup and attach js settings and scripts, then js scripts get and prepare data and draw visualization drawings according to those settings.
 
@@ -21,10 +21,10 @@ Some possible input formats include:
 - csv file
 - views html output
 
-Manager
-Plugin manages all the things, prepares settings and calls Drawer, Mapper and Adapter plugins where needed. Generally the Default manager plugin should be enough for the most cases but can be overridden if needed.
+Builder
+Plugin manages all the things, prepares settings and calls Drawer, Mapper and Adapter plugins where needed. Generally the Default builder plugin should be enough for the most cases but can be overridden if needed.
 
 You don't really need Mapper and Adapter for your custom visualizations if you put all the processing into a Drawer. Those are supposed for building flexible and reusable solutions. Also you can always reuse existing Mappers and Adapters.
 
-Drawer decides which manager to use, but Manager itself does all the main job selecting plugins, connecting plugins and passing data between those etc.
+Drawer decides which builder to use, but Builder itself does all the main job selecting plugins, connecting plugins and passing data between those etc.
 

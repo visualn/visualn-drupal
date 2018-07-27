@@ -5,14 +5,14 @@ namespace Drupal\visualn\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a VisualN Manager item annotation object.
+ * Defines a VisualN Builder item annotation object.
  *
- * @see \Drupal\visualn\Plugin\VisualNManagerManager
+ * @see \Drupal\visualn\Plugin\VisualNBuilderManager
  * @see plugin_api
  *
  * @Annotation
  */
-class VisualNManager extends Plugin {
+class VisualNBuilder extends Plugin {
 
 
   /**

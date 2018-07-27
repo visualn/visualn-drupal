@@ -52,20 +52,19 @@ class VisualN {
 
     $visualNStyleStorage = \Drupal::service('entity_type.manager')->getStorage('visualn_style');
     $visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
-    $visualNManagerManager = \Drupal::service('plugin.manager.visualn.manager');
+    $visualNBuilderManager = \Drupal::service('plugin.manager.visualn.builder');
 
-    // @todo: move manager id discovery for the drawer into DefaultManager::prepareBuild()?
+    // @todo: move builder plugin id discovery for the drawer into DefaultManager::prepareBuild()?
 
     if (!empty($visualn_style_id)) {
-      // load style and get drawer manager from plugin definition
+      // load style and get builder requested by drawer from drawer plugin definition
       $visualn_style = $visualNStyleStorage->load($visualn_style_id);
       $drawer_plugin_id = $visualn_style->getDrawerPlugin()->getPluginId();
-      $manager_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
-      // @todo: pass options as part of $manager_config (?)
+      $builder_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['builder'];
     }
     elseif (!empty($base_drawer_id)) {
       $drawer_plugin_id = $base_drawer_id;
-      $manager_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['manager'];
+      $builder_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['builder'];
     }
     else {
       return $build;
@@ -82,8 +81,8 @@ class VisualN {
     //$build['#attributes']['class'][] = $html_selector;
     $build['visualn_build_markup'] = ['#markup' => '<div class="' . $html_selector . '"></div>'];
 
-    // get manager configuration, load manager plugin and prepare drawing build
-    $manager_config = [
+    // get builder configuration, load builder plugin and prepare drawing build
+    $builder_config = [
       'visualn_style_id' => $visualn_style_id,
       'drawer_config' => $drawer_config,
       'drawer_fields' => $drawer_fields,
@@ -92,8 +91,8 @@ class VisualN {
       'base_drawer_id' => $base_drawer_id,
     ];
 
-    $manager_plugin = $visualNManagerManager->createInstance($manager_plugin_id, $manager_config);
-    $manager_plugin->prepareBuild($build, $vuid, $resource);
+    $builder_plugin = $visualNBuilderManager->createInstance($builder_plugin_id, $builder_config);
+    $builder_plugin->prepareBuild($build, $vuid, $resource);
 
     return $build;
   }
