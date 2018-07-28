@@ -212,7 +212,7 @@ class VisualNImageFormatter extends ImageFormatter {
       ->buildResource($raw_input);
 
     // Get drawing build
-    $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+    $build = \Drupal::service('visualn.builder')->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
 
     // @todo: html_selector should be connected inside '.field__items' in order
     //    to be able to use quick edit feature

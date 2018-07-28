@@ -4,7 +4,6 @@ namespace Drupal\visualn_file\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Provides a 'VisualN File field drawing fetcher' VisualN drawing fetcher.
@@ -76,7 +75,7 @@ class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
                         ->buildResource($raw_input);
 
           // Get drawing build
-          $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+          $build = \Drupal::service('visualn.builder')->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
           $drawing_markup = $build;
         }
 

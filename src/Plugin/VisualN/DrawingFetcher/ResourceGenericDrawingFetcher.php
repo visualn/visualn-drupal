@@ -19,6 +19,7 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\visualn\Helpers\VisualN;
+use Drupal\visualn\BuilderService;
 
 /**
  * Provides a 'VisualN Resource generic drawing fetcher' VisualN drawing fetcher.
@@ -59,6 +60,7 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
       $plugin_definition,
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
+      $container->get('visualn.builder'),
       $container->get('plugin.manager.visualn.raw_resource_format')
     );
   }
@@ -79,11 +81,13 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
    *   The visualn style entity storage service.
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
+   * @param \Drupal\visualn\BuilderService $visualn_builder
+   *   The visualn builder service.
    * @param \Drupal\visualn\Plugin\RawResourceFormatManager $visualn_resource_format_manager
    *   The visualn resource format manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, RawResourceFormatManager $visualn_resource_format_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, BuilderService $visualn_builder, RawResourceFormatManager $visualn_resource_format_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_builder);
 
     $this->visualNResourceFormatManager = $visualn_resource_format_manager;
   }
@@ -175,7 +179,7 @@ class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
         ->buildResource($raw_input);
 
       // Get drawing build
-      $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+      $build = $this->visualNBuilder->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
 
       $drawing_markup = $build;
     }

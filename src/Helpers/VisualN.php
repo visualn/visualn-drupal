@@ -43,61 +43,6 @@ class VisualN {
 */
 
   /**
-   * Standard entry point to create drawerings based on resource and configuration data.
-   *
-   * @todo: convert into a service, then services used could be injected as arguments via service tags
-   */
-  public static function makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields, $base_drawer_id = '') {
-    $build = [];
-
-    $visualNStyleStorage = \Drupal::service('entity_type.manager')->getStorage('visualn_style');
-    $visualNDrawerManager = \Drupal::service('plugin.manager.visualn.drawer');
-    $visualNBuilderManager = \Drupal::service('plugin.manager.visualn.builder');
-
-    // @todo: move builder plugin id discovery for the drawer into DefaultManager::prepareBuild()?
-
-    if (!empty($visualn_style_id)) {
-      // load style and get builder requested by drawer from drawer plugin definition
-      $visualn_style = $visualNStyleStorage->load($visualn_style_id);
-      $drawer_plugin_id = $visualn_style->getDrawerPlugin()->getPluginId();
-      $builder_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['builder'];
-    }
-    elseif (!empty($base_drawer_id)) {
-      $drawer_plugin_id = $base_drawer_id;
-      $builder_plugin_id = $visualNDrawerManager->getDefinition($drawer_plugin_id)['builder'];
-    }
-    else {
-      return $build;
-    }
-
-
-    // generate vuid for the drawing
-    $vuid = \Drupal::service('uuid')->generate();
-
-    // generate html selector for the drawing (where to attach drawing selector)
-    $html_selector = 'visualn-drawing--' . substr($vuid, 0, 8);
-
-    // @todo: attributes dont render if there is nothing to render
-    //$build['#attributes']['class'][] = $html_selector;
-    $build['visualn_build_markup'] = ['#markup' => '<div class="' . $html_selector . '"></div>'];
-
-    // get builder configuration, load builder plugin and prepare drawing build
-    $builder_config = [
-      'visualn_style_id' => $visualn_style_id,
-      'drawer_config' => $drawer_config,
-      'drawer_fields' => $drawer_fields,
-      'html_selector' => $html_selector,
-      // @todo: this was introduced later, for drawer preview page
-      'base_drawer_id' => $base_drawer_id,
-    ];
-
-    $builder_plugin = $visualNBuilderManager->createInstance($builder_plugin_id, $builder_config);
-    $builder_plugin->prepareBuild($build, $vuid, $resource);
-
-    return $build;
-  }
-
-  /**
    * This is a temporary method by now.
    *
    * Questions to consider

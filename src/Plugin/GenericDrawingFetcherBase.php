@@ -17,6 +17,7 @@ use Drupal\Core\Form\SubformStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
+use Drupal\visualn\BuilderService;
 
 abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase implements ContainerFactoryPluginInterface {
 
@@ -43,6 +44,13 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
   protected $visualNDrawerManager;
 
   /**
+   * The visualn builder service.
+   *
+   * @var \Drupal\visualn\BuilderService
+   */
+  protected $visualNBuilder;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -51,7 +59,8 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager')->getStorage('visualn_style'),
-      $container->get('plugin.manager.visualn.drawer')
+      $container->get('plugin.manager.visualn.drawer'),
+      $container->get('visualn.builder')
     );
   }
 
@@ -71,12 +80,15 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
    *   The visualn style entity storage service.
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
+   * @param \Drupal\visualn\BuilderService $visualn_builder
+   *   The visualn builder service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, BuilderService $visualn_builder) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
+    $this->visualNBuilder = $visualn_builder;
   }
 
   /**

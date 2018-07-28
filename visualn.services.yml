@@ -32,3 +32,6 @@ services:
   plugin.manager.visualn.data_generator:
     class: Drupal\visualn\Plugin\VisualNDataGeneratorManager
     parent: default_plugin_manager
+  visualn.builder:
+    class: Drupal\visualn\BuilderService
+    arguments: ['@plugin.manager.visualn.builder', '@plugin.manager.visualn.drawer', '@entity_type.manager']

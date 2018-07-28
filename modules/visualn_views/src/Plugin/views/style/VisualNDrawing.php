@@ -18,7 +18,7 @@ use Drupal\Core\Form\SubformState;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\visualn\Helpers\VisualN;
+use Drupal\visualn\BuilderService;
 
 
 
@@ -74,6 +74,13 @@ class VisualNDrawing extends Serializer {
   protected $visualNResourceFormatManager;
 
   /**
+   * The visualn builder service.
+   *
+   * @var \Drupal\visualn\BuilderService
+   */
+  protected $visualNBuilder;
+
+  /**
    * The visualn unique identifier. Used for fields mapping and html_selector
    *   to distinguish from other drawings.
    *
@@ -100,7 +107,8 @@ class VisualNDrawing extends Serializer {
       // services used by visauln_drawing itself
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
-      $container->get('plugin.manager.visualn.raw_resource_format')
+      $container->get('plugin.manager.visualn.raw_resource_format'),
+      $container->get('visualn.builder')
     );
   }
 
@@ -110,7 +118,8 @@ class VisualNDrawing extends Serializer {
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition,
     SerializerInterface $serializer, array $serializer_formats, array $serializer_format_providers,
-    EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, RawResourceFormatManager $visualn_resource_format_manager) {
+    EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, RawResourceFormatManager $visualn_resource_format_manager,
+    BuilderService $visualn_builder) {
 
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer, $serializer_formats, $serializer_format_providers);
 
@@ -118,6 +127,7 @@ class VisualNDrawing extends Serializer {
     $this->visualNStyleStorage = $visualn_style_storage;
     $this->visualNDrawerManager = $visualn_drawer_manager;
     $this->visualNResourceFormatManager = $visualn_resource_format_manager;
+    $this->visualNBuilder = $visualn_builder;
   }
 
 
@@ -457,7 +467,8 @@ class VisualNDrawing extends Serializer {
       ->buildResource($raw_input);
 
     // Get drawing build
-    $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+    $build = $this->visualNBuilder->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+    $this->visualNBuilder;
 
     return $build;
   }

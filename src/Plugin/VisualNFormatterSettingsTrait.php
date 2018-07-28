@@ -218,7 +218,8 @@ trait VisualNFormatterSettingsTrait {
         $raw_resource_format_plugin
           = $this->visualNResourceFormatManager->createInstance($raw_resource_format_id, []);
         $resource = $raw_resource_format_plugin->buildResource($raw_input);
-        $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+        // @todo: get the service into trait implementing classes
+        $build = \Drupal::service('visualn.builder')->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
       }
       else {
         $build = [];

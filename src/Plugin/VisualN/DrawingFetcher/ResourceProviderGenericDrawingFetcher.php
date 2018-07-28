@@ -15,7 +15,7 @@ use Drupal\Core\Render\Element;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
-use Drupal\visualn\Helpers\VisualN;
+use Drupal\visualn\BuilderService;
 
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
@@ -54,6 +54,7 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
       $plugin_definition,
       $container->get('entity_type.manager')->getStorage('visualn_style'),
       $container->get('plugin.manager.visualn.drawer'),
+      $container->get('visualn.builder'),
       $container->get('plugin.manager.visualn.resource_provider')
     );
   }
@@ -74,11 +75,13 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
    *   The visualn style entity storage service.
    * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
+   * @param \Drupal\visualn\BuilderService $visualn_builder
+   *   The visualn builder service.
    * @param \Drupal\visualn\Plugin\VisualNResourceProviderManager $visualn_resource_provider_manager
    *   The visualn resource provider manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNResourceProviderManager $visualn_resource_provider_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, BuilderService $visualn_builder, VisualNResourceProviderManager $visualn_resource_provider_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_builder);
 
     $this->visualNResourceProviderManager = $visualn_resource_provider_manager;
   }
@@ -220,10 +223,6 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
 
     // @todo:
 
-    // @todo: the vuid here isn't the same as used in VisualN::makeBuildByResource()
-    $vuid = \Drupal::service('uuid')->generate();
-
-
     if (!empty($resource_provider_id)) {
       $provider_plugin = $this->visualNResourceProviderManager->createInstance($resource_provider_id, $resource_provider_config);
 
@@ -243,7 +242,7 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
       $resource = $provider_plugin->getResource();
 
       // Get drawing build
-      $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+      $build = $this->visualNBuilder->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
 
       $drawing_markup = $build;
 

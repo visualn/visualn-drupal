@@ -3,7 +3,6 @@
 namespace Drupal\visualn\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
-use Drupal\visualn\Helpers\VisualN;
 
 /**
  * Provides a 'VisualN Standalone drawing fetcher' VisualN drawing fetcher.
@@ -50,7 +49,7 @@ class StandaloneDrawingFetcher extends GenericDrawingFetcherBase {
       ->buildResource($raw_input);
 
     // Get drawing build
-    $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+    $build = $this->visualNBuilder->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
 
     $drawing_markup = $build;
 

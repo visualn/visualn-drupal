@@ -12,7 +12,7 @@ use Drupal\Core\Form\SubformState;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
-use Drupal\visualn\Helpers\VisualN;
+use Drupal\visualn\BuilderService;
 
 /**
  * Class DrawerPreviewForm.
@@ -40,11 +40,19 @@ class DrawerPreviewForm extends FormBase {
    */
   protected $visualNResourceProviderManager;
 
+  /**
+   * The visualn builder service.
+   *
+   * @var \Drupal\visualn\BuilderService
+   */
+  protected $visualNBuilder;
+
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin.manager.visualn.drawer'),
       $container->get('plugin.manager.visualn.data_generator'),
-      $container->get('plugin.manager.visualn.resource_provider')
+      $container->get('plugin.manager.visualn.resource_provider'),
+      $container->get('visualn.builder')
     );
   }
 
@@ -54,11 +62,13 @@ class DrawerPreviewForm extends FormBase {
   public function __construct(
     VisualNDrawerManager $plugin_manager_visualn_drawer,
     VisualNDataGeneratorManager $plugin_manager_visualn_data_generator,
-    VisualNResourceProviderManager $visualn_resource_provider_manager
+    VisualNResourceProviderManager $visualn_resource_provider_manager,
+    BuilderService $visualn_builder
   ) {
     $this->visualNDrawerManager = $plugin_manager_visualn_drawer;
     $this->visualNDataGeneratorManager = $plugin_manager_visualn_data_generator;
     $this->visualNResourceProviderManager = $visualn_resource_provider_manager;
+    $this->visualNBuilder = $visualn_builder;
   }
 
 
@@ -195,7 +205,7 @@ class DrawerPreviewForm extends FormBase {
     $visualn_style_id = '';
     $drawer_fields = [];
     $base_drawer_id = $form_state->getBuildInfo()['args'][0];
-    $build = VisualN::makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields, $base_drawer_id);
+    $build = $this->visualNBuilder->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields, $base_drawer_id);
 
     $build['#attached']['drupalSettings']['visualn']['context_wrapper'] = '#drawing-build-ajax-wrapper';
 
