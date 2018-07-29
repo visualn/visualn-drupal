@@ -207,8 +207,6 @@ class DrawerPreviewForm extends FormBase {
     $base_drawer_id = $form_state->getBuildInfo()['args'][0];
     $build = $this->visualNBuilder->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields, $base_drawer_id);
 
-    $build['#attached']['drupalSettings']['visualn']['context_wrapper'] = '#drawing-build-ajax-wrapper';
-
     $element['build'] = $build;
 
     return $element;

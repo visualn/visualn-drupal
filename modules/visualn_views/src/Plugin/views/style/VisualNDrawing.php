@@ -545,10 +545,6 @@ class VisualNDrawing extends Serializer {
 
     if (!empty($this->view->live_preview)) {
       $build['json_preview']['#markup'] = $json_markup;
-
-      // let visualn-core.js know that it needs to change wrapper selector to process new drawings
-      // retrieved via ajax to make it work in preview mode
-      $build['#attached']['drupalSettings']['visualn']['context_wrapper'] = '.view-content';
     }
 
     $drawing_build =  $this->doDrawingBuild($json_data);

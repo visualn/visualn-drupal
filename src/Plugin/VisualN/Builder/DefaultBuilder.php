@@ -118,8 +118,8 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
     $build['#attached']['library'][] = 'visualn/visualn-core';
     $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
     // @todo: check the way it is used, add a comment
-    $builder_id = 'visualnDefaultManager';
-    $build['#attached']['drupalSettings']['visualn']['handlerItems']['managers'][$builder_id][$vuid] = $vuid;
+    $builder_id = 'visualnDefaultBuilder';
+    $build['#attached']['drupalSettings']['visualn']['handlerItems']['builders'][$builder_id][$vuid] = $vuid;
 
     // required options: style_id, html_selector
     // add optional options
