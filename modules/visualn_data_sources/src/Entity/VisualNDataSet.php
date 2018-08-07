@@ -189,6 +189,7 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
     $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Authored by'))
       ->setDescription(t('The user ID of author of the VisualN Data Set entity.'))
+      ->setRequired(TRUE)
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
@@ -214,6 +215,7 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('The name of the VisualN Data Set entity.'))
+      ->setRequired(TRUE)
       ->setRevisionable(TRUE)
       ->setSettings([
         'max_length' => 50,
