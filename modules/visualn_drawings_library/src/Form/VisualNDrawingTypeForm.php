@@ -10,6 +10,8 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class VisualNDrawingTypeForm extends EntityForm {
 
+  const VISUALN_FETCHER_FIELD_TYPE_ID = 'visualn_fetcher';
+
   /**
    * {@inheritdoc}
    */
@@ -35,37 +37,45 @@ class VisualNDrawingTypeForm extends EntityForm {
       '#disabled' => !$visualn_drawing_type->isNew(),
     ];
 
+
+    // get the list of visualn_fetcher fields attached to the entity type / bundle
+    // also considered  base and bundle fields
+    // see ContentEntityBase::bundleFieldDefinitions() and ::baseFieldDefinitions()
     $options = [];
-    if (!$visualn_drawing_type->isNew()) {
-      // @todo: instantiate on create
-      $entityManager = \Drupal::service('entity_field.manager');
-      // @todo: get type from entity properties
-      $entity_type = 'visualn_drawing';
-      $bundle = $visualn_drawing_type->id();
-      $bundle_fields = $entityManager->getFieldDefinitions($entity_type, $bundle);
 
-      foreach ($bundle_fields as $field_name => $field_definition) {
-        // filter out base fields
-        if ($field_definition->getFieldStorageDefinition()->isBaseField() == TRUE) {
-          continue;
-        }
+    // @todo: instantiate on create
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $entity_type = $visualn_drawing_type->getEntityType()->getBundleOf();
 
-        // @todo: move field type into constant
-        if ($field_definition->getType() == 'visualn_fetcher') {
-          $options[$field_name] = $field_definition->getLabel();
-        }
+    // for new drawing type bundle is empty
+    $bundle = $visualn_drawing_type->id();
+    $bundle_fields = $entityFieldManager->getFieldDefinitions($entity_type, $bundle);
+
+    // for new drawing types it may still contain base fields (e.g. "Default fetcher" field)
+    // so do not skip them
+    foreach ($bundle_fields as $field_name => $field_definition) {
+      if ($field_definition->getType() == static::VISUALN_FETCHER_FIELD_TYPE_ID) {
+        $options[$field_name] = $field_definition->getLabel();
       }
     }
 
+    // sort options by name
+    asort($options);
 
+    // If entity type is new and visualn_fetcher base (or bundle) fields found (see Drawing entity class)
+    // use the first field (generally there is one "Default fetcher" base field) as default.
+    reset($options);
+    $default_fetcher = $visualn_drawing_type->isNew() && !empty($options) ? key($options) : $this->entity->getDrawingFetcherField();
     $form['drawing_fetcher_field'] = [
       '#type' => 'select',
       '#title' => $this->t('Drawing fetcher field'),
       '#options' => $options,
-      '#default_value' => $this->entity->getDrawingFetcherField(),
-      '#disabled' => $visualn_drawing_type->isNew(),
+      '#default_value' => $default_fetcher,
+      '#description' => $this->t('The field that is used to provide drawing build.'),
+      '#disabled' => $visualn_drawing_type->isNew() && empty($options),
       '#empty_value' => '',
       '#empty_option' => t('- Select drawing fetcher field -'),
+      '#required' => !empty($options),
     ];
 
     return $form;

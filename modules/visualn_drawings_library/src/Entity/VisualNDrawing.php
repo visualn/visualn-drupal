@@ -255,6 +255,32 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE);
 
+    // add default fetcher field and use it by defualt on entity type config page
+    // @todo: it doesn't create a separate database table,
+    //  instead adds columns to the visualn_drawing_field_data table
+    $fields['fetcher'] = BaseFieldDefinition::create('visualn_fetcher')
+      ->setLabel(t('Default fetcher'))
+      ->setDescription(t('Default drawer fetcher field for the drawing.'))
+      //->setSettings([])
+      //->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'visualn_fetcher',
+        'weight' => -4,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'visualn_fetcher',
+        'weight' => -4,
+      ])
+      ->setRequired(FALSE)
+      ->setCardinality(1)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+      // @todo: should it be translatable?
+      //   same for Name field
+      //->setTranslatable(TRUE);
+      //->setRevisionable(TRUE)
+
     return $fields;
   }
 

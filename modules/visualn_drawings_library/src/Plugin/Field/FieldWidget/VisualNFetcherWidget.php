@@ -132,9 +132,34 @@ class VisualNFetcherWidget extends WidgetBase {
 
     // @todo: We can't pass the current reference to the entity because it doesn't always exist,
     //    e.g. when setting default value for the field in field settings.
+    //    Actually it does (see the note below) but can it be used by plugins or should additional
+    //    checks be done? Maybe kind of empty entity?
     // @todo: maybe pass entityType config entity
-    $entity_type = $this->fieldDefinition->get('entity_type');
-    $bundle = $this->fieldDefinition->get('bundle');
+
+/*
+    $field_definition = $this->fieldDefinition;
+    if ($field_definition instanceof Drupal\Core\Field\BaseFieldDefinition) {
+    }
+*/
+
+    // @note: It also works for configuring field form (see FieldItemList::getEntity())
+    //   though entity values are all empty since there basically can't be any real entity
+    //   it is a nice feature
+    $entity = $items->getEntity();
+    $entity_type = $entity->getEntityTypeId();
+    $bundle = $entity->bundle();
+
+    // @note: $field_definition::getTargetBundle() is empty for base entity fields since
+    // they are connected to the entity, not bundle
+    // though $field_definition::getTargetEntityTypeId() works
+    //$entity_type = $field_definition->getTargetEntityTypeId();
+    //$bundle = $field_definition->getTargetBundle();
+
+
+    // @todo: these are not working with 'Default fetcher' field which is a base field
+    //   defined in-code in entity definition.
+    //$entity_type = $this->fieldDefinition->get('entity_type');
+    //$bundle = $this->fieldDefinition->get('bundle');
 
     // @todo: maybe we can get this data in the #process callback directly from the $item object
     $element['fetcher_container']['fetcher_config']['#entity_type'] = $entity_type;
