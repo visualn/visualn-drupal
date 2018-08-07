@@ -9,6 +9,8 @@ use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\UserInterface;
 
+// @todo: change id to visualn_dataset
+
 /**
  * Defines the VisualN Data Set entity.
  *
@@ -254,6 +256,32 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
       ->setReadOnly(TRUE)
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE);
+
+    // add default resource provider field and use it by defualt on entity type config page
+    // @todo: it doesn't create a separate database table,
+    //  instead adds columns to the visualn_data_set_field_data table
+    $fields['resource_provider'] = BaseFieldDefinition::create('visualn_resource_provider')
+      ->setLabel(t('Default resource provider'))
+      ->setDescription(t('Default resource provider field for the dataset.'))
+      //->setSettings([])
+      //->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'visualn_resource_provider',
+        'weight' => -4,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'visualn_resource_provider',
+        'weight' => -4,
+      ])
+      ->setRequired(FALSE)
+      ->setCardinality(1)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+      // @todo: should it be translatable?
+      //   same for Name field
+      //->setTranslatable(TRUE);
+      //->setRevisionable(TRUE)
 
     return $fields;
   }

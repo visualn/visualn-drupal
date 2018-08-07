@@ -93,7 +93,7 @@ class VisualNResourceProviderWidget extends WidgetBase {
       '#description' => t('The resource provider for the drawing'),
       '#default_value' => $item->resource_provider_id,
       '#options' => $resource_providers,
-      '#required' => TRUE,
+      //'#required' => TRUE,
       '#empty_value' => '',
       '#empty_option' => t('- Select resource provider -'),
       '#ajax' => [
@@ -117,6 +117,7 @@ class VisualNResourceProviderWidget extends WidgetBase {
 
     // @todo: Also set keys for #entity_type and #bundle (see fetcher widget). Maybe set as context.
 
+    // @todo: see comments in VisualNFetcherWidget::formElement()
 
 
     // @todo: Set entity type and bundle for the fetcher_plugin since it may need the list of all its fields.
@@ -124,8 +125,9 @@ class VisualNResourceProviderWidget extends WidgetBase {
     // @todo: We can't pass the current reference to the entity because it doesn't always exist,
     //    e.g. when setting default value for the field in field settings.
     // @todo: maybe pass entityType config entity
-    $entity_type = $this->fieldDefinition->get('entity_type');
-    $bundle = $this->fieldDefinition->get('bundle');
+    $entity = $items->getEntity();
+    $entity_type = $entity->getEntityTypeId();
+    $bundle = $entity->bundle();
 
     // @todo: maybe we can get this data in the #process callback directly from the $item object
     $element['provider_container']['#entity_type'] = $entity_type;

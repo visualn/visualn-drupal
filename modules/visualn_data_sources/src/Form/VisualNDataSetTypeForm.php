@@ -10,6 +10,8 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class VisualNDataSetTypeForm extends EntityForm {
 
+  const VISUALN_RESOURCE_PROVIDER_FIELD_TYPE_ID = 'visualn_resource_provider';
+
   /**
    * {@inheritdoc}
    */
@@ -35,37 +37,44 @@ class VisualNDataSetTypeForm extends EntityForm {
       '#disabled' => !$visualn_data_set_type->isNew(),
     ];
 
+    // get the list of visualn_resource_provider fields attached to the entity type / bundle
+    // also considered  base and bundle fields
+    // see ContentEntityBase::bundleFieldDefinitions() and ::baseFieldDefinitions()
     $options = [];
-    if (!$visualn_data_set_type->isNew()) {
-      // @todo: instantiate on create
-      $entityManager = \Drupal::service('entity_field.manager');
-      // @todo: get type from entity properties
-      $entity_type = 'visualn_data_set';
-      $bundle = $visualn_data_set_type->id();
-      $bundle_fields = $entityManager->getFieldDefinitions($entity_type, $bundle);
 
-      foreach ($bundle_fields as $field_name => $field_definition) {
-        // filter out base fields
-        if ($field_definition->getFieldStorageDefinition()->isBaseField() == TRUE) {
-          continue;
-        }
+    // @todo: instantiate on create
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $entity_type = $visualn_data_set_type->getEntityType()->getBundleOf();
 
-        // @todo: move field type into constant
-        if ($field_definition->getType() == 'visualn_resource_provider') {
-          $options[$field_name] = $field_definition->getLabel();
-        }
+    // for new drawing type bundle is empty
+    $bundle = $visualn_data_set_type->id();
+    $bundle_fields = $entityFieldManager->getFieldDefinitions($entity_type, $bundle);
+
+    // for new drawing types it may still contain base fields (e.g. "Default resource provider" field)
+    // so do not skip them
+    foreach ($bundle_fields as $field_name => $field_definition) {
+      if ($field_definition->getType() == static::VISUALN_RESOURCE_PROVIDER_FIELD_TYPE_ID) {
+        $options[$field_name] = $field_definition->getLabel();
       }
     }
 
+    // sort options by name
+    asort($options);
 
+    // If entity type is new and visualn_resource_provider base (or bundle) fields found (see DataSet entity class)
+    // use the first field (generally there is one "Default resource provider" base field) as default.
+    reset($options);
+    $default_resource_provider = $visualn_data_set_type->isNew() && !empty($options) ? key($options) : $this->entity->getResourceProviderField();
     $form['resource_provider_field'] = [
       '#type' => 'select',
       '#title' => $this->t('Resource provider field'),
       '#options' => $options,
-      '#default_value' => $this->entity->getResourceProviderField(),
-      '#disabled' => $visualn_data_set_type->isNew(),
+      '#default_value' => $default_resource_provider,
+      '#description' => $this->t('The field that is used to provide resource object.'),
+      '#disabled' => $visualn_data_set_type->isNew() && empty($options),
       '#empty_value' => '',
       '#empty_option' => t('- Select resource provider field -'),
+      '#required' => !empty($options),
     ];
 
     return $form;
