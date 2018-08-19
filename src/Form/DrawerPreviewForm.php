@@ -103,6 +103,8 @@ class DrawerPreviewForm extends FormBase {
 
     $form['drawer_config']['#drawer_plugin'] = $drawer_plugin;
 
+    // @todo: implement select/autocomplete form element for generator selector
+    //   see visualn config form
 
     // Attach resource provider configuration form
     $resource_provider_id = self::RESOURCE_PROVIDER_ID;

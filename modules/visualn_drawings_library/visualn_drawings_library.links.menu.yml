@@ -13,6 +13,6 @@ entity.visualn_drawing_type.collection:
   title: 'Types of Drawing entities'
   route_name: entity.visualn_drawing_type.collection
   description: 'List VisualN Drawing types (bundles)'
-  parent: visualn.admin_config_visualn
+  parent: visualn.visualn_configuration_form
   weight: 5
 

@@ -47,3 +47,15 @@ visualn.drawer_preview_controller_page:
     _title_callback: '\Drupal\visualn\Controller\DrawerPreviewController::title'
   requirements:
     _permission: 'access administration pages'
+
+# @todo: set correct permissions
+visualn.visualn_configuration_form:
+  path: '/admin/visualn/config'
+  defaults:
+    _form: '\Drupal\visualn\Form\ConfigurationForm'
+    _title: 'Configuration'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
+

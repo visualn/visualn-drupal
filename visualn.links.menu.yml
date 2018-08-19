@@ -1,3 +1,4 @@
+# @todo: use route key for the configuration form
 visualn.admin_config_visualn:
   route_name: visualn.admin_config_visualn
   parent: 'system.admin'
@@ -21,4 +22,11 @@ entity.visualn_setup.collection:
   description: 'List ready to use drawer setups'
   parent: visualn.admin_config_visualn
   weight: 3
+
+visualn.visualn_configuration_form:
+  title: 'Configuration'
+  route_name: visualn.visualn_configuration_form
+  description: 'Configure VisualN module'
+  parent: visualn.admin_config_visualn
+  weight: 99
 

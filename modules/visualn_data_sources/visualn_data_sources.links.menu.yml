@@ -22,6 +22,6 @@ entity.visualn_data_set_type.collection:
   title: 'Types of Data Set entities'
   route_name: entity.visualn_data_set_type.collection
   description: 'List VisualN Data Set types (bundles)'
-  parent: visualn.admin_config_visualn
+  parent: visualn.visualn_configuration_form
   weight: 8
 
