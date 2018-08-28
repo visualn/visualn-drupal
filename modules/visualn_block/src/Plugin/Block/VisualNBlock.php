@@ -5,21 +5,19 @@ namespace Drupal\visualn_block\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
-//use Drupal\Core\Link;
-//use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Request;
-//use Drupal\Core\Entity\EntityStorageInterface;
-//use Drupal\visualn\Plugin\VisualNDrawerManager;
 use Drupal\visualn\Plugin\VisualNDrawingFetcherManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 
 use Drupal\Core\Form\SubformStateInterface;
-use Drupal\visualn_iframe\ShareLinkBuilder;
+use Drupal\visualn_iframe\Entity\VisualNIFrame;
 
 /**
  * Provides a 'VisualNBlock' block.
+ *
+ * @ingroup iframes_toolkit
  *
  * @Block(
  *  id = "visualn_block",
@@ -27,6 +25,8 @@ use Drupal\visualn_iframe\ShareLinkBuilder;
  * )
  */
 class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface {
+
+  const IFRAME_HANDLER_KEY = 'visualn_block_key';
 
   /**
    * The visualn drawing fetcher manager service.
@@ -75,7 +75,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     return [
          'fetcher_id' => '',
          'fetcher_config' => [],
-         'enable_share_link' => 0,
+         'sharing_settings' => [],
          'iframe_hash' => '',
         ] + parent::defaultConfiguration();
   }
@@ -123,7 +123,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $ajax_wrapper_id = implode('-', array_merge($form_array_parents, ['fetcher_id'])) . '-visualn-block-ajax-wrapper';
     $form['fetcher_id'] = [
       '#type' => 'select',
-      '#title' => t('Drawer fetcher plugin'),
+      '#title' => t('Drawing fetcher plugin'),
       '#options' => $fetchers_list,
       '#default_value' => $fetcher_id,
       '#ajax' => [
@@ -154,25 +154,111 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
 
 
 
+    // @todo: review key names
     // check if visualn_iframe module is enabled
     $moduleHandler = \Drupal::service('module_handler');
+    // @todo: check if blocks sharing enabled (in visualn_iframe settings) and permissions
     if ($moduleHandler->moduleExists('visualn_iframe')){
-      // @todo: also maybe disable access to the iframe by url (or add some other access management mechanism)
-      $form['enable_share_link'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Enable Share link (experimental)'),
-        '#default_value' => $this->configuration['enable_share_link'],
-        '#weight' => '1',
-      ];
+      $iframes_default_config = \Drupal::config('visualn_iframe.settings');
+      $additional_config = \Drupal::config('visualn_block.iframe.settings');
+      // check if blocks sharing allowed
+      if ($additional_config->get('allow_blocks_sharing')) {
+
+        $settings = $this->configuration['sharing_settings'];
+        $form['sharing_settings'] = [
+          '#type' => 'details',
+          '#title' => $this->t('Sharing settings'),
+          '#open' => TRUE,
+          '#weight' => '1',
+        ];
+        // add hash link to the form
+        // @todo: add hash link styles (for hash color depending on iframe pulishing status)
+        $hash_label = \Drupal::service('visualn_iframe.builder')->getHashLabel($this->configuration['iframe_hash']);
+        if ($hash_label) {
+          $form['#attached']['library'][] = 'visualn_iframe/visualn-iframe-ui';
+          $hash_label = " {$hash_label}";
+        }
+        $form['sharing_settings']['sharing_enabled'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('Enable sharing') . $hash_label,
+          '#default_value' => isset($settings['sharing_enabled']) ? $settings['sharing_enabled'] : FALSE,
+        ];
+        $form['sharing_settings']['use_defaults'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('Use defaults'),
+          // @todo: add to iframe settings
+          '#default_value' => isset($settings['use_defaults']) ? $settings['use_defaults'] : FALSE,
+          '#states' => [
+            'visible' => [
+              ':input[name="settings[sharing_settings][sharing_enabled]"]' => ['checked' => TRUE],
+            ],
+          ],
+        ];
+        $form['sharing_settings']['show_link'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('Show origin link'),
+          '#default_value' => isset($settings['show_link']) ? $settings['show_link'] : $iframes_default_config->get('default.show_link'),
+          '#states' => [
+            'visible' => [
+              ':input[name="settings[sharing_settings][sharing_enabled]"]' => ['checked' => TRUE],
+              ':input[name="settings[sharing_settings][use_defaults]"]' => ['checked' => FALSE],
+            ],
+          ],
+        ];
+
+        $form['sharing_settings']['origin_url'] = [
+          '#type' => 'textfield',
+          '#title' => $this->t('Origin url'),
+          '#default_value' => isset($settings['origin_url']) ? $settings['origin_url'] : $iframes_default_config->get('default.origin_url'),
+          '#description' => $this->t('Leave blank to use default origin url'),
+          '#attributes' => [
+            'placeholder' => $iframes_default_config->get('default.origin_url'),
+          ],
+          '#states' => [
+            'visible' => [
+              ':input[name="settings[sharing_settings][sharing_enabled]"]' => ['checked' => TRUE],
+              ':input[name="settings[sharing_settings][use_defaults]"]' => ['checked' => FALSE],
+              ':input[name="settings[sharing_settings][show_link]"]' => ['checked' => TRUE],
+            ],
+          ],
+          // @todo: try to validate user input (allow absolute or relative paths or tokens)
+        ];
+        $form['sharing_settings']['origin_title'] = [
+          '#type' => 'textfield',
+          '#title' => $this->t('Origin title'),
+          '#default_value' => isset($settings['origin_title']) ? $settings['origin_title'] : $iframes_default_config->get('default.origin_title'),
+          '#description' => $this->t('Leave blank to use default origin title'),
+          '#attributes' => [
+            'placeholder' => $iframes_default_config->get('default.origin_title'),
+          ],
+          '#states' => [
+            'visible' => [
+              ':input[name="settings[sharing_settings][sharing_enabled]"]' => ['checked' => TRUE],
+              ':input[name="settings[sharing_settings][use_defaults]"]' => ['checked' => FALSE],
+              ':input[name="settings[sharing_settings][show_link]"]' => ['checked' => TRUE],
+            ],
+          ],
+          // @todo: check if user input validation is needed
+        ];
+        $form['sharing_settings']['open_in_new_window'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('Open in new window'),
+          '#default_value' => isset($settings['open_in_new_window']) ? $settings['open_in_new_window'] : $iframes_default_config->get('default.open_in_new_window'),
+          '#states' => [
+            'visible' => [
+              ':input[name="settings[sharing_settings][sharing_enabled]"]' => ['checked' => TRUE],
+              ':input[name="settings[sharing_settings][use_defaults]"]' => ['checked' => FALSE],
+              ':input[name="settings[sharing_settings][show_link]"]' => ['checked' => TRUE],
+            ],
+          ],
+        ];
+      }
     }
     // @todo: is this needed, i.e. maybe the value in $this->configuration is enough
     $form['iframe_hash'] = [
       '#type' => 'value',
       '#value' => $this->configuration['iframe_hash'],  // hash is set in blockSubmit()
     ];
-
-
-
 
     return $form;
   }
@@ -254,6 +340,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $this->configuration['fetcher_id'] = $form_state->getValue('fetcher_id');
     // @todo: also keep in mind that fetcher_container will be removed from form_state values after restructuring
     $this->configuration['fetcher_config'] = $form_state->getValue(['fetcher_container', 'fetcher_config'], []);
+    // @todo: maybe just keep as configuration value without using form element?
     $this->configuration['iframe_hash'] = $form_state->getValue('iframe_hash');
 
     // @todo: extracting and restructuring values, if needed, would better be done on the element level,
@@ -270,29 +357,113 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $subform_state = SubformState::createForSubform($subform, $full_form, $form_state->getCompleteFormState());
     $fetcher_plugin->submitConfigurationForm($subform, $subform_state);
 
+    // @todo: check $this->configuration['label'] for new blocks, is it already set here
 
 
 
+    // @todo: rework this and share link build
     // @todo: move this block into a visualn_iframe function or a class
     // @todo: service would be preferable to using \Drupal (assuming it's an option in current context)
     $moduleHandler = \Drupal::service('module_handler');
     // check if visualn_iframe module is enabled
-    if ($moduleHandler->moduleExists('visualn_iframe')){
-      $this->configuration['enable_share_link'] = $form_state->getValue(['enable_share_link']);
-      // @todo: maybe use a service
-      $share_link_builder = new ShareLinkBuilder();
-      // @todo: record should be craeted/changed first in the block Submit handler
-      $hash = $this->configuration['iframe_hash'] ?: '';
-      // the key should correspond to the key from the respective content provider service class
-      // @todo: set key in the class property
-      $hash = $share_link_builder->createIframeDbRecord('visualn_block_key', $this->configuration, $hash);
-      // for the first time the form is submitted, the hash is empty
-      if (empty($this->configuration['iframe_hash'])) {
-        $this->configuration['iframe_hash'] = $hash;
+    if ($moduleHandler->moduleExists('visualn_iframe')) {
+      // @todo: what if drawings sharing is enabled while properties form and editing before submit?
+      $additional_config = \Drupal::config('visualn_block.iframe.settings');
+      if ($additional_config->get('allow_blocks_sharing')) {
+
+        $this->configuration['sharing_settings'] = $form_state->getValue('sharing_settings');
+
+        // @todo: store permissions info and block config in iframe entry context field
+        //   add the field iteself
+
+        // @todo: keep the whole config to load block by config and check permissions
+        //   review the comment below
+        //
+        // VisualN Blocks are config entities which basically can't always be identified
+        // by some kind of ID. E.g. such blocks used with Panels contrib module are stored
+        // as part of panel configuration.
+        // On the other hand it may be sill needed to check user permissions to view an
+        // iframe based on block content. Because of practically unlimited ways that such
+        // blocks can be used (regions, panels etc.) there is no certan way to load them
+        // and thus no other way to get info on permissions other than to store the whole config.
+        $data = [
+          'fetcher_id' => $fetcher_id,
+          'fetcher_config' => $fetcher_config,
+        ];
+
+        $settings = $this->configuration['sharing_settings'];
+
+        $hash = $this->configuration['iframe_hash'] ?: '';
+        if (empty($hash)) {
+          $hash = \Drupal::service('visualn_iframe.builder')->generateHash();
+          // @todo: check 'langcode' and 'status' values
+          $params = [
+            'hash' => $hash,
+            'status' => 1,
+            'langcode' => 'en',
+            'name' => $this->configuration['label'],
+            'user_id' => \Drupal::currentUser()->id(),
+            'displayed' => FALSE,
+            'viewed' => FALSE,
+            'handler_key' => static::IFRAME_HANDLER_KEY,
+            'settings' => $settings,
+            'data' => $data,
+            'implicit' => FALSE,
+          ];
+          $iframe_entity = \Drupal::service('visualn_iframe.builder')
+            ->createIFrameEntity($params);
+
+          $this->configuration['iframe_hash'] = $hash;
+
+          // @todo: is it really needed, isn't configuration value enough?
+          //   note that iframe_hash is set as a #value form element
+          $form_state->setValue('iframe_hash', $hash);
+        }
+        else {
+          // Update the iframe entry or create a new one with the same hash.
+          $iframe_entity = VisualNIFrame::getIFrameEntityByHash($hash);
+          if ($iframe_entity) {
+            $iframe_entity->setSettings($settings);
+            $iframe_entity->setData($data);
+            $iframe_entity->setName($this->configuration['label']);
+            $iframe_entity->save();
+          }
+          else {
+            // When a block config is imported on other site, there is no iframe entry
+            // so create a new one with the same hash. Also it can happen when
+            // an iframe entry was deleted manually.
+            //
+            // @todo: review the approach
+            // For now just create a new 'published' entry with the same hash.
+            // There is no info in that case whether it is 'displayed' or 'viewed'.
+            // Maybe log a message, or make the workflow configurable via admin UI.
+            //
+            // @todo: Manual deletion should be prevented by iframe content provider
+            //   that would check if there is a block using the hash.
+
+
+            // @todo: check 'langcode' and 'status' values
+            $params = [
+              'hash' => $hash,
+              'status' => 1,
+              'langcode' => 'en',
+              'name' => $this->configuration['label'],
+              'user_id' => \Drupal::currentUser()->id(),
+              'displayed' => FALSE,
+              'viewed' => FALSE,
+              'handler_key' => static::IFRAME_HANDLER_KEY,
+              'settings' => $settings,
+              'data' => $data,
+              'implicit' => FALSE,
+            ];
+            $iframe_entity = \Drupal::service('visualn_iframe.builder')
+              ->createIFrameEntity($params);
+          }
+        }
+
+        // @todo: reset cache tag for iframe (since block content could change)
+        //   the cache tag itself should use hash a the only way to identify the block build iframe
       }
-      // @todo: since we can use not only in page regions but also in panels etc.,
-      //    we can't use block_id (also it is not accessible here) or other such info for
-      //    the link generation
     }
   }
 
@@ -318,17 +489,114 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
     // @todo: service would be preferable to using \Drupal (assuming it's an option in current context)
     $moduleHandler = \Drupal::service('module_handler');
     // check if visualn_iframe module is enabled
-    if ($moduleHandler->moduleExists('visualn_iframe') && $this->configuration['enable_share_link']){
-      // @todo: deal with render cache here (e.g. if module was enabled, disabled and then re-enabled - link won't appear/disapper because of block cache)
-      // @todo: maybe use a service
-      $share_link_builder = new ShareLinkBuilder();
-      // @todo: record should be craeted/changed first in the block Submit handler
-      $iframe_url = $share_link_builder->getIframeUrl($this->configuration['iframe_hash']);
-      // this key is used in IframeConentProvider::provideContent()
-      $build['share_iframe_link'] = $share_link_builder->buildLink($iframe_url);
-      // @todo: since we can use not only in page regions but also in panels etc.,
-      //    we can't use block_id (also it is not accessible here) or other such info for
-      //    the link generation
+    if ($moduleHandler->moduleExists('visualn_iframe') && $this->configuration['sharing_settings']['sharing_enabled']) {
+
+      $additional_config = \Drupal::config('visualn_block.iframe.settings');
+      if ($additional_config->get('allow_blocks_sharing')) {
+
+        // @todo: deal with render cache here (e.g. if module was enabled, disabled and then re-enabled - link won't appear/disapper because of block cache)
+        //   also if a visualn_iframe entry is removed manually
+        // @todo: rename the variable (everywhere)
+        //   initialize in ::create()
+        $share_link_builder = \Drupal::service('visualn_iframe.builder');
+
+        // Generate iframe url box markup and attach to the block build
+        $hash = $this->configuration['iframe_hash'];
+        // @todo: check if the hash belongs here (e.g. not taken drawing entity etc.) if needed
+        if ($hash) {
+          $iframe_url = NULL;
+          // The iframe entry should be created/changed in the block Submit handler
+          $iframe_entity = VisualNIFrame::getIFrameEntityByHash($hash);
+          if ($iframe_entity) {
+            $iframe_url = $share_link_builder->getIFrameUrl($hash);
+
+            $update = FALSE;
+
+            // only change location if empty
+            $location = $iframe_entity->getLocation();
+            if (empty($location)) {
+              $location = \Drupal::service('path.current')->getPath();
+              $iframe_entity->setLocation($location);
+              $update = TRUE;
+            }
+
+            // @todo: use getters and setters
+            if (!$iframe_entity->get('displayed')->value) {
+              $iframe_entity->set('displayed', TRUE);
+              $update = TRUE;
+            }
+
+            if ($update) {
+              $iframe_entity->save();
+            }
+          }
+          else {
+            // @todo: the value should be taken from config (set on IFrame settings page)
+            //   Not recommended to enable since no way to check the user
+            //   also mention in the setting description text
+
+            $create_by_hash = $additional_config->get('implicit_entries_restore');
+            if ($create_by_hash) {
+              $settings = $this->configuration['sharing_settings'];
+              $data = [];
+
+              // @todo: see the comment regarding adding the full config
+              //   to the data in class::blockSubmit()
+              $fetcher_id = $this->configuration['fetcher_id'];
+              $fetcher_config = $this->configuration['fetcher_config'];
+              $data = [
+                'fetcher_id' => $fetcher_id,
+                'fetcher_config' => $fetcher_config,
+              ];
+
+              // @todo: check 'langcode' and 'status' values
+              $params = [
+                'hash' => $hash,
+                'status' => 1,
+                'langcode' => 'en',
+                'name' => $this->configuration['label'],
+                'user_id' => \Drupal::currentUser()->id(),
+                'displayed' => TRUE,
+                'location' => \Drupal::service('path.current')->getPath(),
+                'viewed' => FALSE,
+                'handler_key' => static::IFRAME_HANDLER_KEY,
+                'settings' => $settings,
+                'data' => $data,
+                'implicit' => TRUE,
+              ];
+              $iframe_entity = \Drupal::service('visualn_iframe.builder')
+                ->createIFrameEntity($params);
+
+              $iframe_url = $share_link_builder->getIFrameUrl($hash);
+            }
+            else {
+              // If no iframe entry and recreate is not allowed, do not show the link
+              // @todo: review message text
+              \Drupal::logger('visualn_block')->warning($this->t('IFrame wasn\'t created due to the following reason: disallowed (hash: @hash, path: @path).', [
+                '@hash' => $hash,
+                '@path' => \Drupal::service('path.current')->getPath(),
+              ]));
+              //\Drupal::logger('visualn_block')->warning($this->t('IFrame wasn\'t created'));
+            }
+          }
+
+
+          if ($iframe_url) {
+            // Attach iframe url box markup to the block build
+            $build['share_iframe_link'] = $share_link_builder->buildLink($iframe_url);
+          }
+        }
+        else {
+          // @todo: log a message (for the case when no hash with enabled sharing)
+        }
+      }
+      // @todo: this should react only on specific settings changes that influence share
+      //   link exposition
+      $build['#cache']['tags'][] = 'visualn_block_iframe_settings';
+      // invalidate cache tag e.g. on entity delete, to restore it if allowed
+      if ($iframe_entity) {
+        $build['#cache']['tags'][] = 'visualn_iframe:' . $iframe_entity->id();
+      }
     }
 
     return $build;

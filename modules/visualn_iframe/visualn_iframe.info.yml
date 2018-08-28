@@ -1,7 +1,8 @@
-name: VisualN Iframe
+name: VisualN IFrame
 type: module
 description: Enable visualizations share via iframe embed code.
 core: 8.x
-package: VisualN (Experimental)
+package: VisualN
 dependencies:
   - visualn
+  - text

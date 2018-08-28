@@ -11,8 +11,11 @@
             var offset = $(this).offset();
             // @todo: provide an option to select between <embed> and <iframe> tags
             // attach an overlay textarea with the share iframe code with the iframe url
-            var overlay = $('<div><textarea style="width: 400px; height: 100px;"><embed width="1000" height="600" src="'+link_url+'"></embed></textarea></div>');
-            //var overlay = $('<div><textarea style="width: 400px; height: 100px;"><iframe width="1000" height="600" src="'+link_url+'"></iframe></textarea></div>');
+            // @todo: check for other attributes (e.g. allow etc.)
+            //   check sandbox iframe property to avoid malicious iframes containing fishing forms
+            // @todo: frameborder not supported in html5, use style="border:none;" instead
+            var overlay = $('<div><textarea style="width: 400px; height: 100px;"><iframe width="1000" height="600" src="'+link_url+'" frameborder="0"></iframe></textarea></div>');
+            //var overlay = $('<div><textarea style="width: 400px; height: 100px;"><embed width="1000" height="600" src="'+link_url+'"></embed></textarea></div>');
             overlay.css("position", "absolute");
             overlay.css("left", offset.left);
             overlay.css("top", offset.top + $(this).height() + 5);

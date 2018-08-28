@@ -47,8 +47,8 @@
  * @section embedding_drawings Embedding drawings
  *
  * - @link drawing_entities Drawing entities and Library of drawings @endlink
- * - @link visualn_tokens Drawing tokens @endlink
- * - @link visualn_iframes Drawing iframes @endlink
+ * - @link iframes_toolkit IFrames toolkit @endlink
+ * - @link drawing_tokens Drawing tokens @endlink
  *
  * @section subdrawers User-defined drawers (subdrawers)
  *
@@ -177,6 +177,18 @@
  * which also return a resource but are more about format of *raw* resources trying
  * to describe real envorinment than about contents of that raw resources. And also
  * being limited to one specific resource type.
+ * @}
+ */
+
+/**
+ * @defgroup iframes_toolkit IFrames toolkit
+ * @{
+ * Provides tools to share drawings (and other content) via iframes.
+ *
+ * The toolkit basically doesn't depend on other VisualN modules though it is
+ * integrated with them, e.g. to share drawings embedded into content via
+ * ckeditor custom plugin or VisualN blocks content.
+ * The toolkit can also be integrated with other third-party modules.
  * @}
  */
 

@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\visualn_iframe\ContentProvider;
+// @todo: rename to DefaultIFrameContentProvider
+
+namespace Drupal\visualn_iframe\IFrameContentProvider;
 
 /**
  * Class ContentProvider.
@@ -34,8 +36,8 @@ class ContentProvider implements ContentProviderInterface {
   }
 
   
-  //public function addIframeContentProvider(ThemeNegotiatorInterface $iframe_content_provider, $priority) {
-  public function addIframeContentProvider(ContentProviderInterface $iframe_content_provider, $priority) {
+  //public function addIFrameContentProvider(ThemeNegotiatorInterface $iframe_content_provider, $priority) {
+  public function addIFrameContentProvider(ContentProviderInterface $iframe_content_provider, $priority) {
     $this->iframe_content_providers[$priority][] = $iframe_content_provider;
     // Force the providers to be re-sorted.
     $this->sortedContentProviders = NULL;
@@ -44,7 +46,7 @@ class ContentProvider implements ContentProviderInterface {
   /**
    * Returns the sorted array of iframe content providers.
    *
-   * @return array|\Drupal\visualn_iframe\ContentProvider\ContentProviderInterface[]
+   * @return array|\Drupal\visualn_iframe\IFrameContentProvider\ContentProviderInterface[]
    *   An array of iframe content provider objects.
    */
   protected function getSortedContentProviders() {
@@ -61,11 +63,11 @@ class ContentProvider implements ContentProviderInterface {
     return $this->sortedContentProviders;
   }
 
-  public function applies($record_key, $options) {
+  public function applies($handler_key, $data, $settings) {
     return TRUE;
   }
 
-  public function provideContent($record_key, $options) {
+  public function provideContent($handler_key, $data, $settings) {
     /*
     foreach ($this->getSortedNegotiators() as $negotiator) {
       if ($negotiator->applies($route_match)) {
@@ -77,8 +79,8 @@ class ContentProvider implements ContentProviderInterface {
     }
     */
     foreach ($this->getSortedContentProviders() as $iframe_content_provider) {
-      if ($iframe_content_provider->applies($record_key, $options)) {
-        return $iframe_content_provider->provideContent($record_key, $options);
+      if ($iframe_content_provider->applies($handler_key, $data, $settings)) {
+        return $iframe_content_provider->provideContent($handler_key, $data, $settings);
       }
     }
     // @todo: This should be set in DefaultContentProvider

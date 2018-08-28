@@ -9,47 +9,38 @@
  * Implements hook_schema().
  */
 function visualn_iframe_schema() {
-  // @todo: check user_schema
-  $schema['visualn_iframes_data'] = [
+  // @todo: add visualn_iframe_staged table with hash, user_id and staged properties columns
+
+  $schema['visualn_iframe_staged'] = [
     'description' => 'Stores module data as hash/key/options records per iframe.',
+    // @todo: the fields properties should be the same as in visualn_iframe entity type
     'fields' => [
-      // @todo: rename to uid or similar
+      // @todo: rename to uuid or similar
       'hash' => [
         'description' => 'The hash identifier of the data.',
         'type' => 'varchar_ascii',
-        'length' => 128,
+        'length' => 50,
         'not null' => TRUE,
         'default' => '',
+      ],
+      // @todo: see EntityReferenceItem::schema()
+      'user_id' => [
+        'description' => 'The uid of the user that initiated the change.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ],
+      'created' => [
+        'description' => 'The timestamp used by garbage collector.',
+        'type' => 'int',
       ],
       // @todo: rename the column (also "key" name is reserved)
-      'handler_key' => [
+      'settings' => [
         'description' => 'The key for modules to identify their records.',
         'type' => 'varchar_ascii',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
+        'length' => 2048,
+        //'not null' => TRUE,
+        //'default' => '',
       ],
-      // @todo: maybe rename to configuration or add a column for those
-      //    and maybe the to add an option to choose whether to pass options
-      //    or configuration to IframeContentProvider::provideContent()
-      'data' => [
-        'description' => 'The serialized additional options.',
-        'type' => 'blob',
-        'not null' => FALSE,
-        'size' => 'big',
-      ],
-      // @todo: add visualization enabled/disabled key
-
-      /*
-      'serialized' => [
-        'description' => 'Whether value is serialized.',
-        'type' => 'int',
-        'size' => 'tiny',
-        'unsigned' => TRUE,
-        'default' => 0,
-      ],
-      */
-
     ],
     'primary key' => ['hash'],
     'indexes' => [

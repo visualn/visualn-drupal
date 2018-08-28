@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_iframe\ContentProvider;
+namespace Drupal\visualn_iframe\IFrameContentProvider;
 
 /**
  * Interface ContentProviderInterface.
