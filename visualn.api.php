@@ -47,6 +47,7 @@
  * @section embedding_drawings Embedding drawings
  *
  * - @link drawing_entities Drawing entities and Library of drawings @endlink
+ * - @link ckeditor_integration CKEditor integration @endlink
  * - @link iframes_toolkit IFrames toolkit @endlink
  * - @link drawing_tokens Drawing tokens @endlink
  *

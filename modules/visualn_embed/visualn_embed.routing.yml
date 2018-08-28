@@ -1,0 +1,94 @@
+# @todo: add a controller method to attach dialog-related css out of the form class (for drawing-replace action)
+# @todo: review permissions
+
+visualn_embed.visualn_drawing_embed_dialog:
+  path: '/visualn_embed/form/drawing_embed_dialog'
+  defaults:
+    _form: '\Drupal\visualn_embed\Form\DrawingEmbedListDialogForm'
+    _title: 'Choose Drawing'
+  requirements:
+    _permission: 'access visualn drawing overview'
+
+# @todo: set correct permissions
+# @todo: based on embed.routing.yml
+visualn_embed.drawing_embed_controller_preview:
+  # @todo: maybe rename to 'drawing-placeholder'
+  path: '/visualn-drawing-embed/preview/{id}'
+  defaults:
+    _controller: '\Drupal\visualn_embed\Controller\DrawingWidgetEmbedController::previewWidget'
+  options:
+    _theme: ajax_base_page
+  requirements:
+    _permission: 'embed visualn drawings'
+
+# @todo: set correct permissions
+visualn_embed.drawing_embed_controller_real_preview:
+  # @todo: maybe rename to placeholder
+  path: '/visualn-drawing-embed/real-preview/{id}'
+  defaults:
+    _controller: '\Drupal\visualn_embed\Controller\DrawingPreviewController::drawingPreviewResponse'
+  options:
+    _theme: ajax_base_page
+  requirements:
+    _permission: 'embed visualn drawings'
+
+# @todo: set correct permissions
+visualn_embed.drawing_embed_controller_real_preview_content:
+  # @todo: maybe rename to placeholder
+  path: '/visualn-drawing-embed/real-preview-content/{id}'
+  defaults:
+    _controller: '\Drupal\visualn_embed\Controller\DrawingPreviewController::drawingPreviewBuild'
+  #options:
+    #_theme: ajax_base_page
+  requirements:
+    _permission: 'embed visualn drawings'
+
+visualn_embed.new_drawing_controller_build:
+  path: '/visualn-ckeditor/new-drawing/{type}'
+  defaults:
+    _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::createNew'
+    _title: 'Build'
+  requirements:
+    _permission: 'add visualn drawing entities'
+
+visualn_embed.drawing_controller_edit:
+  path: '/visualn-ckeditor/drawing/{id}/edit'
+  defaults:
+    _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::edit'
+    # @todo: implemente title() method
+    _title: 'Edit'
+  requirements:
+    _permission: 'edit visualn drawing entities'
+
+# @todo: this may also accept additional argument to determine ajax commands
+#   that should be called after submit and expected on the client side depending
+#   on the use case
+visualn_embed.drawing_controller_edit_content:
+  path: '/visualn-ckeditor/drawing/{id}/edit_content'
+  defaults:
+    _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::edit_content'
+    # @todo: implemente title() method
+    _title: 'Edit'
+  requirements:
+    _permission: 'edit visualn drawing entities'
+
+visualn_embed.drawing_controller_delete:
+  path: '/visualn-ckeditor/drawing/{id}/delete'
+  defaults:
+    _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::delete'
+    # @todo: implemente title() method
+    _title: 'Delete'
+  requirements:
+    _permission: 'delete visualn drawing entities'
+
+# @todo: add a controller method to attach dialog-related css out of the form class
+# @todo: set correct permissions
+visualn_embed.drawing_properties_dialog:
+  path: '/visualn_embed/form/drawing_properties_dialog'
+  defaults:
+    _form: '\Drupal\visualn_embed\Form\DrawingPropertiesDialogForm'
+    _title: 'Drawing Properties'
+  requirements:
+    # @todo: maybe just set to _access: TRUE, check image properties button implementation
+    _permission: 'embed visualn drawings'
+

@@ -1,0 +1,14 @@
+ckeditor-styles:
+  css:
+    theme:
+      css/ckeditor-styles.css: {}
+
+preview-drawing-dialog:
+  css:
+    theme:
+      css/preview-drawing-dialog.css: {}
+
+visualn-drawing-embed-wrapper:
+  css:
+    theme:
+      css/visualn-embed.css: {}

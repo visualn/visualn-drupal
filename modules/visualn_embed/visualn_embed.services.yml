@@ -1,0 +1,5 @@
+services:
+  visualn_embed.iframe_content_provider:
+    class: Drupal\visualn_embed\IFrameContent\EmbeddedDrawingIFrameContentProvider
+    tags:
+      - { name: visualn_iframe_content_provider }

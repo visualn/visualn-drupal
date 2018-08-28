@@ -1,0 +1,21 @@
+/* @todo: rename the file to dialogs.css or similar */
+/* @todo: consider responsive styles also */
+/* the class is also used for visualn-core.js context_wrapper setting */
+.preview-content {
+  min-width: 800px;
+  border: 1px solid #ccc;
+  margin: 5px;
+  padding: 5px;
+  /*max-height: 92%;*/
+}
+
+/* @todo: temporary solution, maybe add a class to the dialog */
+.ui-dialog {
+  max-width: 98%;
+}
+
+/* @todo: add different classes for each preview*/
+.ui-dialog-visualn {
+  width: 800px !important;
+  min-width: 800px !important;
+}

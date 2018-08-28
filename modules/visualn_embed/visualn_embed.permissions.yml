@@ -1,0 +1,7 @@
+# @todo: check how permissions are implemented for entity_embed contrib module,
+#   drawings can be embedded using text input without enabling the button
+# @todo: also check if user viewing the page that has an embedded drawing in its content
+#   has permission to view it, set appropriate cache tags (how?), check
+#   how it is impelemnted in entity_embed_embed contrib module
+embed visualn drawings:
+  title: 'Embed VisualN Drawings'
