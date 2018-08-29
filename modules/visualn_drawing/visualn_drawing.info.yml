@@ -1,0 +1,7 @@
+name: VisualN Drawing
+type: module
+description: VisualN Drawing content entity type and drawings list.
+core: 8.x
+package: VisualN
+dependencies:
+  - visualn

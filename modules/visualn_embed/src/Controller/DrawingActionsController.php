@@ -3,7 +3,7 @@
 namespace Drupal\visualn_embed\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\visualn_drawings_library\Entity\VisualNDrawing;
+use Drupal\visualn_drawing\Entity\VisualNDrawing;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\editor\Ajax\EditorDialogSave;
