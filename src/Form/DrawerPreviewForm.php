@@ -36,7 +36,7 @@ class DrawerPreviewForm extends FormBase {
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn_data_sources\Plugin\VisualNResourceProviderManager
+   * @var \Drupal\visualn_dataset\Plugin\VisualNResourceProviderManager
    */
   protected $visualNResourceProviderManager;
 

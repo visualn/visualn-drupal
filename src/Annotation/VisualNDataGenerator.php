@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a VisualN Data Generator item annotation object.
  *
- * @see \Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager
+ * @see \Drupal\visualn_dataset\Plugin\VisualNDataGeneratorManager
  * @see plugin_api
  *
  * @Annotation

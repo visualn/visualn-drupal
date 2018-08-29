@@ -21,7 +21,7 @@ class DrawersListController extends ControllerBase {
   protected $visualNDrawerManager;
 
   /**
-   * Drupal\visualn_data_sources\Plugin\VisualNDataGeneratorManager definition.
+   * Drupal\visualn_dataset\Plugin\VisualNDataGeneratorManager definition.
    *
    * @var \Drupal\visualn\Plugin\VisualNDataGeneratorManager
    */

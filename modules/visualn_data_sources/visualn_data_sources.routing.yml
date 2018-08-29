@@ -1,8 +1,0 @@
-visualn_data_sources.resource_provider_controller_data:
-  path: '/visualn-data-sources/data/{data_type}'
-  defaults:
-    _controller: '\Drupal\visualn_data_sources\Controller\ResourceProviderController::data'
-    # @todo: _title is not needed here, check route structure for other keys
-    _title: 'providedData'
-  requirements:
-    _permission: 'access content'
