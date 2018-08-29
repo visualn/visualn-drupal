@@ -31,8 +31,8 @@ class VisualNDataSetListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),
-      'entity.visualn_data_set.edit_form',
-      ['visualn_data_set' => $entity->id()]
+      'entity.visualn_dataset.edit_form',
+      ['visualn_dataset' => $entity->id()]
     );
     return $row + parent::buildRow($entity);
   }

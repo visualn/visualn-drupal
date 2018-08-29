@@ -57,7 +57,7 @@ class VisualNDataSetRevisionDeleteForm extends ConfirmFormBase {
   public static function create(ContainerInterface $container) {
     $entity_manager = $container->get('entity.manager');
     return new static(
-      $entity_manager->getStorage('visualn_data_set'),
+      $entity_manager->getStorage('visualn_dataset'),
       $container->get('database')
     );
   }
@@ -66,7 +66,7 @@ class VisualNDataSetRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'visualn_data_set_revision_delete_confirm';
+    return 'visualn_dataset_revision_delete_confirm';
   }
 
   /**
@@ -80,7 +80,7 @@ class VisualNDataSetRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('entity.visualn_data_set.version_history', ['visualn_data_set' => $this->revision->id()]);
+    return new Url('entity.visualn_dataset.version_history', ['visualn_dataset' => $this->revision->id()]);
   }
 
   /**
@@ -93,8 +93,8 @@ class VisualNDataSetRevisionDeleteForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $visualn_data_set_revision = NULL) {
-    $this->revision = $this->VisualNDataSetStorage->loadRevision($visualn_data_set_revision);
+  public function buildForm(array $form, FormStateInterface $form_state, $visualn_dataset_revision = NULL) {
+    $this->revision = $this->VisualNDataSetStorage->loadRevision($visualn_dataset_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -109,13 +109,13 @@ class VisualNDataSetRevisionDeleteForm extends ConfirmFormBase {
     $this->logger('content')->notice('VisualN Data Set: deleted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
     drupal_set_message(t('Revision from %revision-date of VisualN Data Set %title has been deleted.', ['%revision-date' => format_date($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));
     $form_state->setRedirect(
-      'entity.visualn_data_set.canonical',
-       ['visualn_data_set' => $this->revision->id()]
+      'entity.visualn_dataset.canonical',
+       ['visualn_dataset' => $this->revision->id()]
     );
-    if ($this->connection->query('SELECT COUNT(DISTINCT vid) FROM {visualn_data_set_field_revision} WHERE id = :id', [':id' => $this->revision->id()])->fetchField() > 1) {
+    if ($this->connection->query('SELECT COUNT(DISTINCT vid) FROM {visualn_dataset_field_revision} WHERE id = :id', [':id' => $this->revision->id()])->fetchField() > 1) {
       $form_state->setRedirect(
-        'entity.visualn_data_set.version_history',
-         ['visualn_data_set' => $this->revision->id()]
+        'entity.visualn_dataset.version_history',
+         ['visualn_dataset' => $this->revision->id()]
       );
     }
   }

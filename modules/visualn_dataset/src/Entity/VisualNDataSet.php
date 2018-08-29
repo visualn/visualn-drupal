@@ -5,11 +5,10 @@ namespace Drupal\visualn_dataset\Entity;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\RevisionableContentEntityBase;
+use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\UserInterface;
-
-// @todo: change id to visualn_dataset
 
 /**
  * Defines the VisualN Data Set entity.
@@ -17,7 +16,7 @@ use Drupal\user\UserInterface;
  * @ingroup visualn_dataset
  *
  * @ContentEntityType(
- *   id = "visualn_data_set",
+ *   id = "visualn_dataset",
  *   label = @Translation("VisualN Data Set"),
  *   bundle_label = @Translation("VisualN Data Set type"),
  *   handlers = {
@@ -38,10 +37,10 @@ use Drupal\user\UserInterface;
  *       "html" = "Drupal\visualn_dataset\VisualNDataSetHtmlRouteProvider",
  *     },
  *   },
- *   base_table = "visualn_data_set",
- *   data_table = "visualn_data_set_field_data",
- *   revision_table = "visualn_data_set_revision",
- *   revision_data_table = "visualn_data_set_field_revision",
+ *   base_table = "visualn_dataset",
+ *   data_table = "visualn_dataset_field_data",
+ *   revision_table = "visualn_dataset_revision",
+ *   revision_data_table = "visualn_dataset_field_revision",
  *   translatable = TRUE,
  *   admin_permission = "administer visualn data set entities",
  *   entity_keys = {
@@ -55,20 +54,20 @@ use Drupal\user\UserInterface;
  *     "status" = "status",
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn/data-set/{visualn_data_set}",
+ *     "canonical" = "/admin/config/media/visualn/data-set/{visualn_dataset}",
  *     "add-page" = "/admin/config/media/visualn/data-set/add",
- *     "add-form" = "/admin/config/media/visualn/data-set/add/{visualn_data_set_type}",
- *     "edit-form" = "/admin/config/media/visualn/data-set/{visualn_data_set}/edit",
- *     "delete-form" = "/admin/config/media/visualn/data-set/{visualn_data_set}/delete",
- *     "version-history" = "/admin/config/media/visualn/data-set/{visualn_data_set}/revisions",
- *     "revision" = "/admin/config/media/visualn/data-set/{visualn_data_set}/revisions/{visualn_data_set_revision}/view",
- *     "revision_revert" = "/admin/config/media/visualn/data-set/{visualn_data_set}/revisions/{visualn_data_set_revision}/revert",
- *     "revision_delete" = "/admin/config/media/visualn/data-set/{visualn_data_set}/revisions/{visualn_data_set_revision}/delete",
- *     "translation_revert" = "/admin/config/media/visualn/data-set/{visualn_data_set}/revisions/{visualn_data_set_revision}/revert/{langcode}",
+ *     "add-form" = "/admin/config/media/visualn/data-set/add/{visualn_dataset_type}",
+ *     "edit-form" = "/admin/config/media/visualn/data-set/{visualn_dataset}/edit",
+ *     "delete-form" = "/admin/config/media/visualn/data-set/{visualn_dataset}/delete",
+ *     "version-history" = "/admin/config/media/visualn/data-set/{visualn_dataset}/revisions",
+ *     "revision" = "/admin/config/media/visualn/data-set/{visualn_dataset}/revisions/{visualn_dataset_revision}/view",
+ *     "revision_revert" = "/admin/config/media/visualn/data-set/{visualn_dataset}/revisions/{visualn_dataset_revision}/revert",
+ *     "revision_delete" = "/admin/config/media/visualn/data-set/{visualn_dataset}/revisions/{visualn_dataset_revision}/delete",
+ *     "translation_revert" = "/admin/config/media/visualn/data-set/{visualn_dataset}/revisions/{visualn_dataset_revision}/revert/{langcode}",
  *     "collection" = "/admin/config/media/visualn/data-sets",
  *   },
- *   bundle_entity_type = "visualn_data_set_type",
- *   field_ui_base_route = "entity.visualn_data_set_type.edit_form"
+ *   bundle_entity_type = "visualn_dataset_type",
+ *   field_ui_base_route = "entity.visualn_dataset_type.edit_form"
  * )
  */
 class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDataSetInterface {
@@ -88,6 +87,22 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
   /**
    * {@inheritdoc}
    */
+  protected function urlRouteParameters($rel) {
+    $uri_route_parameters = parent::urlRouteParameters($rel);
+
+    if ($rel === 'revision_revert' && $this instanceof RevisionableInterface) {
+      $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
+    }
+    elseif ($rel === 'revision_delete' && $this instanceof RevisionableInterface) {
+      $uri_route_parameters[$this->getEntityTypeId() . '_revision'] = $this->getRevisionId();
+    }
+
+    return $uri_route_parameters;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
@@ -100,7 +115,7 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
       }
     }
 
-    // If no revision author has been set explicitly, make the visualn_data_set owner the
+    // If no revision author has been set explicitly, make the visualn_dataset owner the
     // revision author.
     if (!$this->getRevisionUser()) {
       $this->setRevisionUserId($this->getOwnerId());
@@ -259,7 +274,7 @@ class VisualNDataSet extends RevisionableContentEntityBase implements VisualNDat
 
     // add default resource provider field and use it by defualt on entity type config page
     // @todo: it doesn't create a separate database table,
-    //  instead adds columns to the visualn_data_set_field_data table
+    //  instead adds columns to the visualn_dataset_field_data table
     $fields['resource_provider'] = BaseFieldDefinition::create('visualn_resource_provider')
       ->setLabel(t('Default resource provider'))
       ->setDescription(t('Default resource provider field for the dataset.'))

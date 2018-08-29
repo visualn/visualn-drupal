@@ -51,7 +51,7 @@ class VisualNDataSetRevisionRevertTranslationForm extends VisualNDataSetRevision
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('visualn_data_set'),
+      $container->get('entity.manager')->getStorage('visualn_dataset'),
       $container->get('date.formatter'),
       $container->get('language_manager')
     );
@@ -61,7 +61,7 @@ class VisualNDataSetRevisionRevertTranslationForm extends VisualNDataSetRevision
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'visualn_data_set_revision_revert_translation_confirm';
+    return 'visualn_dataset_revision_revert_translation_confirm';
   }
 
   /**
@@ -74,9 +74,9 @@ class VisualNDataSetRevisionRevertTranslationForm extends VisualNDataSetRevision
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $visualn_data_set_revision = NULL, $langcode = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, $visualn_dataset_revision = NULL, $langcode = NULL) {
     $this->langcode = $langcode;
-    $form = parent::buildForm($form, $form_state, $visualn_data_set_revision);
+    $form = parent::buildForm($form, $form_state, $visualn_dataset_revision);
 
     $form['revert_untranslated_fields'] = [
       '#type' => 'checkbox',

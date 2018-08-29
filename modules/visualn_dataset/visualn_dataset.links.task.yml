@@ -1,23 +1,23 @@
 # VisualN Data Set routing definition
 
-entity.visualn_data_set.canonical:
-  route_name: entity.visualn_data_set.canonical
-  base_route: entity.visualn_data_set.canonical
+entity.visualn_dataset.canonical:
+  route_name: entity.visualn_dataset.canonical
+  base_route: entity.visualn_dataset.canonical
   title: 'View'
 
-entity.visualn_data_set.edit_form:
-  route_name: entity.visualn_data_set.edit_form
-  base_route: entity.visualn_data_set.canonical
+entity.visualn_dataset.edit_form:
+  route_name: entity.visualn_dataset.edit_form
+  base_route: entity.visualn_dataset.canonical
   title: 'Edit'
 
-entity.visualn_data_set.version_history:
-  route_name: entity.visualn_data_set.version_history
-  base_route: entity.visualn_data_set.canonical
+entity.visualn_dataset.version_history:
+  route_name: entity.visualn_dataset.version_history
+  base_route: entity.visualn_dataset.canonical
   title: 'Revisions'
 
-entity.visualn_data_set.delete_form:
-  route_name:  entity.visualn_data_set.delete_form
-  base_route:  entity.visualn_data_set.canonical
+entity.visualn_dataset.delete_form:
+  route_name:  entity.visualn_dataset.delete_form
+  base_route:  entity.visualn_dataset.canonical
   title: Delete
   weight: 10
 

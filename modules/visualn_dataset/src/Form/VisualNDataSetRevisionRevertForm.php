@@ -57,7 +57,7 @@ class VisualNDataSetRevisionRevertForm extends ConfirmFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('visualn_data_set'),
+      $container->get('entity.manager')->getStorage('visualn_dataset'),
       $container->get('date.formatter')
     );
   }
@@ -66,7 +66,7 @@ class VisualNDataSetRevisionRevertForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'visualn_data_set_revision_revert_confirm';
+    return 'visualn_dataset_revision_revert_confirm';
   }
 
   /**
@@ -80,7 +80,7 @@ class VisualNDataSetRevisionRevertForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('entity.visualn_data_set.version_history', ['visualn_data_set' => $this->revision->id()]);
+    return new Url('entity.visualn_dataset.version_history', ['visualn_dataset' => $this->revision->id()]);
   }
 
   /**
@@ -100,8 +100,8 @@ class VisualNDataSetRevisionRevertForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $visualn_data_set_revision = NULL) {
-    $this->revision = $this->VisualNDataSetStorage->loadRevision($visualn_data_set_revision);
+  public function buildForm(array $form, FormStateInterface $form_state, $visualn_dataset_revision = NULL) {
+    $this->revision = $this->VisualNDataSetStorage->loadRevision($visualn_dataset_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -122,8 +122,8 @@ class VisualNDataSetRevisionRevertForm extends ConfirmFormBase {
     $this->logger('content')->notice('VisualN Data Set: reverted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
     drupal_set_message(t('VisualN Data Set %title has been reverted to the revision from %revision-date.', ['%title' => $this->revision->label(), '%revision-date' => $this->dateFormatter->format($original_revision_timestamp)]));
     $form_state->setRedirect(
-      'entity.visualn_data_set.version_history',
-      ['visualn_data_set' => $this->revision->id()]
+      'entity.visualn_dataset.version_history',
+      ['visualn_dataset' => $this->revision->id()]
     );
   }
 

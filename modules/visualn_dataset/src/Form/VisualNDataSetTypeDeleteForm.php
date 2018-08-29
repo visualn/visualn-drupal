@@ -22,7 +22,7 @@ class VisualNDataSetTypeDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('entity.visualn_data_set_type.collection');
+    return new Url('entity.visualn_dataset_type.collection');
   }
 
   /**

@@ -22,7 +22,7 @@ class VisualNDataSetStorage extends SqlContentEntityStorage implements VisualNDa
    */
   public function revisionIds(VisualNDataSetInterface $entity) {
     return $this->database->query(
-      'SELECT vid FROM {visualn_data_set_revision} WHERE id=:id ORDER BY vid',
+      'SELECT vid FROM {visualn_dataset_revision} WHERE id=:id ORDER BY vid',
       [':id' => $entity->id()]
     )->fetchCol();
   }
@@ -32,7 +32,7 @@ class VisualNDataSetStorage extends SqlContentEntityStorage implements VisualNDa
    */
   public function userRevisionIds(AccountInterface $account) {
     return $this->database->query(
-      'SELECT vid FROM {visualn_data_set_field_revision} WHERE uid = :uid ORDER BY vid',
+      'SELECT vid FROM {visualn_dataset_field_revision} WHERE uid = :uid ORDER BY vid',
       [':uid' => $account->id()]
     )->fetchCol();
   }
@@ -41,7 +41,7 @@ class VisualNDataSetStorage extends SqlContentEntityStorage implements VisualNDa
    * {@inheritdoc}
    */
   public function countDefaultLanguageRevisions(VisualNDataSetInterface $entity) {
-    return $this->database->query('SELECT COUNT(*) FROM {visualn_data_set_field_revision} WHERE id = :id AND default_langcode = 1', [':id' => $entity->id()])
+    return $this->database->query('SELECT COUNT(*) FROM {visualn_dataset_field_revision} WHERE id = :id AND default_langcode = 1', [':id' => $entity->id()])
       ->fetchField();
   }
 
@@ -49,7 +49,7 @@ class VisualNDataSetStorage extends SqlContentEntityStorage implements VisualNDa
    * {@inheritdoc}
    */
   public function clearRevisionsLanguage(LanguageInterface $language) {
-    return $this->database->update('visualn_data_set_revision')
+    return $this->database->update('visualn_dataset_revision')
       ->fields(['langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED])
       ->condition('langcode', $language->getId())
       ->execute();

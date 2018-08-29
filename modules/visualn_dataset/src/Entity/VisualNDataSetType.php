@@ -8,7 +8,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  * Defines the VisualN Data Set type entity.
  *
  * @ConfigEntityType(
- *   id = "visualn_data_set_type",
+ *   id = "visualn_dataset_type",
  *   label = @Translation("VisualN Data Set type"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
@@ -22,9 +22,9 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *       "html" = "Drupal\visualn_dataset\VisualNDataSetTypeHtmlRouteProvider",
  *     },
  *   },
- *   config_prefix = "visualn_data_set_type",
+ *   config_prefix = "visualn_dataset_type",
  *   admin_permission = "administer site configuration",
- *   bundle_of = "visualn_data_set",
+ *   bundle_of = "visualn_dataset",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
@@ -32,10 +32,10 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     "resource_provider_field" = "resource_provider_field"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn/data-set-types/manage/{visualn_data_set_type}",
+ *     "canonical" = "/admin/config/media/visualn/data-set-types/manage/{visualn_dataset_type}",
  *     "add-form" = "/admin/config/media/visualn/data-set-types/add",
- *     "edit-form" = "/admin/config/media/visualn/data-set-types/manage/{visualn_data_set_type}/edit",
- *     "delete-form" = "/admin/config/media/visualn/data-set-types/manage/{visualn_data_set_type}/delete",
+ *     "edit-form" = "/admin/config/media/visualn/data-set-types/manage/{visualn_dataset_type}/edit",
+ *     "delete-form" = "/admin/config/media/visualn/data-set-types/manage/{visualn_dataset_type}/delete",
  *     "collection" = "/admin/config/media/visualn/data-set-types"
  *   }
  * )

@@ -1,4 +1,4 @@
-visualn_dataset.visualn_data_set_type.*:
+visualn_dataset.visualn_dataset_type.*:
   type: config_entity
   label: 'VisualN Data Set type config'
   mapping:

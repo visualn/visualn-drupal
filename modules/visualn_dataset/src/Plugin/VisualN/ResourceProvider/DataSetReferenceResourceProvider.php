@@ -10,7 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
  * Provides a 'VisualN Data Set Reference' VisualN resource provider.
  *
  * @VisualNResourceProvider(
- *  id = "visualn_data_set_reference",
+ *  id = "visualn_dataset_reference",
  *  label = @Translation("VisualN Data Set Reference resource provider"),
  *  context = {
  *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type")),
@@ -69,7 +69,7 @@ class DataSetReferenceResourceProvider extends VisualNResourceProviderBase {
       // @todo: we use data_set_entity but not just an entity because data set entities have a method
       //    to return resource provider plugin specific to them
       $data_set_entity = $first_delta;
-      // @todo: check that entity is of type visualn_data_set
+      // @todo: check that entity is of type visualn_dataset
 
       // @todo: check this line
       $resource_provider_plugin = $data_set_entity->get('entity')->getTarget()->getValue()->getResourceProviderPlugin();
