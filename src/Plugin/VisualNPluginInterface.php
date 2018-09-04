@@ -24,12 +24,4 @@ interface VisualNPluginInterface extends PluginInspectionInterface, Configurable
    */
   public function prepareBuild(array &$build, $vuid, ResourceInterface $resource);
 
-  /**
-   * Get plugin jsId.
-   * Plugin jsId is used in plugin (drawer, mapper, adapter) js script to identify its function object.
-   *
-   * @return string $js_id
-   */
-  public function jsId();
-
 }

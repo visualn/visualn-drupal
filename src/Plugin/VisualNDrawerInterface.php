@@ -9,16 +9,10 @@ use Drupal\Core\Form\FormStateInterface;
  * Defines an interface for VisualN Drawer plugins.
  *
  * @see \Drupal\visualn\Plugin\VisualNDrawerBase
+ *
+ * @ingroup drawer_plugins
  */
 interface VisualNDrawerInterface extends VisualNPluginInterface, PluginFormInterface {
-
-  /**
-   * Modify drawer_config before attaching to js settings.
-   * Can be used to translate strings etc.
-   *
-   * @param array $drawer_config
-   */
-  public function prepareJSConfig(array &$drawer_config);
 
   /**
    * Extract drawer configuration array values from $form_state for drawer configuration form.

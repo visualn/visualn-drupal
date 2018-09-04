@@ -12,6 +12,8 @@
  * This site is an API reference for VisualN, generated from comments embedded
  * in the source code.
  *
+ * The up-to-date documentation version can be found at http://api.visualn.org/api/visualn
+ *
  * Here are some topics to help you get started developing with VisualN.
  *
  * @section essentials Essential background concepts
@@ -95,6 +97,20 @@
  * build as a result.
  * Developers can create custom builders that would implement custom logic
  * if DefaultBuilder doesn't fit their needs.
+ * @}
+ */
+
+/**
+ * @defgroup drawer_plugins Drawer plugins
+ * @{
+ * Drawers are used to generate drawings markup.
+ *
+ * Drawers are the central part of the VisualN ecosystem. They allow
+ * to generate any type of markup, clientside (js) or serverside, based
+ * on provided data and configuration (or without them). Adapters and Mappers
+ * make Drawers resource agnostic. The same drawer can be used to create
+ * drawings based on uploaded files data, remote resources, generated data
+ * or any other resource type.
  * @}
  */
 

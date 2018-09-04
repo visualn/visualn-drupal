@@ -7,17 +7,18 @@
 
 namespace Drupal\visualn\DrawerBoilerplate;
 
-use Drupal\visualn\Plugin\VisualNDrawerBase;
+use Drupal\visualn\Plugin\DrawerWithJsBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\ResourceInterface;
 
 /**
  * Boilerplate class for VisualN Drawer plugins.
  *
- * @see \Drupal\visualn\Plugin\VisualNDrawerBase
- * @see \Drupal\visualn\Plugin\VisualNDrawerInterface
+ * @see \Drupal\visualn\Plugin\DrawerWithJsBase
+ * @see \Drupal\visualn\Plugin\DrawerWithJsInterface
  */
-abstract class DrawerGenericBoilerplate extends VisualNDrawerBase {
+abstract class DrawerGenericBoilerplate extends DrawerWithJsBase {
+  // @todo: this will always provide a DrawerWithJs drawer even when js not used
 
   /**
    * @inheritdoc
@@ -80,7 +81,7 @@ abstract class DrawerGenericBoilerplate extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareJSConfig(array &$drawer_config) {
+  public function prepareJsConfig(array &$drawer_config) {
     $drawer_config['drawer_setup'] = json_decode($drawer_config['drawer_setup'], TRUE);
   }
 

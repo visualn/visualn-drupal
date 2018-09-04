@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Adapter;
 
-use Drupal\visualn\Plugin\VisualNAdapterBase;
+use Drupal\visualn\Plugin\AdapterWithJsBase;
 use Drupal\visualn\ResourceInterface;
 
 /**
@@ -16,7 +16,7 @@ use Drupal\visualn\ResourceInterface;
  *  input = "remote_generic_dsv",
  * )
  */
-class RemoteDsvToJSArrayAdapter extends VisualNAdapterBase {
+class RemoteDsvToJSArrayAdapter extends AdapterWithJsBase {
 
   // @todo: generally this is a DSV (delimiter separated values) file
   // @todo: convert it to general purpose adapter for formatted column text

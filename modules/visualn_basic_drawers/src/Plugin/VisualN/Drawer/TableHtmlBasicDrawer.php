@@ -14,6 +14,7 @@ use Drupal\visualn\ResourceInterface;
  * @VisualNDrawer(
  *  id = "visualn_table_html_basic",
  *  label = @Translation("Table Html Basic"),
+ *  input = "generic_data_array",
  * )
  */
 class TableHtmlBasicDrawer extends VisualNDrawerBase {
@@ -161,13 +162,6 @@ class TableHtmlBasicDrawer extends VisualNDrawerBase {
     }
 
     return $resource;
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function jsId() {
-    return '';
   }
 
 }

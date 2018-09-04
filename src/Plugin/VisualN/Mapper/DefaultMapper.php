@@ -4,7 +4,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Mapper;
 
-use Drupal\visualn\Plugin\VisualNMapperBase;
+use Drupal\visualn\Plugin\MapperWithJsBase;
 use Drupal\visualn\ResourceInterface;
 
 /**
@@ -19,7 +19,7 @@ use Drupal\visualn\ResourceInterface;
  *  output =  "generic_js_data_array",
  * )
  */
-class DefaultMapper extends VisualNMapperBase {
+class DefaultMapper extends MapperWithJsBase {
 
   /**
    * {@inheritdoc}

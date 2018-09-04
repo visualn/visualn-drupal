@@ -110,17 +110,6 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
     $options = $this->getConfiguration();
     $output_type = $resource->getResourceType();
 
-    // @todo: attach js scripts only if there is at least one drawer (or handler) with non-empty jsId (in handlers list)
-
-    // @todo: visualn-core.js must be attached before other visualn js scripts (drawers, mappers, adapters, builders)
-    // @todo: move into base class or even into dependencies for builder js script and attach it there instead of end of method function
-    // @todo: maybe pass VisualN variable to drawer scpripts as it is done for Drupal global variable
-    $build['#attached']['library'][] = 'visualn/visualn-core';
-    $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
-    // @todo: check the way it is used, add a comment
-    $builder_id = 'visualnDefaultBuilder';
-    $build['#attached']['drupalSettings']['visualn']['handlerItems']['builders'][$builder_id][$vuid] = $vuid;
-
     // required options: style_id, html_selector
     // add optional options
     $options += [
@@ -186,10 +175,7 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
     $build['#visualn'] = [];
 */
 
-    // @todo: remove setting drawer_field in drawer base class
-    // @todo: check VisualDrawerBase::prepareBuild() and remove unused info from $build[#visualn] key,
-    //    e.g. data_keys_structure info
-
+    $js_use_found = FALSE;
 
     // Serverside drawers need data to be already there when called so drawers are called last ones
     $plugin_types = ['adapter', 'mapper', 'drawer'];
@@ -197,6 +183,14 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
     foreach ($plugin_types as $plugin_type) {
       // generally there is one plugin of each kind
       foreach ($chain[$plugin_type] as $k => $chain_plugin) {
+        // @todo: or just check if js interface is implemented
+        if (!$js_use_found && method_exists($chain_plugin, 'jsId') && is_callable([$chain_plugin, 'jsId'])) {
+          // initialize drawings settings storage (to make it explicit here)
+          // typically plugins don't need any settings if do not use js handlers (or not?)
+          $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
+          $js_use_found = TRUE;
+          // @todo: maybe also attach visualn core js here
+        }
         if ($plugin_type == 'adapter' && $k == 0) {
           // @todo: maybe also set data_keys since adapter may need only data keys info
           // @todo: actually drawer_fields, data_keys_structure (and possibly data_keys) should be
@@ -244,12 +238,49 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
     }
 */
 
-    $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['html_selector'] = $options['html_selector'];
-    // Attach visualn builder js script.
-    // @todo: move this to a method in a base abstract class
-    $build['#attached']['library'][] = 'visualn/builder-default';
+    // @todo: or check if implements js interface instead
+    // attach js scripts only if there is at least one drawer (or other chain plugin) implementing jsId() method
+    $uses_js = $js_use_found;
+    if ($uses_js) {
+      // this should be generally set though technically plugins may attach libraries to sub keys
+      if (!isset($build['#attached']['library'])) {
+        $build['#attached']['library'] = [];
+      }
 
-    // @todo: set visualn/core library as a dependency (?)
+
+      // @todo: attach these libraries and settigns to the beginning of the 'library' array
+
+
+      // @todo: visualn-core.js must be attached before other visualn js scripts (drawers, mappers, adapters, builders)
+      //   to init visualnData variable used by plugins js handlers to register themselves
+      //   though some better way should be implemented to avoid it
+      // @todo: move into base class or even into dependencies for builder js script and attach it there instead of end of method function
+      // @todo: maybe pass VisualN variable to drawer scpripts as it is done for Drupal global variable
+
+      //$build['#attached']['library'][] = 'visualn/visualn-core';
+      //array_unshift($build['#attached']['library'], 'visualn/visualn-core');
+      $build['#attached']['library'] = array_merge(['visualn/visualn-core'], $build['#attached']['library']);
+
+
+
+      //$build['#attached']['drupalSettings']['visualn']['drawings'][$vuid] = [];
+      // @todo: check the way it is used, add a comment
+      $builder_id = 'visualnDefaultBuilder';
+      $build['#attached']['drupalSettings']['visualn']['handlerItems']['builders'][$builder_id][$vuid] = $vuid;
+
+
+
+
+
+
+
+
+      $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['html_selector'] = $options['html_selector'];
+      // Attach visualn builder js script.
+      $build['#attached']['library'][] = 'visualn/builder-default';
+
+      // @todo: set visualn/core library as a dependency (?)
+    }
 
     return $resource;
   }

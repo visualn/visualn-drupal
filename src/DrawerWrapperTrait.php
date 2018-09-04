@@ -90,11 +90,11 @@ trait DrawerWrapperTrait {
   }
 */
 
-  public function prepareJSConfig(array &$drawer_config) {
+  public function prepareJsConfig(array &$drawer_config) {
     $original_drawer_config = $drawer_config;
-    parent::prepareJSConfig($drawer_config);
+    parent::prepareJsConfig($drawer_config);
 
-    foreach ($this->getMethodModifiers('prepareJSConfig', 'after') as  $modifier_substitution) {
+    foreach ($this->getMethodModifiers('prepareJsConfig', 'after') as  $modifier_substitution) {
       $modifier = $modifier_substitution['modifier'];
       $substitution_name = $modifier_substitution['substitution_name'];
       $modifier->{$substitution_name}($drawer_config, $original_drawer_config);

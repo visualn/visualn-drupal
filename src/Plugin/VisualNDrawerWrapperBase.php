@@ -71,8 +71,8 @@ abstract class VisualNDrawerWrapperBase extends PluginBase implements VisualNDra
   /**
    * @inheritdoc
    */
-  public function prepareJSConfig(array &$drawer_config) {
-    $this->subdrawer_base_drawer->prepareJSConfig($drawer_config);
+  public function prepareJsConfig(array &$drawer_config) {
+    $this->subdrawer_base_drawer->prepareJsConfig($drawer_config);
   }
 
   /**

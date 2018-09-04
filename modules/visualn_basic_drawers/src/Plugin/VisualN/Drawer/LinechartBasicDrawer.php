@@ -2,8 +2,7 @@
 
 namespace Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer;
 
-use Drupal\visualn\Plugin\VisualNDrawerBase;
-//use Drupal\Core\Form\FormStateInterface;
+use Drupal\visualn\Plugin\DrawerWithJsBase;
 use Drupal\visualn\ResourceInterface;
 
 /**
@@ -16,7 +15,7 @@ use Drupal\visualn\ResourceInterface;
  *  label = @Translation("Linechart Basic"),
  * )
  */
-class LinechartBasicDrawer extends VisualNDrawerBase {
+class LinechartBasicDrawer extends DrawerWithJsBase {
 
   /**
    * @inheritdoc
@@ -37,6 +36,20 @@ class LinechartBasicDrawer extends VisualNDrawerBase {
    */
   public function jsId() {
     return 'visualnLinechartBasicDrawer';
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function dataKeys() {
+    // @todo:
+    $data_keys = [
+      'x',
+      'data1',
+      'data2',
+    ];
+
+    return $data_keys;
   }
 
 }

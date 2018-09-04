@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Mapper;
 
-use Drupal\visualn\Plugin\VisualNMapperBase;
+use Drupal\visualn\Plugin\MapperWithJsBase;
 use Drupal\visualn\ResourceInterface;
 
 /**
@@ -19,7 +19,7 @@ use Drupal\visualn\ResourceInterface;
  *  output = "visualn_basic_tree_input",
  * )
  */
-class BasicTreeMapper extends VisualNMapperBase {
+class BasicTreeMapper extends MapperWithJsBase {
 
   // used to build mapper plugins chain
   // @todo: find better terms here instead of input and output keys

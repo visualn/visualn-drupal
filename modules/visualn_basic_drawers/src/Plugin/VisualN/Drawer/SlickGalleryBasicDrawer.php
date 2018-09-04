@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer;
 
-use Drupal\visualn\Plugin\VisualNDrawerBase;
+use Drupal\visualn\Plugin\DrawerWithJsBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\ResourceInterface;
 
@@ -16,7 +16,7 @@ use Drupal\visualn\ResourceInterface;
  *  label = @Translation("Slick Gallery Basic"),
  * )
  */
-class SlickGalleryBasicDrawer extends VisualNDrawerBase {
+class SlickGalleryBasicDrawer extends DrawerWithJsBase {
 
   /**
    * {@inheritdoc}
@@ -64,7 +64,7 @@ class SlickGalleryBasicDrawer extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareJSConfig(array &$drawer_config) {
+  public function prepareJsConfig(array &$drawer_config) {
     $drawer_config['show_dots'] = $drawer_config['show_dots'] ? TRUE : FALSE;
   }
 
@@ -91,6 +91,18 @@ class SlickGalleryBasicDrawer extends VisualNDrawerBase {
    */
   public function jsId() {
     return 'visualnSlickGalleryBasicDrawer';
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function dataKeys() {
+    $data_keys = [
+      'url',
+      'html',
+    ];
+
+    return $data_keys;
   }
 
 }

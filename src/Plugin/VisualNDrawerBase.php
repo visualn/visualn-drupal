@@ -11,6 +11,8 @@ use Drupal\visualn\ResourceInterface;
  * Base class for VisualN Drawer plugins.
  *
  * @see \Drupal\visualn\Plugin\VisualNDrawerInterface
+ *
+ * @ingroup drawer_plugins
  */
 abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDrawerInterface {
 
@@ -43,40 +45,6 @@ abstract class VisualNDrawerBase extends VisualNPluginBase implements VisualNDra
 
     return $form;
   }
-
-
-  /**
-   * @inheritdoc
-   */
-  public function prepareJSConfig(array &$drawer_config) {
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
-    $drawer_config =  $this->configuration + $this->defaultConfiguration();
-    $this->prepareJSConfig($drawer_config);
-    $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['config'] = $drawer_config;
-
-    $drawer_js_id = $this->jsId();  // defaults to plugin id if not overriden in drawer plugin class.
-    $build['#attached']['drupalSettings']['visualn']['drawings'][$vuid]['drawer']['drawerId'] = $drawer_js_id;
-    $build['#attached']['drupalSettings']['visualn']['handlerItems']['drawings'][$drawer_js_id][$vuid] = $vuid;  // @todo: this settings is just for reference
-
-    // @todo: this info is not needed any more
-/*
-    $drawer_info = [];
-    $drawer_info['data_keys_structure'] = $this->dataKeysStructure();
-    // generally there will be only one element with "0" index but we keep it for consistency
-    // with default workflow (see $chain array in DefaultManager class)
-    $build['#visualn']['chain_info']['drawer'] = !empty($build['#visualn']['chain_info']['drawer']) ? $build['#visualn']['chain_info']['drawer'] : [];
-    $build['#visualn']['chain_info']['drawer'][] = $drawer_info;
-*/
-
-    return $resource;
-  }
-
-
 
   /**
    * @inheritdoc

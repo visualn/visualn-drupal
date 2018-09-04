@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer;
 
-use Drupal\visualn\Plugin\VisualNDrawerBase;
+use Drupal\visualn\Plugin\DrawerWithJsBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\ResourceInterface;
 
@@ -16,7 +16,7 @@ use Drupal\visualn\ResourceInterface;
  *  label = @Translation("Leaflet Map Basic"),
  * )
  */
-class LeafletMapBasicDrawer extends VisualNDrawerBase {
+class LeafletMapBasicDrawer extends DrawerWithJsBase {
 
   /**
    * @inheritdoc
@@ -107,5 +107,17 @@ class LeafletMapBasicDrawer extends VisualNDrawerBase {
     return 'visualnLeafletMapBasicDrawer';
   }
 
+  /**
+   * @inheritdoc
+   */
+  public function dataKeys() {
+    $data_keys = [
+      'title',
+      'lon',
+      'lat',
+    ];
+
+    return $data_keys;
+  }
 
 }

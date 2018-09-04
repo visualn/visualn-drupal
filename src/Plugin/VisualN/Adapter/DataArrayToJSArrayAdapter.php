@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Adapter;
 
-use Drupal\visualn\Plugin\VisualNAdapterBase;
+use Drupal\visualn\Plugin\AdapterWithJsBase;
 use Drupal\visualn\ResourceInterface;
 
 /**
@@ -16,8 +16,8 @@ use Drupal\visualn\ResourceInterface;
  *  input = "generic_data_array",
  * )
  */
-// @todo: maybe remove default output type from annotation to avoid confusion and make it more visible
-class DataArrayToJSArrayAdapter extends VisualNAdapterBase {
+// @todo: maybe remove default output type from annotation to avoid confusion and make it more explicit
+class DataArrayToJSArrayAdapter extends AdapterWithJsBase {
 
   /**
    * @inheritdoc

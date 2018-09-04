@@ -7,17 +7,18 @@
 
 namespace Drupal\visualn\DrawerBoilerplate;
 
-use Drupal\visualn\Plugin\VisualNDrawerBase;
+use Drupal\visualn\Plugin\DrawerWithJsBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\ResourceInterface;
 
 /**
  * Boilerplate class for VisualN Drawer plugins.
  *
- * @see \Drupal\visualn\Plugin\VisualNDrawerBase
- * @see \Drupal\visualn\Plugin\VisualNDrawerInterface
+ * @see \Drupal\visualn\Plugin\DrawerWithJsBase
+ * @see \Drupal\visualn\Plugin\DrawerWithJsInterface
  */
-abstract class DrawerWSSBoilerplate extends VisualNDrawerBase {
+abstract class DrawerWSSBoilerplate extends DrawerWithJsBase {
+  // @todo: this will always provide a DrawerWithJs drawer even when js not used
 
   /**
    * @inheritdoc
@@ -76,7 +77,7 @@ abstract class DrawerWSSBoilerplate extends VisualNDrawerBase {
   /**
    * @inheritdoc
    */
-  public function prepareJSConfig(array &$drawer_config) {
+  public function prepareJsConfig(array &$drawer_config) {
 
     // @todo: this can be a added to the DrawerBase class to be used across all WSS drawers (or to a trait)
     $visualn_setup_id = $drawer_config['drawer_setup_id'];

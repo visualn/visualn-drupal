@@ -56,11 +56,4 @@ class DefaultServersideMapper extends VisualNMapperBase {
     return $resource;
   }
 
-  /**
-   * @inheritdoc
-   */
-  public function jsId() {
-    return '';
-  }
-
 }

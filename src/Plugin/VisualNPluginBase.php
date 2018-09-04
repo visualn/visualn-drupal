@@ -19,24 +19,6 @@ abstract class VisualNPluginBase extends PluginBase implements VisualNPluginInte
   }
 
   /**
-   * @inheritdoc
-   *
-   * @todo: maybe remove this abstract method since already contained in the interface
-   */
-  //abstract public function prepareBuild(array &$build, $vuid, ResourceInterface $resource);
-
-  /**
-   * @inheritdoc
-   */
-  public function jsId() {
-    return $this->getPluginId();
-  }
-
-
-
-
-
-  /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {

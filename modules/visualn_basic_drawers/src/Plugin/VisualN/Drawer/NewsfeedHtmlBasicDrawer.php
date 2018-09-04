@@ -63,4 +63,18 @@ class NewsfeedHtmlBasicDrawer extends VisualNDrawerBase {
     return $resource;
   }
 
+  /**
+   * @inheritdoc
+   */
+  public function dataKeys() {
+    $data_keys = [
+      'title',
+      'link',
+      'image_url',
+      'text',
+    ];
+
+    return $data_keys;
+  }
+
 }
