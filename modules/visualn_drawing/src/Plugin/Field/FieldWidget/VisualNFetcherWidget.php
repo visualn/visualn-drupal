@@ -74,6 +74,7 @@ class VisualNFetcherWidget extends WidgetBase {
     // @todo: review the code, see VisualNResourceProviderWidget class
 
     $element['#type'] = 'fieldset';
+    $element['#description'] = t('Select and configure drawing fetcher plugin to create a drawing. Each fetcher may have its specific configuration options set and drawing building logic implemented.');
 
     $item = $items[$delta];
     $fetcher_config = !empty($item->fetcher_config) ? unserialize($item->fetcher_config) : [];
@@ -224,7 +225,7 @@ class VisualNFetcherWidget extends WidgetBase {
       // change fetcher configuration form container to fieldset if not empty
       if (Element::children($element)) {
         $element['#type'] = 'fieldset';
-        $element['#title'] = t('Drawing fetcher settings');
+        $element['#title'] = t('Fetcher settings');
       }
 
       // @todo: a $fetcher_container_key could be used here to avoid the case when two fetcher plugins

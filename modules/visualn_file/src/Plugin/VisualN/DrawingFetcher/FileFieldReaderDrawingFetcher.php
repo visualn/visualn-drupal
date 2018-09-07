@@ -6,13 +6,13 @@ use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a 'VisualN File field drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'File field reader' VisualN drawing fetcher.
  *
  * @ingroup fetcher_plugins
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_file_field",
- *  label = @Translation("VisualN File field drawing fetcher"),
+ *  id = "visualn_file_field_reader",
+ *  label = @Translation("File field reader"),
  *  context = {
  *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type")),
  *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle")),
@@ -20,7 +20,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-class FileFieldDrawingFetcher extends VisualNDrawingFetcherBase {
+class FileFieldReaderDrawingFetcher extends VisualNDrawingFetcherBase {
 
   /**
    * {@inheritdoc}

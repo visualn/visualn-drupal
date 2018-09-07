@@ -6,13 +6,13 @@ use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a 'Image field drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'Image field reader' VisualN drawing fetcher.
  *
  * @ingroup fetcher_plugins
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_image_field",
- *  label = @Translation("Image field drawing fetcher"),
+ *  id = "visualn_image_field_reader",
+ *  label = @Translation("Image field reader"),
  *  context = {
  *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type")),
  *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle")),
@@ -20,7 +20,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-class ImageFieldDrawingFetcher extends GenericDrawingFetcherBase {
+class ImageFieldReaderDrawingFetcher extends GenericDrawingFetcherBase {
   // @todo: use standalone fetcher as base to be able to change visualn style for
   //    image field, if not selected try to get drawer config from formatter settigns
   // @todo: add 'current view mode' context' for the case when user doesn't select a visualn style

@@ -14,16 +14,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a 'VisualN Resource Provider generic drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'Data source reader' VisualN drawing fetcher.
  *
  * @ingroup fetcher_plugins
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_data_source_generic",
- *  label = @Translation("VisualN Data Source generic drawing fetcher")
+ *  id = "visualn_data_source_reader",
+ *  label = @Translation("Data source reader")
  * )
  */
-class DataSourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
+class DataSourceReaderDrawingFetcher extends GenericDrawingFetcherBase {
 
   /**
    * The visualn resource format manager service.

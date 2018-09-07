@@ -312,7 +312,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
       // change fetcher configuration form container to fieldset if not empty
       if (Element::children($element)) {
         $element['#type'] = 'fieldset';
-        $element['#title'] = t('Drawing fetcher settings');
+        $element['#title'] = t('Fetcher settings');
       }
 /*
       $element['fetcher_config'] = [];

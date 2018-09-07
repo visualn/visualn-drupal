@@ -260,17 +260,17 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
     //  instead adds columns to the visualn_drawing_field_data table
     $fields['fetcher'] = BaseFieldDefinition::create('visualn_fetcher')
       ->setLabel(t('Default fetcher'))
-      ->setDescription(t('Default drawer fetcher field for the drawing.'))
+      ->setDescription(t('Fetchers collect data and graphics parameters to build a drawing.'))
       //->setSettings([])
       //->setDefaultValue('')
       ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'visualn_fetcher',
-        'weight' => -4,
+        'weight' => -3,
       ])
       ->setDisplayOptions('form', [
         'type' => 'visualn_fetcher',
-        'weight' => -4,
+        'weight' => -3,
       ])
       ->setRequired(FALSE)
       ->setCardinality(1)

@@ -21,13 +21,13 @@ use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 
 /**
- * Provides a 'VisualN Resource Provider generic drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'Basic (resource provider switcher)' VisualN drawing fetcher.
  *
  * @ingroup fetcher_plugins
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_resource_provider_generic",
- *  label = @Translation("VisualN Resource Provider generic drawing fetcher"),
+ *  id = "visualn_resource_provider_switcher",
+ *  label = @Translation("Basic (resource provider switcher)"),
  *  context = {
  *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type"), required = FALSE),
  *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle"), required = FALSE),
@@ -35,7 +35,7 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
  *  }
  * )
  */
-class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
+class ResourceProviderSwitcherDrawingFetcher extends GenericDrawingFetcherBase {
 
   /**
    * The visualn resource format manager service.
@@ -148,7 +148,7 @@ class ResourceProviderGenericDrawingFetcher extends GenericDrawingFetcherBase {
     $form['resource_provider_id'] = [
       '#type' => 'select',
       '#title' => t('Resource provider'),
-      '#description' => t('The resource provider for the drawing'),
+      '#description' => t('Providers prepare a resource object based on files, urls, data generators etc.'),
       '#default_value' => $this->configuration['resource_provider_id'],
       '#options' => $resource_providers,
       '#required' => TRUE,

@@ -6,18 +6,18 @@ use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a 'VisualN Views drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'Views reader' VisualN drawing fetcher.
  *
  * @todo: implement fetcher logic
  *
  * @ingroup fetcher_plugins
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_views",
- *  label = @Translation("VisualN Views drawing fetcher")
+ *  id = "visualn_views_reader",
+ *  label = @Translation("Views reader (*not working*)")
  * )
  */
-class ViewsDrawingFetcher extends VisualNDrawingFetcherBase {
+class ViewsReaderDrawingFetcher extends VisualNDrawingFetcherBase {
 
   /**
    * {@inheritdoc}

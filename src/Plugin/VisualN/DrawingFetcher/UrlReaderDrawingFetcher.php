@@ -22,16 +22,16 @@ use Drupal\visualn\Helpers\VisualN;
 use Drupal\visualn\BuilderService;
 
 /**
- * Provides a 'VisualN Resource generic drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'Url reader' VisualN drawing fetcher.
  *
  * @ingroup fetcher_plugins
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_resource_generic",
- *  label = @Translation("VisualN Resource generic drawing fetcher")
+ *  id = "visualn_url_reader",
+ *  label = @Translation("Url reader")
  * )
  */
-class ResourceGenericDrawingFetcher extends GenericDrawingFetcherBase {
+class UrlReaderDrawingFetcher extends GenericDrawingFetcherBase {
 
   const RAW_RESOURCE_FORMAT_GROUP = 'visualn_resource_widget';
 

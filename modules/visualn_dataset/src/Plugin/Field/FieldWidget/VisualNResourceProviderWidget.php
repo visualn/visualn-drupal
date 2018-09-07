@@ -90,7 +90,7 @@ class VisualNResourceProviderWidget extends WidgetBase {
     $element['resource_provider_id'] = [
       '#type' => 'select',
       '#title' => t('Resource provider plugin'),
-      '#description' => t('The resource provider for the drawing'),
+      '#description' => t('Providers prepare a resource object based on files, urls, data generators etc.'),
       '#default_value' => $item->resource_provider_id,
       '#options' => $resource_providers,
       //'#required' => TRUE,

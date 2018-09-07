@@ -6,15 +6,15 @@ use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a 'VisualN Resource field drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'Url field reader' VisualN drawing fetcher.
  *
  * @todo: implement fetcher logic
  *
  * @ingroup fetcher_plugins
  *
  * @VisualNDrawingFetcher(
- *  id = "visualn_resource_field",
- *  label = @Translation("VisualN Resource field drawing fetcher"),
+ *  id = "visualn_url_field_reader",
+ *  label = @Translation("Url field reader (*not working*)"),
  *  context = {
  *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type")),
  *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle")),
@@ -22,7 +22,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-class ResourceFieldDrawingFetcher extends VisualNDrawingFetcherBase {
+class UrlFieldReaderDrawingFetcher extends VisualNDrawingFetcherBase {
 
   /**
    * {@inheritdoc}

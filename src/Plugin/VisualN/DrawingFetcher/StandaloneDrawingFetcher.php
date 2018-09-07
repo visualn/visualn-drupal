@@ -5,13 +5,13 @@ namespace Drupal\visualn\Plugin\VisualN\DrawingFetcher;
 use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 
 /**
- * Provides a 'VisualN Standalone drawing fetcher' VisualN drawing fetcher.
+ * Provides a 'No data (standalone)' VisualN drawing fetcher.
  *
  * @ingroup fetcher_plugins
  *
  * @VisualNDrawingFetcher(
  *  id = "visualn_standalone",
- *  label = @Translation("VisualN Standalone drawing fetcher")
+ *  label = @Translation("No data (standalone)")
  * )
  */
 class StandaloneDrawingFetcher extends GenericDrawingFetcherBase {
