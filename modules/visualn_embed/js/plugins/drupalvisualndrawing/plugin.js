@@ -303,8 +303,8 @@
           var params = {};
           var param_keys = {
             align: 'data-align',
-            width: 'data-visualn-drawing-width',
-            height: 'data-visualn-drawing-height',
+            width: 'width',
+            height: 'height',
             settings: 'data-visualn-drawing-settings'
           };
           $.each(param_keys, function(key, attr){

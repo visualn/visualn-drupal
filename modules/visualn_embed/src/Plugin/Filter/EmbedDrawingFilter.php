@@ -49,8 +49,8 @@ class EmbedDrawingFilter extends FilterBase {
         $drawing_id = $node->getAttribute('data-visualn-drawing-id');
 
         // @todo: trim width and height if needed
-        $width = $node->getAttribute('data-visualn-drawing-width');
-        $height = $node->getAttribute('data-visualn-drawing-height');
+        $width = $node->getAttribute('width');
+        $height = $node->getAttribute('height');
 
         // @todo: make sure that it is array or empty
         $settings = $node->getAttribute('data-visualn-drawing-settings');
@@ -59,8 +59,8 @@ class EmbedDrawingFilter extends FilterBase {
         $shared = isset($settings['shared']) ? $settings['shared'] : FALSE;
 
         // @todo: maybe check if ::hasAttirbute() before
-        $node->removeAttribute('data-visualn-drawing-width');
-        $node->removeAttribute('data-visualn-drawing-height');
+        $node->removeAttribute('width');
+        $node->removeAttribute('height');
         $node->removeAttribute('data-visualn-drawing-id');
 
         // @todo: if additional classes set in attributes, they should be added to existing ones

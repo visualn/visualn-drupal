@@ -47,8 +47,8 @@ class DrawingPropertiesDialogForm extends FormBase {
 
     $drawing_id = isset($input['editor_object']['data-visualn-drawing-id']) ? $input['editor_object']['data-visualn-drawing-id'] : 0;
     $align = isset($input['editor_object']['data-align']) ? $input['editor_object']['data-align'] : 'none';
-    $width = isset($input['editor_object']['data-visualn-drawing-width']) ? $input['editor_object']['data-visualn-drawing-width'] : '';
-    $height = isset($input['editor_object']['data-visualn-drawing-height']) ? $input['editor_object']['data-visualn-drawing-height'] : '';
+    $width = isset($input['editor_object']['width']) ? $input['editor_object']['width'] : '';
+    $height = isset($input['editor_object']['height']) ? $input['editor_object']['height'] : '';
     $hash = isset($input['editor_object']['data-visualn-drawing-hash']) ? $input['editor_object']['data-visualn-drawing-hash'] : '';
 
     $settings = isset($input['editor_object']['data-visualn-drawing-settings']) ? $input['editor_object']['data-visualn-drawing-settings'] : '';
@@ -293,8 +293,8 @@ class DrawingPropertiesDialogForm extends FormBase {
       'tag_attributes' => [
         'data-visualn-drawing-id' => $drawing_id,
         // @todo: add align and dimensions properties
-        'data-visualn-drawing-width' => $width,
-        'data-visualn-drawing-height' => $height,
+        'width' => $width,
+        'height' => $height,
 
         // @todo: this will reuse core AlignFilter filter
         //   also mention in documentation that the filter should be enabled in order it to work
