@@ -33,7 +33,7 @@ use Drupal\visualn\BuilderService;
  */
 class UrlReaderDrawingFetcher extends GenericDrawingFetcherBase {
 
-  const RAW_RESOURCE_FORMAT_GROUP = 'visualn_resource_widget';
+  const RAW_RESOURCE_FORMAT_GROUP = 'visualn_url_widget';
 
   // @todo: this is to avoid the error: "LogicException: The database connection is not serializable.
   // This probably means you are serializing an object that has an indirect reference to the database connection.

@@ -1,8 +1,8 @@
-name: VisualN Resource
+name: VisualN Url Field
 type: module
 description: VisualN support for url resources.
 core: 8.x
-package: VisualN
+package: VisualN (Experimental)
 dependencies:
   - visualn
   - link

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_resource\Plugin\Field\FieldWidget;
+namespace Drupal\visualn_url_field\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -19,19 +19,19 @@ use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\visualn\Helpers\VisualN;
 
 /**
- * Plugin implementation of the 'visualn_resource' widget.
+ * Plugin implementation of the 'visualn_url' widget.
  *
  * @FieldWidget(
- *   id = "visualn_resource",
- *   label = @Translation("VisualN resource"),
+ *   id = "visualn_url",
+ *   label = @Translation("VisualN url"),
  *   field_types = {
- *     "visualn_resource"
+ *     "visualn_url"
  *   }
  * )
  */
-class VisualNResourceWidget extends LinkWidget implements ContainerFactoryPluginInterface {
+class VisualNUrlWidget extends LinkWidget implements ContainerFactoryPluginInterface {
 
-  const RAW_RESOURCE_FORMAT_GROUP = 'visualn_resource_widget';
+  const RAW_RESOURCE_FORMAT_GROUP = 'visualn_url_widget';
 
   // @todo: implement defaultSettings() method
 

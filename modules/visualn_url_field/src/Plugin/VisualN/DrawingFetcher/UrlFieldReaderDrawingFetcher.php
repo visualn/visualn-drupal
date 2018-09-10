@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_resource\Plugin\VisualN\DrawingFetcher;
+namespace Drupal\visualn_url_field\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -135,7 +135,7 @@ class UrlFieldReaderDrawingFetcher extends VisualNDrawingFetcherBase {
       }
 
       // @todo: move field type into constant
-      if ($field_definition->getType() == 'visualn_resource') {
+      if ($field_definition->getType() == 'visualn_url') {
         $options[$field_name] = $field_definition->getLabel();
       }
     }

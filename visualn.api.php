@@ -198,6 +198,21 @@
  */
 
 /**
+ * @defgroup ckeditor_integration CKEditor integration
+ * @{
+ * Provides tools to embed Drawing entities into content using CKEditor.
+ *
+ * The toolkit provides CKEditor toolbar button and context menu items to embed,
+ * create, preview and delete VisualN Drawing entities directly while editing
+ * content.
+ *
+ * Also it provides a content filter to render embedded drawings.
+ *
+ * Embedded drawings are integrated with @link iframes_toolkit IFrames toolkit @endlink.
+ * @}
+ */
+
+/**
  * @defgroup iframes_toolkit IFrames toolkit
  * @{
  * Provides tools to share drawings (and other content) via iframes.
@@ -258,7 +273,7 @@ function hook_visualn_raw_resource_format_info_alter(&$definitions) {
   // @todo: maybe set group directly in plugins annotation
   foreach ($definitions as $k => $definition) {
     if (in_array($definition['id'], $ids)) {
-      $definitions[$k]['groups'][] = 'visualn_resource_widget';
+      $definitions[$k]['groups'][] = 'visualn_url_widget';
     }
   }
 }

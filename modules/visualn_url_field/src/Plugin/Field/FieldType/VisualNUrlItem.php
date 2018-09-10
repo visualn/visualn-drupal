@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_resource\Plugin\Field\FieldType;
+namespace Drupal\visualn_url_field\Plugin\Field\FieldType;
 
 //use Drupal\Core\Field\FieldDefinitionInterface;
 //use Drupal\Core\Field\FieldItemBase;
@@ -11,18 +11,18 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Plugin implementation of the 'visualn_resource' field type.
+ * Plugin implementation of the 'visualn_url' field type.
  *
  * @FieldType(
- *   id = "visualn_resource",
- *   label = @Translation("VisualN resource"),
+ *   id = "visualn_url",
+ *   label = @Translation("VisualN url"),
  *   description = @Translation("Stores a URL string that points to a resource for visualization"),
- *   default_widget = "visualn_resource",
- *   default_formatter = "visualn_resource",
+ *   default_widget = "visualn_url",
+ *   default_formatter = "visualn_url",
  *   constraints = {"LinkType" = {}, "LinkAccess" = {}, "LinkExternalProtocols" = {}, "LinkNotExistingInternal" = {}}
  * )
  */
-class VisualNResourceItem extends LinkItem {
+class VisualNUrlItem extends LinkItem {
 
   /**
    * {@inheritdoc}

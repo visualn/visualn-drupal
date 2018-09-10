@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_resource\Plugin\Field\FieldFormatter;
+namespace Drupal\visualn_url_field\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
 //use Drupal\Component\Utility\Html;
@@ -18,17 +18,17 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\visualn\Plugin\VisualNFormatterSettingsTrait;
 
 /**
- * Plugin implementation of the 'visualn_resource' formatter.
+ * Plugin implementation of the 'visualn_url' formatter.
  *
  * @FieldFormatter(
- *   id = "visualn_resource",
- *   label = @Translation("VisualN resource"),
+ *   id = "visualn_url",
+ *   label = @Translation("VisualN url"),
  *   field_types = {
- *     "visualn_resource"
+ *     "visualn_url"
  *   }
  * )
  */
-class VisualNResourceFormatter extends  LinkFormatter implements ContainerFactoryPluginInterface {
+class VisualNUrlFormatter extends  LinkFormatter implements ContainerFactoryPluginInterface {
 
   // @todo: move formatter settings methods code into a trait
 
