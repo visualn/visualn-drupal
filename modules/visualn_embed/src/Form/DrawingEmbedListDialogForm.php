@@ -13,7 +13,11 @@ use Drupal\Core\Url;
 use Drupal\Core\Link;
 
 /**
- * @todo: add docblock with description
+ * Build drawing embed form with list of available drawings
+ *
+ * @todo: add description
+ *
+ * @ingroup ckeditor_integration
  */
 class DrawingEmbedListDialogForm extends FormBase {
 
@@ -248,6 +252,7 @@ class DrawingEmbedListDialogForm extends FormBase {
           'data-dialog-options' => json_encode([
             'target' => 'new-drawing-dialog',
             'classes' => ['ui-dialog' => 'ui-dialog-visualn'],
+            'modal' => TRUE,
           ]),
         ],
       ];

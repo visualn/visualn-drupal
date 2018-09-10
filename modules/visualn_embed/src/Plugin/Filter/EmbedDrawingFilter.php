@@ -14,6 +14,7 @@ use Drupal\visualn_iframe\Entity\VisualNIFrame;
 /**
  * Provides a filter to display embedded VisualN drawings based on data attributes.
  *
+ * @ingroup ckeditor_integration
  * @ingroup iframes_toolkit
  *
  * @Filter(
@@ -56,12 +57,18 @@ class EmbedDrawingFilter extends FilterBase {
         $settings = $node->getAttribute('data-visualn-drawing-settings');
         // @todo: check if settings is an array
         $settings = json_decode($settings, TRUE);
-        $shared = isset($settings['shared']) ? $settings['shared'] : FALSE;
+        $shared = is_array($settings) && isset($settings['shared']) ? $settings['shared'] : FALSE;
 
         // @todo: maybe check if ::hasAttirbute() before
         $node->removeAttribute('width');
         $node->removeAttribute('height');
         $node->removeAttribute('data-visualn-drawing-id');
+        $node->removeAttribute('data-visualn-drawing-settings');
+
+        // @todo: review attribute name
+        $hash = $node->getAttribute('data-visualn-drawing-hash');
+        $node->removeAttribute('data-visualn-drawing-hash');
+
 
         // @todo: if additional classes set in attributes, they should be added to existing ones
         //   but not replace them. Also try to reuse existing ckeditor buttons
@@ -90,10 +97,6 @@ class EmbedDrawingFilter extends FilterBase {
               //   visualn_iframe entity table structure
               //   see https://drupal.stackexchange.com/questions/202831/get-the-route-name-of-the-current-page
 
-              // @todo: review attribute name
-              $hash = $node->getAttribute('data-visualn-drawing-hash');
-              // @todo: maybe remove attribute in any case (for disabled and enabled module)
-              $node->removeAttribute('data-visualn-drawing-hash');
               $additional_config = \Drupal::config('visualn_embed.iframe.settings');
               if (empty($hash)) {
                 // Ignore settings and get the 'default' iframe entry

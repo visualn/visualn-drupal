@@ -12,6 +12,7 @@ use Drupal\visualn_iframe\Entity\VisualNIFrame;
 /**
  * Class DrawingPropertiesDialogForm.
  *
+ * @ingroup ckeditor_integration
  * @ingroup iframes_toolkit
  */
 class DrawingPropertiesDialogForm extends FormBase {
@@ -51,17 +52,7 @@ class DrawingPropertiesDialogForm extends FormBase {
     $height = isset($input['editor_object']['height']) ? $input['editor_object']['height'] : '';
     $hash = isset($input['editor_object']['data-visualn-drawing-hash']) ? $input['editor_object']['data-visualn-drawing-hash'] : '';
 
-    $settings = isset($input['editor_object']['data-visualn-drawing-settings']) ? $input['editor_object']['data-visualn-drawing-settings'] : '';
-    $original_settings = $settings;
-    // @todo: check if is an array
-    $settings = json_decode($settings, TRUE);
-    // Sharing settings should not be set manualy (i.e. typing in tag attribute),
-    // by convention, for security reasons and other considerations but only using
-    // drawing configuration form, by convention. Thus there is no practical reason to make
-    // 'shared' a separate tag attribute (e.g. data-visualn-drawing-shared).
-    // Also 'shared'should be stored as part of visualn_iframe entry (settings column)
-    // whereas 'width' and 'height' are not.
-    $shared = isset($settings['shared']) ? $settings['shared'] : FALSE;
+    $original_settings = isset($input['editor_object']['data-visualn-drawing-settings']) ? $input['editor_object']['data-visualn-drawing-settings'] : '';
 
     // @todo: maybe key it as ['editor_object']['drawing_id'] so that values form js call could be mapped
     //   directly into $formState->getValue()
@@ -128,6 +119,31 @@ class DrawingPropertiesDialogForm extends FormBase {
       $additional_config = \Drupal::config('visualn_embed.iframe.settings');
       if ($additional_config->get('allow_drawings_sharing')) {
 
+        $settings = json_decode($original_settings, TRUE);
+        // @todo: do settings items need to be validated before useing if form since taken from user input?
+        $settings = is_array($settings) ? $settings : [];
+        // @todo: add default settings for empty ones
+        //   only add additional settings if visualn_iframe enabled (at least for submit handler)
+        // @todo: add other required settings
+        // @todo: rename to settings defaults (?)
+        $settings += [
+          'shared' => FALSE,
+          'use_defaults' => FALSE,
+          'show_link' => $iframes_default_config->get('default.show_link'),
+          'origin_url' => $iframes_default_config->get('default.origin_url'),
+          'origin_title' => $iframes_default_config->get('default.origin_title'),
+          'open_in_new_window' => $iframes_default_config->get('default.open_in_new_window'),
+        ];
+        // Sharing settings should not be set manualy (i.e. typing in tag attribute),
+        // by convention, for security reasons and other considerations but only using
+        // drawing configuration form, by convention. Thus there is no practical reason to make
+        // 'shared' a separate tag attribute (e.g. data-visualn-drawing-shared).
+        // Also 'shared'should be stored as part of visualn_iframe entry (settings column)
+        // whereas 'width' and 'height' are not.
+
+        //$shared = isset($settings['shared']) ? $settings['shared'] : FALSE;
+
+
         // @todo: consider option when visualn_iframe was enabled and then disabled
         //   in this case configured embedded drawings info should no be lost
         //   also if module disabled, drawings (using sharing) cache should be reset to not
@@ -145,15 +161,14 @@ class DrawingPropertiesDialogForm extends FormBase {
           '#type' => 'checkbox',
           '#title' => $this->t('Enable sharing') . $hash_label,
           // @todo: check if the value isn't already set for the ckeditor widget (tag)
-          // @todo: use $settings['shared']
-          '#default_value' => $shared,
+          '#default_value' => $settings['shared'],
         ];
 
         $form['use_defaults'] = [
           '#type' => 'checkbox',
           '#title' => $this->t('Use defaults'),
-          // @todo: add to iframe settings
-          '#default_value' => isset($settings['use_defaults']) ? $settings['use_defaults'] : FALSE,
+          // @todo: add to iframe settings page
+          '#default_value' => $settings['use_defaults'],
           '#states' => [
             'visible' => [
               ':input[name="sharing_enabled"]' => ['checked' => TRUE],
@@ -168,7 +183,7 @@ class DrawingPropertiesDialogForm extends FormBase {
         $form['show_link'] = [
           '#type' => 'checkbox',
           '#title' => $this->t('Show origin link'),
-          '#default_value' => isset($settings['show_link']) ? $settings['show_link'] : $iframes_default_config->get('default.show_link'),
+          '#default_value' => $settings['show_link'],
           '#states' => [
             'visible' => [
               ':input[name="sharing_enabled"]' => ['checked' => TRUE],
@@ -189,7 +204,7 @@ class DrawingPropertiesDialogForm extends FormBase {
         $form['origin_url'] = [
           '#type' => 'textfield',
           '#title' => $this->t('Origin url'),
-          '#default_value' => isset($settings['origin_url']) ? $settings['origin_url'] : $iframes_default_config->get('default.origin_url'),
+          '#default_value' => $settings['origin_url'],
           '#description' => $this->t('Leave blank to use default origin url'),
           '#attributes' => [
             'placeholder' => $iframes_default_config->get('default.origin_url'),
@@ -206,7 +221,7 @@ class DrawingPropertiesDialogForm extends FormBase {
         $form['origin_title'] = [
           '#type' => 'textfield',
           '#title' => $this->t('Origin title'),
-          '#default_value' => isset($settings['origin_title']) ? $settings['origin_title'] : $iframes_default_config->get('default.origin_title'),
+          '#default_value' => $settings['origin_title'],
           '#description' => $this->t('Leave blank to use default origin title'),
           '#attributes' => [
             'placeholder' => $iframes_default_config->get('default.origin_title'),
@@ -223,7 +238,7 @@ class DrawingPropertiesDialogForm extends FormBase {
         $form['open_in_new_window'] = [
           '#type' => 'checkbox',
           '#title' => $this->t('Open in new window'),
-          '#default_value' => isset($settings['open_in_new_window']) ? $settings['open_in_new_window'] : $iframes_default_config->get('default.open_in_new_window'),
+          '#default_value' => $settings['open_in_new_window'],
           '#states' => [
             'visible' => [
               ':input[name="sharing_enabled"]' => ['checked' => TRUE],
@@ -233,19 +248,6 @@ class DrawingPropertiesDialogForm extends FormBase {
           ],
         ];
       }
-    }
-    else {
-      // @todo: the value is supposed to be kept in 'settings' then (?)
-      // @todo: keep ckeditor widget property attribute if user not allowed to share drawing
-      //   no need to completely remove it since user may set it manually disabling ckeditor js
-      //   and to post it like that (there seems to be no attributes filter, only tag, or not?)
-      //   anyway develop policy for sharing usage here
-      $form['sharing_enabled'] = [
-        '#type' => 'hidden',
-        // @todo: check if the value isn't already set for the ckeditor widget (tag)
-        '#default_value' => $shared,
-      ];
-      // @todo: also keep all other settings
     }
 
     // @todo: attach ajax callback and return a command to replace the tag
@@ -301,6 +303,7 @@ class DrawingPropertiesDialogForm extends FormBase {
         'data-align' => $align,
         //'data-visualn-drawing-align' => $align,
         'data-visualn-drawing-settings' => $settings,
+        // @todo: move hash to settings (?)
         'data-visualn-drawing-hash' => $iframe_hash,
       ],
     ];
