@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_file\Plugin\VisualN\DrawingFetcher;
+namespace Drupal\visualn_file_field\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;

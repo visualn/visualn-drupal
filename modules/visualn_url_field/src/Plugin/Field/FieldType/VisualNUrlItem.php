@@ -39,7 +39,7 @@ class VisualNUrlItem extends LinkItem {
     ) + parent::defaultFieldSettings();
   }
 
-  // @todo: check comment regarding isEmpty() in visualn_file submodule field type
+  // @todo: check comment regarding isEmpty() in visualn_file_field submodule field type
 
   /**
    * {@inheritdoc}

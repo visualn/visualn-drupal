@@ -5,7 +5,7 @@
 //    @see https://www.drupal.org/project/drupal/issues/2926219
 //    @see https://www.drupal.org/project/drupal/issues/2926220
 
-namespace Drupal\visualn_file\Plugin\Field\FieldWidget;
+namespace Drupal\visualn_file_field\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -15,7 +15,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 //use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
-use Drupal\visualn_file\Plugin\FileWidgetWrapper;
+use Drupal\visualn_file_field\Plugin\FileWidgetWrapper;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\Core\Field\WidgetBase;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_file\Plugin\Field\FieldType;
+namespace Drupal\visualn_file_field\Plugin\Field\FieldType;
 
 //use Drupal\Core\Field\FieldDefinitionInterface;
 //use Drupal\Core\Field\FieldItemBase;

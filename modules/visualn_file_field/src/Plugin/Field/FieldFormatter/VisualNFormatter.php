@@ -1,5 +1,5 @@
 <?php
-namespace Drupal\visualn_file\Plugin\Field\FieldFormatter;
+namespace Drupal\visualn_file_field\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\core\form\FormStateInterface;

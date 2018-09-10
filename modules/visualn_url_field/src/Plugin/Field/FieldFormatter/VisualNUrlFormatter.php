@@ -135,7 +135,7 @@ class VisualNUrlFormatter extends  LinkFormatter implements ContainerFactoryPlug
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
-    // @todo: this is almost a copy from visualn_file formatter
+    // @todo: this is almost a copy from visualn_file_field formatter
     $elements = $this->visualnViewElements($items, $langcode);
     if ($this->getSetting('show_resource_link') == 0) {
       foreach ($elements as $delta => $element) {

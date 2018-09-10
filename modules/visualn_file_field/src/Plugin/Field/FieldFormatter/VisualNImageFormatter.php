@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_file\Plugin\Field\FieldFormatter;
+namespace Drupal\visualn_file_field\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemInterface;
@@ -164,7 +164,7 @@ class VisualNImageFormatter extends ImageFormatter {
       '#suffix' => '</div>',
       '#attached' => [
         'library' => [
-          'visualn_file/visualn-image-formatter-handler'
+          'visualn_file_field/visualn-image-formatter-handler'
         ],
         'drupalSettings' => [
           'visualnFile' => ['imageFormatterItemsWrapperId' => [$fuid => $image_items_wrapper_id]],

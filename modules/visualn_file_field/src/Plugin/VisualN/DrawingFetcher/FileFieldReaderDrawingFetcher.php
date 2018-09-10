@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\visualn_file\Plugin\VisualN\DrawingFetcher;
+namespace Drupal\visualn_file_field\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -27,11 +27,9 @@ class FileFieldReaderDrawingFetcher extends VisualNDrawingFetcherBase {
    */
   public function defaultConfiguration() {
     return [
-      // @todo: rename key to visualn_file_field_name
       'visualn_file_field' => '',
     ] + parent::defaultConfiguration();
-
- }
+  }
 
   /**
    * {@inheritdoc}
@@ -119,6 +117,7 @@ class FileFieldReaderDrawingFetcher extends VisualNDrawingFetcherBase {
     // select file field and maybe delta
     // @todo: maybe select also delta
 
+    // @todo: add as '#empty' select element propery
     $options = ['' => t('- Select -')];
     // @todo: instantiate on create
     $entityManager = \Drupal::service('entity_field.manager');

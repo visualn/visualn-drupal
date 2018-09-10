@@ -1,4 +1,4 @@
-name: VisualN File
+name: VisualN File Field
 type: module
 description: Enables VisualN support for files.
 core: 8.x

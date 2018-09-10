@@ -9,7 +9,7 @@
  * And another bug with unsetting userInput() in ::submit() callback (see todo below in ::submit()).
  */
 
-namespace Drupal\visualn_file\Plugin;
+namespace Drupal\visualn_file_field\Plugin;
 
 use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
 
