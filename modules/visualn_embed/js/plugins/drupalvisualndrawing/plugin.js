@@ -43,8 +43,17 @@
             editor.insertHtml(entityElement.getOuterHtml());
           };
 
+          var drawing_id = getSelectionDrawingId(editor);
+          // @todo: use existingElement if keeping drawing properties after replacement is neeeded
+          //   though iframe properties should be reset/updated then since iframe entry
+          //   would point to a different drawing (reset hash or keep hash and update entry)
+          //var existingElement = getSelectedEmbeddedDrawing(editor);
+
           // Populate existing values of form.
           var existingValues = {};
+          if (drawing_id) {
+            existingValues['data-visualn-drawing-id'] = drawing_id;
+          }
           var dialogSettings = {
             dialogClass: 'ui-dialog-visualn'
           };
@@ -187,6 +196,10 @@
 
           // Populate existing values of form.
           var existingValues = {};
+          var drawing_id = getSelectionDrawingId(editor);
+          if (drawing_id) {
+            existingValues['data-visualn-drawing-id'] = drawing_id;
+          }
           var dialogSettings = {
             dialogClass: 'ui-dialog-visualn'
           };

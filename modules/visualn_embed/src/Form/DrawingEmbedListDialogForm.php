@@ -38,6 +38,9 @@ class DrawingEmbedListDialogForm extends FormBase {
     $drawing_entities_list = [];
 
 
+    // @todo: check comments in DrawingEmbedListDialogForm::buildForm()
+    $input = $form_state->getUserInput();
+    $selected_drawing_id = isset($input['editor_object']['data-visualn-drawing-id']) ? $input['editor_object']['data-visualn-drawing-id'] : 0;
 
     // @todo: If it loads full entites, just get ids and labels using an sql query
     //   also check permission and published status
@@ -107,6 +110,11 @@ class DrawingEmbedListDialogForm extends FormBase {
       '#empty' => $this->t('No drawings found'),
       //'#required' => TRUE,
     ];
+
+    // preselect current drawing if set (user selected embedded drawing)
+    if ($selected_drawing_id) {
+      $form['drawing_id']['#default_value'] = $selected_drawing_id;
+    }
 
     // @todo: make it sticky at the bottom of the table
     $form['actions'] = [
