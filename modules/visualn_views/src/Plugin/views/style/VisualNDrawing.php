@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Drupal\core\form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -137,9 +138,10 @@ class VisualNDrawing extends Serializer {
   protected function defineOptions() {
     $options = parent::defineOptions();
 
-    $options['visualn_style_id'] = array('default' => '');
-    $options['drawer_config'] = array('default' => []);
+    $options['visualn_style_id'] = ['default' => ''];
+    $options['drawer_config'] = ['default' => []];
     $options['expose_keys_mapping'] = 0;
+    $options['drawer_fields'] = ['default' => []];
 
     return $options;
   }
@@ -305,30 +307,22 @@ class VisualNDrawing extends Serializer {
     $this->replaceAjaxOptions($element[$drawer_container_key]['drawer_config'], $form_state);
 
 
-
     // @todo: Use some kind of \VisualN::buildDrawerDataKeysForm($drawer_plugin, $form, $form_state) here.
 
-    $data_keys = $drawer_plugin->dataKeys();
-    if (!empty($data_keys)) {
-      // @todo: get rid of value from 'field' or massage value at plugin submit
-      $element[$drawer_container_key]['drawer_fields'] = [
-        '#type' => 'table',
-        '#header' => [$this->t('Data key'), $this->t('Field')],
-      ];
-      $field_names = $this->displayHandler->getFieldLabels();
-      foreach ($data_keys as $data_key) {
-        $element[$drawer_container_key]['drawer_fields'][$data_key]['label'] = [
-          '#plain_text' => $data_key,
-        ];
-        $element[$drawer_container_key]['drawer_fields'][$data_key]['field'] = [
-          '#type' => 'select',
-          '#options' => $field_names,
-          '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
-        ];
-      }
-    }
+    // Drawer fields subform (i.e. data_keys mappings) should be attached in a separate #process callback
+    // that would trigger after the drawer buildConfigurationForm() attaches the config form
+    // and is completed. It is required for the case when drawer has a variable number of data keys.
+    // see the code below
+    // @see VisualNFormHelper::processDrawerContainerSubform()
+    $element[$drawer_container_key]['drawer_fields']['#process'] = [[get_called_class(), 'processDrawerFieldsSubform']];
+    $element[$drawer_container_key]['drawer_fields']['#drawer_plugin'] = $drawer_plugin;
+    $element[$drawer_container_key]['drawer_fields']['#drawer_fields'] = $drawer_fields;
+    $field_names = $this->displayHandler->getFieldLabels();
+    $element[$drawer_container_key]['drawer_fields']['#field_names'] = $field_names;
 
 
+    // @todo: technically, this should be moved to an #after_build callback (though it seems to work even as it is)
+    // @see VisualNFormHelper::processDrawerContainerSubform() for more info
     // since drawer and fields onfiguration forms may be empty, do a check (then it souldn't be of details type)
     if (Element::children($element[$drawer_container_key]['drawer_config'])
          || Element::children($element[$drawer_container_key]['drawer_fields'])) {
@@ -369,7 +363,7 @@ class VisualNDrawing extends Serializer {
   protected function replaceAjaxOptions(&$element, FormStateInterface $form_state) {
     foreach (Element::children($element) as $key) {
       if (isset($element[$key]['#ajax'])) {
-        $element[$key]['#ajax']['url'] = views_ui_build_form_url($form_state);
+        $element[$key]['#ajax'] = ['url' => views_ui_build_form_url($form_state)];
       }
 
       // check subtree elements
@@ -582,5 +576,57 @@ class VisualNDrawing extends Serializer {
       }
     }
     return $output;
+  }
+
+  /**
+   * Attach drawer_fields subform based on drawer_plugin dataKeys().
+   *
+   * The subform is attached in a #process callback to have drawer config form
+   * values already mapped at this point. It is needed e.g. for drawers with variable
+   * number of data keys managed in a #process callback set in buildConfigurationForm().
+   *
+   * @see \Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer\LinechartBasicDrawer
+   */
+  public static function processDrawerFieldsSubform(array $element, FormStateInterface $form_state, $form) {
+    // this is mostly a copy-paste of the VisualNFormHelper::processDrawerContainerSubform()
+    $field_names = $element['#field_names'];
+
+    $element_parents = $element['#array_parents'];
+    $base_element_parents = array_slice($element_parents, 0, -1);
+    $base_element_parents[] = 'drawer_config';
+
+    $config_element = NestedArray::getValue($form, $base_element_parents);
+    $subform_state = SubformState::createForSubform($config_element, $form, $form_state);
+
+    $drawer_plugin = $element['#drawer_plugin'];
+    $drawer_fields = $element['#drawer_fields'];
+    $drawer_plugin_clone = clone $drawer_plugin;
+    $drawer_config = $drawer_plugin->extractFormValues($config_element, $subform_state);
+    $drawer_plugin_clone->setConfiguration($drawer_config);
+
+    $data_keys = $drawer_plugin_clone->dataKeys();
+    // @todo: convert textfields into a table in a #process callback
+    //    maybe even inside Mapper config form method
+    if (!empty($data_keys)) {
+      // @todo: get rid of value from 'field' or massage value at plugin submit
+      $element += [
+        '#type' => 'table',
+        '#header' => [t('Data key'), t('Field')],
+      ];
+      foreach ($data_keys as $i => $data_key) {
+        $element[$data_key]['label'] = [
+          '#plain_text' => $data_key,
+        ];
+        $element[$data_key]['field'] = [
+          '#type' => 'select',
+          '#options' => $field_names,
+          '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
+          '#empty_option' => t('- Select data source -'),
+          '#required' => FALSE,
+        ];
+      }
+    }
+
+    return $element;
   }
 }

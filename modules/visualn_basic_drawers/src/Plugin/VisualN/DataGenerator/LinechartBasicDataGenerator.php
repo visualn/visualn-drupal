@@ -1,5 +1,7 @@
 <?php
 
+// @todo: sync generator config with drawer preview config settings (?)
+
 namespace Drupal\visualn_basic_drawers\Plugin\VisualN\DataGenerator;
 
 use Drupal\visualn\Plugin\VisualNDataGeneratorBase;
@@ -29,6 +31,7 @@ class LinechartBasicDataGenerator extends VisualNDataGeneratorBase {
   public function defaultConfiguration() {
     return [
       'number' => '5',
+      'series_number' => '1',
     ] + parent::defaultConfiguration();
  }
 
@@ -45,6 +48,16 @@ class LinechartBasicDataGenerator extends VisualNDataGeneratorBase {
       '#required' => TRUE,
     ];
 
+    // @todo: currently no way to set different number of points for each series
+    $form['series_number'] = [
+      '#type' => 'number',
+      '#title' => t('Number of series'),
+      '#default_value' => $this->configuration['series_number'],
+      '#min' => 1,
+      '#max' => 10,
+      '#required' => TRUE,
+    ];
+
     return $form;
   }
 
@@ -53,13 +66,11 @@ class LinechartBasicDataGenerator extends VisualNDataGeneratorBase {
    */
   public function generateData() {
     $data = [];
-
     for ($i = 0; $i < $this->configuration['number']; $i++) {
-      $data[] = [
-        'x' => $i+1,
-        'data1' => mt_rand(0, 9),
-        'data2' => mt_rand(0, 9),
-      ];
+      $data[$i]['x'] = $i+1;
+      for ($j = 1; $j <= $this->configuration['series_number']; $j++) {
+        $data[$i]['data' . $j] = mt_rand(0, 9);
+      }
     }
 
     return $data;

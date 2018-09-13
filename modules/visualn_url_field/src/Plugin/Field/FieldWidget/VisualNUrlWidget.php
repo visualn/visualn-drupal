@@ -151,6 +151,7 @@ class VisualNUrlWidget extends LinkWidget implements ContainerFactoryPluginInter
     $configuration['visualn_style_id'] = $item->visualn_style_id ?: '';
     // @todo: add visualn_style_id = "" to widget default config (check) to avoid "?:" check
 
+    // in case of ajaxified config forms with dynamic structure drawer fields are updated inside the callback
     $element = VisualNFormsHelper::processDrawerContainerSubform($element, $form_state, $form, $configuration);
 
     return $element;

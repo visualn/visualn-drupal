@@ -261,6 +261,10 @@ class DrawerPreviewForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    // @todo: trigger drawer plugin ::validateConfigurationForm() and ::submitConfigurationForm() methods
+    //   e.g. to clean values
+    //   same for data_generator plugins
+
     // Display result.
     foreach ($form_state->getValues() as $key => $value) {
       //drupal_set_message($key . ': ' . $value);

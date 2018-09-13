@@ -5,6 +5,8 @@ namespace Drupal\visualn\Helpers;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Render\Element;
+use Drupal\Component\Utility\NestedArray;
+use Symfony\Component\HttpFoundation\Request;
 
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
@@ -101,46 +103,30 @@ class VisualNFormsHelper {
 
 
     // @todo: Use some kind of \VisualN::buildDrawerDataKeysForm($drawer_plugin, $form, $form_state) here.
+    // @todo: trim data_keys values after submitting settings
 
-    // @todo: trim values after submitting settings
-    $data_keys = $drawer_plugin->dataKeys();
-    // @todo: convert textfields into a table in a #process callback
-    //    maybe even inside Mapper config form method
-    if (!empty($data_keys)) {
-      // @todo: get rid of value from 'field' or massage value at plugin submit
-      $element[$drawer_container_key]['drawer_fields'] = [
-        '#type' => 'table',
-        '#header' => [t('Data key'), t('Field')],
-      ];
-      foreach ($data_keys as $i => $data_key) {
-        $element[$drawer_container_key]['drawer_fields'][$data_key]['label'] = [
-          '#plain_text' => $data_key,
-        ];
-        $element[$drawer_container_key]['drawer_fields'][$data_key]['field'] = [
-          '#type' => 'textfield',
-          '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
-        ];
-      }
-    }
+    // Drawer fields subform (i.e. data_keys mappings) should be attached in a separate #process callback
+    // that would trigger after the drawer buildConfigurationForm() attaches the config form
+    // and is completed. It is required for the case when drawer has a variable number of data keys.
+    // see the code below
+    // @see VisualNDrawing::processDrawerContainerSubform()
+    $element[$drawer_container_key]['drawer_fields']['#process'] = [[get_called_class(), 'processDrawerFieldsSubform']];
+    $element[$drawer_container_key]['drawer_fields']['#drawer_plugin'] = $drawer_plugin;
+    $element[$drawer_container_key]['drawer_fields']['#drawer_fields'] = $drawer_fields;
 
+    // Check if drawer config has ajaxified elements to update data keys (same as in views).
+    // This should be done in #process (but not #after_build) since #ajax settings use
+    // also a #process callback to attach js etc.
+    $style_element_array_parents = array_slice($element['#array_parents'], 0, -1);
+    $base_element = NestedArray::getValue($form, $style_element_array_parents);
 
+    // get ajax wrapper id to replace the original drawer one if found
+    $ajax_wrapper_id = $base_element['visualn_style_id']['#ajax']['wrapper'];
+    static::replaceAjaxOptions($element, $form_state, $ajax_wrapper_id);
 
-    // since drawer and fields configuration forms may be empty, do a check (then it souldn't be of details type)
-    if (Element::children($element[$drawer_container_key]['drawer_config'])
-         || Element::children($element[$drawer_container_key]['drawer_fields'])) {
-      $style_element_array_parents = array_slice($element['#array_parents'], 0, -1);
-      // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
-      $details_open = FALSE;
-      if ($form_state->getTriggeringElement()) {
-        $triggering_element = $form_state->getTriggeringElement();
-        $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, ['visualn_style_id']);
-      }
-      $element[$drawer_container_key] = [
-        '#type' => 'details',
-        '#title' => t('Style configuration'),
-        '#open' => $details_open,
-      ] + $element[$drawer_container_key];
-    }
+    // open drawer_container 'details' if needed
+    $element[$drawer_container_key]['#after_build'][] = [get_called_class(), 'afterBuildDrawerDetailsOpenSubform'];
+
 
     // @todo: replace with #element_submit when introduced into core
     // extract values for drawer_container subform and drawer_config and drawer_fields
@@ -148,6 +134,88 @@ class VisualNFormsHelper {
     //    also it can be done in ::submitConfigurationForm()
     $element[$drawer_container_key]['#element_validate'] = [[get_called_class(), 'validateDrawerContainerSubForm']];
     //$element[$drawer_container_key]['#element_validate'] = [[get_called_class(), 'submitDrawerContainerSubForm']];
+
+    return $element;
+  }
+
+  /**
+   * Attach drawer_fields subform based on drawer_plugin dataKeys().
+   *
+   * The subform is attached in a #process callback to have drawer config form
+   * values already mapped at this point. It is needed e.g. for drawers with variable
+   * number of data keys managed in a #process callback set in buildConfigurationForm().
+   *
+   * @see \Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer\LinechartBasicDrawer
+   */
+  public static function processDrawerFieldsSubform(array $element, FormStateInterface $form_state, $form) {
+    $element_parents = $element['#array_parents'];
+    $base_element_parents = array_slice($element_parents, 0, -1);
+    $base_element_parents[] = 'drawer_config';
+
+    $config_element = NestedArray::getValue($form, $base_element_parents);
+    $subform_state = SubformState::createForSubform($config_element, $form, $form_state);
+
+    $drawer_plugin = $element['#drawer_plugin'];
+    $drawer_fields = $element['#drawer_fields'];
+    $drawer_plugin_clone = clone $drawer_plugin;
+    $drawer_config = $drawer_plugin->extractFormValues($config_element, $subform_state);
+    $drawer_plugin_clone->setConfiguration($drawer_config);
+
+    $data_keys = $drawer_plugin_clone->dataKeys();
+    // @todo: convert textfields into a table in a #process callback
+    //    maybe even inside Mapper config form method
+    if (!empty($data_keys)) {
+      // @todo: get rid of value from 'field' or massage value at plugin submit
+      $element += [
+        '#type' => 'table',
+        '#header' => [t('Data key'), t('Field')],
+      ];
+      foreach ($data_keys as $i => $data_key) {
+        $element[$data_key]['label'] = [
+          '#plain_text' => $data_key,
+        ];
+        $element[$data_key]['field'] = [
+          '#type' => 'textfield',
+          '#default_value' => isset($drawer_fields[$data_key]) ? $drawer_fields[$data_key] : '',
+        ];
+      }
+    }
+
+    return $element;
+  }
+
+  /**
+   * Process callback for drawer config and drawer fields container subform.
+   *
+   * Check  if 'details' element should be open after all drawer_config and drawer_fields elements are attached.
+   */
+  public static function afterBuildDrawerDetailsOpenSubform(array $element, FormStateInterface $form_state) {
+    // since drawer and fields configuration forms may be empty, do a check (then it souldn't be of details type)
+    if (Element::children($element['drawer_config']) || Element::children($element['drawer_fields'])) {
+      // @todo: actually it is base_element_array_parents for both, visualn_style_id and drawer_config
+      $style_element_array_parents = array_slice($element['#array_parents'], 0, -2);
+      //$style_element_array_parents = array_slice($element['#array_parents'], 0, -1);
+      // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
+      $details_open = FALSE;
+      if ($form_state->getTriggeringElement()) {
+        $triggering_element = $form_state->getTriggeringElement();
+        $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, ['visualn_style_id']);
+
+        // also open details on ajaxified element click
+        if (!$details_open) {
+          $diff = array_diff($triggering_element['#array_parents'], $style_element_array_parents);
+          // the $diff is supposed not to be empty since drawer_config and visualn_style_id have the same base
+          if ($diff) {
+            $details_open = $triggering_element['#array_parents'] === array_merge($style_element_array_parents, $diff);
+          }
+        }
+      }
+      $element = [
+        '#type' => 'details',
+        '#title' => t('Style configuration'),
+        '#open' => $details_open,
+      ] + $element;
+    }
 
     return $element;
   }
@@ -596,6 +664,46 @@ class VisualNFormsHelper {
       $form_state->unsetValue($element_parents);
     }
   }
+
+
+
+
+
+  /**
+   * Process #ajax elements. If drawer configuration form uses #ajax to rebuild elements on cerain events,
+   * those calls must use views specific 'url' setting or new elements values won't be saved.
+   *
+   * @todo: based on views display style VisualNDrawing::replaceAjaxOptions()
+   */
+  protected static function replaceAjaxOptions(&$element, FormStateInterface $form_state, $ajax_wrapper_id, $element_depth = 0) {
+    foreach (Element::children($element) as $key) {
+      if (isset($element[$key]['#ajax'])) {
+        $element[$key]['#ajax'] = [
+          'callback' => [get_called_class(), 'ajaxCallback2'],
+          'wrapper' => $ajax_wrapper_id,
+          // @todo: maybe set as $element[$key]['#drawer_config_element_depth']
+          'element_depth' => $element_depth,
+        ];
+      }
+
+      // check subtree elements
+      static::replaceAjaxOptions($element[$key], $form_state, $ajax_wrapper_id, $element_depth + 1);
+    }
+  }
+
+  public static function ajaxCallback2(array $form, FormStateInterface $form_state, Request $request) {
+    $triggering_element = $form_state->getTriggeringElement();
+
+    // triggering element can be at any level, the element_depth value is set in replaceAjaxOptions()
+    $element_depth = $triggering_element['#ajax']['element_depth'];
+    // the other two keys are 'drawer_container' and visualn_style id
+    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, - ($element_depth +  2));
+
+    $element = NestedArray::getValue($form, $triggering_element_parents);
+
+    return $element['drawer_container'];
+  }
+
 
 
 }
