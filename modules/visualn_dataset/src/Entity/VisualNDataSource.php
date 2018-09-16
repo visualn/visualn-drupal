@@ -32,11 +32,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "resource_provider_config" = "resource_provider_config"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn/data-sources/manage/{visualn_data_source}",
- *     "add-form" = "/admin/config/media/visualn/data-sources/add",
- *     "edit-form" = "/admin/config/media/visualn/data-sources/manage/{visualn_data_source}/edit",
- *     "delete-form" = "/admin/config/media/visualn/data-sources/manage/{visualn_data_source}/delete",
- *     "collection" = "/admin/config/media/visualn/data-sources"
+ *     "canonical" = "/admin/visualn/data-sources/manage/{visualn_data_source}",
+ *     "add-form" = "/admin/visualn/data-sources/add",
+ *     "edit-form" = "/admin/visualn/data-sources/manage/{visualn_data_source}/edit",
+ *     "delete-form" = "/admin/visualn/data-sources/manage/{visualn_data_source}/delete",
+ *     "collection" = "/admin/visualn/data-sources"
  *   }
  * )
  */

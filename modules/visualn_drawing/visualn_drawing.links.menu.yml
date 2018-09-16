@@ -6,6 +6,13 @@ entity.visualn_drawing.collection:
   parent: visualn.admin_config_visualn
   weight: 2
 
+entity.visualn_drawing.add_form:
+  title: 'Add drawing'
+  route_name: entity.visualn_drawing.add_page
+  description: 'Add new drawing entity'
+  parent: entity.visualn_drawing.collection
+  weight: 4
+
 
 # VisualN Drawing type menu items definition
 entity.visualn_drawing_type.collection:

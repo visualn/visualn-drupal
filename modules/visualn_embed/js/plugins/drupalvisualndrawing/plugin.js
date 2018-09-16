@@ -117,7 +117,6 @@
           // @todo: how to pass dialog id so that it could be close on save by ajax commands response?
           Drupal.ckeditor.openDialog(editor,
             //Drupal.url('visualn_embed/form/drawing_embed_dialog'),
-            //Drupal.url('admin/config/media/visualn/drawing/' + drawing_id + '/edit'),
             Drupal.url('visualn-ckeditor/drawing/' + drawing_id + '/edit_content'),
 
             //Drupal.url('visualn-ckeditor/drawing/' + drawing_id + '/edit'),

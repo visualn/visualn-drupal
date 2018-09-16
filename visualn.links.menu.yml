@@ -2,7 +2,6 @@
 visualn.admin_config_visualn:
   route_name: visualn.admin_config_visualn
   parent: 'system.admin'
-  #parent: system.admin_config_media
   title: 'VisualN'
   weight: 0
 visualn.drawers_list_controller_page:
@@ -23,8 +22,9 @@ entity.visualn_setup.collection:
   parent: visualn.admin_config_visualn
   weight: 3
 
+# @todo: rename to not confuse with admin/config menu item
 visualn.visualn_configuration_form:
-  title: 'Configuration'
+  title: 'Config'
   route_name: visualn.visualn_configuration_form
   description: 'Configure VisualN module'
   parent: visualn.admin_config_visualn

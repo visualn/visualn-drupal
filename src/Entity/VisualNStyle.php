@@ -33,11 +33,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "drawer_config" = "drawer_config"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn/styles/manage/{visualn_style}",
- *     "add-form" = "/admin/config/media/visualn/styles/add",
- *     "edit-form" = "/admin/config/media/visualn/styles/manage/{visualn_style}/edit",
- *     "delete-form" = "/admin/config/media/visualn/styles/manage/{visualn_style}/delete",
- *     "collection" = "/admin/config/media/visualn/styles"
+ *     "canonical" = "/admin/visualn/styles/manage/{visualn_style}",
+ *     "add-form" = "/admin/visualn/styles/add",
+ *     "edit-form" = "/admin/visualn/styles/manage/{visualn_style}/edit",
+ *     "delete-form" = "/admin/visualn/styles/manage/{visualn_style}/delete",
+ *     "collection" = "/admin/visualn/styles"
  *   }
  * )
  */

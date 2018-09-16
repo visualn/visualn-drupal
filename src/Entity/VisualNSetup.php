@@ -32,11 +32,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "baker_config" = "baker_config"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn/setups/manage/{visualn_setup}",
- *     "add-form" = "/admin/config/media/visualn/setups/add",
- *     "edit-form" = "/admin/config/media/visualn/setups/manage/{visualn_setup}/edit",
- *     "delete-form" = "/admin/config/media/visualn/setups/manage/{visualn_setup}/delete",
- *     "collection" = "/admin/config/media/visualn/setups"
+ *     "canonical" = "/admin/visualn/setups/manage/{visualn_setup}",
+ *     "add-form" = "/admin/visualn/setups/add",
+ *     "edit-form" = "/admin/visualn/setups/manage/{visualn_setup}/edit",
+ *     "delete-form" = "/admin/visualn/setups/manage/{visualn_setup}/delete",
+ *     "collection" = "/admin/visualn/setups"
  *   }
  * )
  */

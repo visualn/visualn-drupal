@@ -32,11 +32,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     "resource_provider_field" = "resource_provider_field"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn/data-set-types/manage/{visualn_dataset_type}",
- *     "add-form" = "/admin/config/media/visualn/data-set-types/add",
- *     "edit-form" = "/admin/config/media/visualn/data-set-types/manage/{visualn_dataset_type}/edit",
- *     "delete-form" = "/admin/config/media/visualn/data-set-types/manage/{visualn_dataset_type}/delete",
- *     "collection" = "/admin/config/media/visualn/data-set-types"
+ *     "canonical" = "/admin/visualn/dataset-types/manage/{visualn_dataset_type}",
+ *     "add-form" = "/admin/visualn/dataset-types/add",
+ *     "edit-form" = "/admin/visualn/dataset-types/manage/{visualn_dataset_type}/edit",
+ *     "delete-form" = "/admin/visualn/dataset-types/manage/{visualn_dataset_type}/delete",
+ *     "collection" = "/admin/visualn/dataset-types"
  *   }
  * )
  */

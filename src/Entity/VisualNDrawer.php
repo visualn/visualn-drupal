@@ -1,5 +1,7 @@
 <?php
 
+// @todo: rename to VisualNSubdrawer and move to the visualn_subdewers module
+
 namespace Drupal\visualn\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
@@ -37,11 +39,11 @@ use Drupal\visualn\Plugin\VisualNDrawerModifierInterface;
  *     "modifiers" = "modifiers"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn/drawers/manage/{visualn_drawer}",
- *     "add-form" = "/admin/config/media/visualn/drawers/add",
- *     "edit-form" = "/admin/config/media/visualn/drawers/manage/{visualn_drawer}/edit",
- *     "delete-form" = "/admin/config/media/visualn/drawers/manage/{visualn_drawer}/delete",
- *     "collection" = "/admin/config/media/visualn/drawers"
+ *     "canonical" = "/admin/visualn/config/subdrawers/manage/{visualn_drawer}",
+ *     "add-form" = "/admin/visualn/config/subdrawers/add",
+ *     "edit-form" = "/admin/visualn/config/subdrawers/manage/{visualn_drawer}/edit",
+ *     "delete-form" = "/admin/visualn/config/subdrawers/manage/{visualn_drawer}/delete",
+ *     "collection" = "/admin/visualn/config/subdrawers"
  *   }
  * )
  */

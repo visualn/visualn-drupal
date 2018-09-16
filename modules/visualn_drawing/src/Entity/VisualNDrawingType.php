@@ -32,11 +32,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     "drawing_fetcher_field" = "drawing_fetcher_field"
  *   },
  *   links = {
- *     "canonical" = "/admin/config/media/visualn/drawing-types/{visualn_drawing_type}",
- *     "add-form" = "/admin/config/media/visualn/drawing-types/add",
- *     "edit-form" = "/admin/config/media/visualn/drawing-types/{visualn_drawing_type}/edit",
- *     "delete-form" = "/admin/config/media/visualn/drawing-types/{visualn_drawing_type}/delete",
- *     "collection" = "/admin/config/media/visualn/drawing-types"
+ *     "canonical" = "/admin/visualn/drawing-types/{visualn_drawing_type}",
+ *     "add-form" = "/admin/visualn/drawing-types/add",
+ *     "edit-form" = "/admin/visualn/drawing-types/{visualn_drawing_type}/edit",
+ *     "delete-form" = "/admin/visualn/drawing-types/{visualn_drawing_type}/delete",
+ *     "collection" = "/admin/visualn/drawing-types"
  *   }
  * )
  */
