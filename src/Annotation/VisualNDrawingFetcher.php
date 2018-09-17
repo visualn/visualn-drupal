@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a VisualN Drawing Fetcher item annotation object.
  *
- * @see \Drupal\visualn\Plugin\VisualNDrawingFetcherManager
+ * @see \Drupal\visualn\Manager\DrawingFetcherManager
  * @see plugin_api
  *
  * @Annotation

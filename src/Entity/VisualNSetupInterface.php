@@ -19,7 +19,7 @@ interface VisualNSetupInterface extends ConfigEntityInterface {
   /**
    * Get the instance of the VisualNSetup entity baker plugin.
    *
-   * @return \Drupal\visualn\Plugin\VisualNSetupBakerBase
+   * @return \Drupal\visualn\Core\SetupBakerBase
    */
   public function getSetupBakerPlugin();
 

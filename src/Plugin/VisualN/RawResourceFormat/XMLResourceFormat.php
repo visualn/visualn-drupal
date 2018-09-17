@@ -7,7 +7,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\RawResourceFormat;
 
-use Drupal\visualn\Plugin\RawResourceFormatBase;
+use Drupal\visualn\Core\RawResourceFormatBase;
 
 /**
  * Provides a 'XML' VisualN raw resource format.

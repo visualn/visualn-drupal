@@ -5,7 +5,7 @@ namespace Drupal\visualn\Form;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
-use Drupal\visualn\Plugin\VisualNSetupBakerManager;
+use Drupal\visualn\Manager\SetupBakerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -16,17 +16,17 @@ class VisualNSetupForm extends EntityForm {
   /**
    * The visualn setup baker manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNSetupBakerManager
+   * @var \Drupal\visualn\Manager\SetupBakerManager
    */
   protected $visualNSetupBakerManager;
 
   /**
    * Constructs a VisualNSetupEditForm object.
    *
-   * @param \Drupal\visualn\Plugin\VisualNSetupBakerManager $visualn_setup_baker_manager
+   * @param \Drupal\visualn\Manager\SetupBakerManager $visualn_setup_baker_manager
    *   The visualn setup baker manager service.
    */
-  public function __construct(VisualNSetupBakerManager $visualn_setup_baker_manager) {
+  public function __construct(SetupBakerManager $visualn_setup_baker_manager) {
     $this->visualNSetupBakerManager = $visualn_setup_baker_manager;
   }
 

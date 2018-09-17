@@ -4,13 +4,13 @@
 
 namespace Drupal\visualn\Plugin\VisualN\ResourceProvider;
 
-use Drupal\visualn\Plugin\VisualNResourceProviderBase;
+use Drupal\visualn\Core\ResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\visualn\Plugin\VisualNDataGeneratorManager;
+use Drupal\visualn\Manager\DataGeneratorManager;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\Core\Url;
 use Drupal\visualn\Helpers\VisualN;
@@ -23,14 +23,14 @@ use Drupal\visualn\Helpers\VisualN;
  *  label = @Translation("VisualN Generated Resource Provider"),
  * )
  */
-class GeneratedResourceProvider extends VisualNResourceProviderBase implements ContainerFactoryPluginInterface {
+class GeneratedResourceProvider extends ResourceProviderBase implements ContainerFactoryPluginInterface {
 
   const RAW_RESOURCE_FORMAT = 'visualn_generic_data_array';
 
   /**
-   * Drupal\visualn\Plugin\VisualNDataGeneratorManager definition.
+   * Drupal\visualn\Manager\DataGeneratorManager definition.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDataGeneratorManager
+   * @var \Drupal\visualn\Manager\DataGeneratorManager
    */
   protected $visualNDataGeneratorManager;
 
@@ -49,7 +49,7 @@ class GeneratedResourceProvider extends VisualNResourceProviderBase implements C
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, VisualNDataGeneratorManager $plugin_manager_visualn_data_generator) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, DataGeneratorManager $plugin_manager_visualn_data_generator) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->visualNDataGeneratorManager = $plugin_manager_visualn_data_generator;

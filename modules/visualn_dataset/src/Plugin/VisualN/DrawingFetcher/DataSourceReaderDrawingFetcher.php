@@ -4,7 +4,7 @@ namespace Drupal\visualn_dataset\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
+use Drupal\visualn\Manager\DrawerManager;
 use Drupal\visualn\BuilderService;
 
 use Drupal\Core\Form\FormStateInterface;
@@ -62,14 +62,14 @@ class DataSourceReaderDrawingFetcher extends GenericDrawingFetcherBase {
    *   The plugin implementation definition
    * @param \Drupal\Core\Entity\EntityStorageInterface $visualn_style_storage
    *   The visualn style entity storage service.
-   * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
+   * @param \Drupal\visualn\Manager\DrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    * @param \Drupal\visualn\BuilderService $visualn_builder
    *   The visualn builder service.
    * @param \Drupal\Core\Entity\EntityStorageInterface $visualn_data_source_storage
    *   The visualn data source storage service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, BuilderService $visualn_builder, EntityStorageInterface $visualn_data_source_storage) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, DrawerManager $visualn_drawer_manager, BuilderService $visualn_builder, EntityStorageInterface $visualn_data_source_storage) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_builder);
 
     $this->visualNDataSourceStorage = $visualn_data_source_storage;

@@ -6,7 +6,7 @@ use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\visualn\Plugin\VisualNDrawingFetcherManager;
+use Drupal\visualn\Manager\DrawingFetcherManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
@@ -31,7 +31,7 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
   /**
    * The visualn drawing fetcher manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawingFetcherManager
+   * @var \Drupal\visualn\Manager\DrawingFetcherManager
    */
   protected $visualNDrawingFetcherManager;
 
@@ -59,10 +59,10 @@ class VisualNBlock extends BlockBase implements ContainerFactoryPluginInterface 
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition
-   * @param \Drupal\visualn\Plugin\VisualNDrawingFetcherManager $visualn_drawing_fetcher_manager
+   * @param \Drupal\visualn\Manager\DrawingFetcherManager $visualn_drawing_fetcher_manager
    *   The visualn drawing fetcher manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, VisualNDrawingFetcherManager $visualn_drawing_fetcher_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, DrawingFetcherManager $visualn_drawing_fetcher_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->visualNDrawingFetcherManager = $visualn_drawing_fetcher_manager;

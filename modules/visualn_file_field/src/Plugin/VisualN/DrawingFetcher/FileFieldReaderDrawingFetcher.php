@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_file_field\Plugin\VisualN\DrawingFetcher;
 
-use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
+use Drupal\visualn\Core\DrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -20,7 +20,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-class FileFieldReaderDrawingFetcher extends VisualNDrawingFetcherBase {
+class FileFieldReaderDrawingFetcher extends DrawingFetcherBase {
 
   /**
    * {@inheritdoc}

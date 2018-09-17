@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a VisualN Builder item annotation object.
  *
- * @see \Drupal\visualn\Plugin\VisualNBuilderManager
+ * @see \Drupal\visualn\Manager\BuilderManager
  * @see plugin_api
  *
  * @Annotation

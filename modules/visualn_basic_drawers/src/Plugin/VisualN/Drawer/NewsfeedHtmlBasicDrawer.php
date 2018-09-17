@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer;
 
-use Drupal\visualn\Plugin\VisualNDrawerBase;
+use Drupal\visualn\Core\DrawerBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\ResourceInterface;
 
@@ -17,7 +17,7 @@ use Drupal\visualn\ResourceInterface;
  *  input = "generic_data_array",
  * )
  */
-class NewsfeedHtmlBasicDrawer extends VisualNDrawerBase {
+class NewsfeedHtmlBasicDrawer extends DrawerBase {
 
   /**
    * @inheritdoc

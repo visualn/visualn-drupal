@@ -5,9 +5,9 @@ namespace Drupal\visualn\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNDataGeneratorManager;
-use Drupal\visualn\Plugin\VisualNResourceProviderManager;
+use Drupal\visualn\Manager\DrawerManager;
+use Drupal\visualn\Manager\DataGeneratorManager;
+use Drupal\visualn\Manager\ResourceProviderManager;
 use Drupal\Core\Form\SubformState;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Plugin\Context\Context;
@@ -24,9 +24,9 @@ class DrawerPreviewForm extends FormBase {
 
 
   /**
-   * Drupal\visualn\Plugin\VisualNDrawerManager definition.
+   * Drupal\visualn\Manager\DrawerManager definition.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
@@ -36,7 +36,7 @@ class DrawerPreviewForm extends FormBase {
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn_dataset\Plugin\VisualNResourceProviderManager
+   * @var \Drupal\visualn\Manager\ResourceProviderManager
    */
   protected $visualNResourceProviderManager;
 
@@ -60,10 +60,10 @@ class DrawerPreviewForm extends FormBase {
    * Constructs a new DrawerPreviewForm object.
    */
   public function __construct(
-    VisualNDrawerManager $plugin_manager_visualn_drawer,
-    VisualNDataGeneratorManager $plugin_manager_visualn_data_generator,
-    VisualNResourceProviderManager $visualn_resource_provider_manager,
-    BuilderService $visualn_builder
+      DrawerManager $plugin_manager_visualn_drawer,
+      DataGeneratorManager $plugin_manager_visualn_data_generator,
+      ResourceProviderManager $visualn_resource_provider_manager,
+      BuilderService $visualn_builder
   ) {
     $this->visualNDrawerManager = $plugin_manager_visualn_drawer;
     $this->visualNDataGeneratorManager = $plugin_manager_visualn_data_generator;

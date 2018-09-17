@@ -2,9 +2,10 @@
 
 namespace Drupal\visualn\Plugin;
 
-use Drupal\visualn\Plugin\VisualNDrawerBase;
+use Drupal\visualn\Core\DrawerBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\visualn\Core\DrawerInterface;
 use Drupal\visualn\ResourceInterface;
 
 /**
@@ -17,7 +18,7 @@ use Drupal\visualn\ResourceInterface;
  */
 // @todo: !IMPORTANT: drawer should always be actualized with every new change to the interface and base class
 //    since it must include all the methods and wrapper around them to delegate to the subdrawer_base_drawer object.
-abstract class VisualNDrawerWrapperBase extends PluginBase implements VisualNDrawerInterface {
+abstract class VisualNDrawerWrapperBase extends PluginBase implements DrawerInterface {
 
   // Contains a reference to the base drawer object.
   protected $subdrawer_base_drawer;

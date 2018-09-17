@@ -6,7 +6,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
+use Drupal\visualn\Manager\DrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\visualn\Entity\VisualNStyleInterface;
 use Drupal\visualn\Entity\VisualNStyle;
@@ -24,17 +24,17 @@ class VisualNStyleForm extends EntityForm {
   /**
    * The visualn drawer manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
   /**
    * Constructs a VisualNStyleEditForm object.
    *
-   * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
+   * @param \Drupal\visualn\Manager\DrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    */
-  public function __construct(VisualNDrawerManager $visualn_drawer_manager) {
+  public function __construct(DrawerManager $visualn_drawer_manager) {
     $this->visualNDrawerManager = $visualn_drawer_manager;
   }
 

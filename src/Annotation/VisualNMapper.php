@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a VisualN Mapper item annotation object.
  *
- * @see \Drupal\visualn\Plugin\VisualNMapperManager
+ * @see \Drupal\visualn\Manager\MapperManager
  * @see plugin_api
  *
  * @Annotation

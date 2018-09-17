@@ -4,8 +4,8 @@ namespace Drupal\visualn\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNResourceProviderManager;
+use Drupal\visualn\Manager\DrawerManager;
+use Drupal\visualn\Manager\ResourceProviderManager;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
@@ -40,7 +40,7 @@ class ResourceProviderSwitcherDrawingFetcher extends GenericDrawingFetcherBase {
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNResourceProviderManager
+   * @var \Drupal\visualn\Manager\ResourceProviderManager
    */
   protected $visualNResourceProviderManager;
 
@@ -73,14 +73,14 @@ class ResourceProviderSwitcherDrawingFetcher extends GenericDrawingFetcherBase {
    *   The plugin implementation definition
    * @param \Drupal\Core\Entity\EntityStorageInterface $visualn_style_storage
    *   The visualn style entity storage service.
-   * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
+   * @param \Drupal\visualn\Manager\DrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    * @param \Drupal\visualn\BuilderService $visualn_builder
    *   The visualn builder service.
-   * @param \Drupal\visualn\Plugin\VisualNResourceProviderManager $visualn_resource_provider_manager
+   * @param \Drupal\visualn\Manager\ResourceProviderManager $visualn_resource_provider_manager
    *   The visualn resource provider manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, BuilderService $visualn_builder, VisualNResourceProviderManager $visualn_resource_provider_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, DrawerManager $visualn_drawer_manager, BuilderService $visualn_builder, ResourceProviderManager $visualn_resource_provider_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_builder);
 
     $this->visualNResourceProviderManager = $visualn_resource_provider_manager;

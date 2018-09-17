@@ -45,7 +45,7 @@ interface VisualNStyleInterface extends ConfigEntityInterface {
   /**
    * Get VisualN style specific drawer plugin instance.
    *
-   * @return \Drupal\visualn\Plugin\VisualNDrawerInterface
+   * @return \Drupal\visualn\Core\DrawerInterface
    */
   public function getDrawerPlugin();
 

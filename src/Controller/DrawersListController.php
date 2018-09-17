@@ -4,8 +4,8 @@ namespace Drupal\visualn\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNDataGeneratorManager;
+use Drupal\visualn\Manager\DrawerManager;
+use Drupal\visualn\Manager\DataGeneratorManager;
 use Drupal\Core\Link;
 
 /**
@@ -14,16 +14,16 @@ use Drupal\Core\Link;
 class DrawersListController extends ControllerBase {
 
   /**
-   * Drupal\visualn\Plugin\VisualNDrawerManager definition.
+   * Drupal\visualn\Manager\DrawerManager definition.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
   /**
-   * Drupal\visualn_dataset\Plugin\VisualNDataGeneratorManager definition.
+   * Drupal\visualn\Manager\DataGeneratorManager definition.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDataGeneratorManager
+   * @var \Drupal\visualn\Manager\DataGeneratorManager
    */
   protected $visualNDataGeneratorManager;
 
@@ -40,7 +40,7 @@ class DrawersListController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(VisualNDrawerManager $plugin_manager_visualn_drawer, VisualNDataGeneratorManager $plugin_manager_visualn_data_generator) {
+  public function __construct(DrawerManager $plugin_manager_visualn_drawer, DataGeneratorManager $plugin_manager_visualn_data_generator) {
     $this->visualNDrawerManager = $plugin_manager_visualn_drawer;
     $this->visualNDataGeneratorManager = $plugin_manager_visualn_data_generator;
   }

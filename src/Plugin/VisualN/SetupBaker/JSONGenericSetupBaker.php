@@ -7,7 +7,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\SetupBaker;
 
-use Drupal\visualn\Plugin\VisualNSetupBakerBase;
+use Drupal\visualn\Core\SetupBakerBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -18,7 +18,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  label = @Translation("JSON Generic Setup Baker"),
  * )
  */
-class JSONGenericSetupBaker extends VisualNSetupBakerBase {
+class JSONGenericSetupBaker extends SetupBakerBase {
 
   /**
    * {@inheritdoc}

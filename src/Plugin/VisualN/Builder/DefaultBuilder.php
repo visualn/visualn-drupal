@@ -2,15 +2,15 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Builder;
 
-use Drupal\visualn\Plugin\VisualNBuilderBase;
+use Drupal\visualn\Core\BuilderBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\VisualNAdapterManager;
-use Drupal\visualn\Plugin\VisualNMapperManager;
+use Drupal\visualn\Manager\DrawerManager;
+use Drupal\visualn\Manager\AdapterManager;
+use Drupal\visualn\Manager\MapperManager;
 use Drupal\visualn\Entity\VisualNStyle;
-use Drupal\visualn\Plugin\VisualNDrawerInterface;
+use Drupal\visualn\Core\DrawerInterface;
 use Drupal\visualn\ResourceInterface;
 
 /**
@@ -41,7 +41,7 @@ use Drupal\visualn\ResourceInterface;
  *  label = @Translation("Default Builder"),
  * )
  */
-class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPluginInterface {
+class DefaultBuilder extends BuilderBase implements ContainerFactoryPluginInterface {
 
   /**
    * The image style entity storage.
@@ -53,21 +53,21 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
   /**
    * The visualn drawer manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
   /**
    * The visualn adapter manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNAdapterManager
+   * @var \Drupal\visualn\Manager\AdapterManager
    */
   protected $VisualNAdapterManager;
 
   /**
    * The visualn mapper manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNMapperManager
+   * @var \Drupal\visualn\Manager\MapperManager
    */
   protected $VisualNMapperManager;
 
@@ -89,7 +89,7 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
   /**
    * Constructs a Plugin object.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, VisualNAdapterManager $visualn_adapter_manager, visualNMapperManager $visualn_mapper_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, DrawerManager $visualn_drawer_manager, AdapterManager $visualn_adapter_manager, MapperManager $visualn_mapper_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     //$this->definition = $plugin_definition + $configuration;
@@ -290,7 +290,7 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
    *
    * @todo: move to interface and maybe rename
    */
-  protected function composePluginsChain(VisualNDrawerInterface $drawer, $input_type, array $input_options, $input_base_type = '') {
+  protected function composePluginsChain(DrawerInterface $drawer, $input_type, array $input_options, $input_base_type = '') {
     // The arrays are used to allow multiple plugins of each type in the chain
     // though generally this isn't used and wasn't tested. In most cases
     // this seems to have no sense (at least for drawer plugins).
@@ -465,7 +465,7 @@ class DefaultBuilder extends VisualNBuilderBase implements ContainerFactoryPlugi
   }
 
   // @todo:
-  protected function composeSuggestedPluginsChain(VisualNDrawerInterface $drawer, $input_type, array $input_options, $input_base_type = '') {
+  protected function composeSuggestedPluginsChain(DrawerInterface $drawer, $input_type, array $input_options, $input_base_type = '') {
   }
 
   /**

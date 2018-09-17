@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a VisualN Drawer item annotation object.
  *
- * @see \Drupal\visualn\Plugin\VisualNDrawerManager
+ * @see \Drupal\visualn\Manager\DrawerManager
  * @see plugin_api
  *
  * @Annotation

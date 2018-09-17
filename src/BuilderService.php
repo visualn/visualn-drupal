@@ -2,8 +2,8 @@
 
 namespace Drupal\visualn;
 
-use Drupal\visualn\Plugin\VisualNBuilderManager;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
+use Drupal\visualn\Manager\BuilderManager;
+use Drupal\visualn\Manager\DrawerManager;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\visualn\ResourceInterface;
@@ -17,16 +17,16 @@ use Drupal\visualn\ResourceInterface;
 class BuilderService implements BuilderServiceInterface {
 
   /**
-   * Drupal\visualn\Plugin\VisualNBuilderManager definition.
+   * Drupal\visualn\Manager\BuilderManager definition.
    *
-   * @var \Drupal\visualn\Plugin\VisualNBuilderManager
+   * @var \Drupal\visualn\Manager\BuilderManager
    */
   protected $visualNBuilderManager;
 
   /**
-   * Drupal\visualn\Plugin\VisualNDrawerManager definition.
+   * Drupal\visualn\Manager\DrawerManager definition.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
@@ -40,7 +40,7 @@ class BuilderService implements BuilderServiceInterface {
   /**
    * Constructs a new BuilderService object.
    */
-  public function __construct(VisualNBuilderManager $plugin_manager_visualn_builder, VisualNDrawerManager $plugin_manager_visualn_drawer, EntityTypeManager $entity_type_manager) {
+  public function __construct(BuilderManager $plugin_manager_visualn_builder, DrawerManager $plugin_manager_visualn_drawer, EntityTypeManager $entity_type_manager) {
     $this->visualNBuilderManager = $plugin_manager_visualn_builder;
     $this->visualNDrawerManager = $plugin_manager_visualn_drawer;
     $this->visualNStyleStorage = $entity_type_manager->getStorage('visualn_style');

@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a VisualN Resource Provider item annotation object.
  *
- * @see \Drupal\visualn_dataset\Plugin\VisualNResourceProviderManager
+ * @see \Drupal\visualn\Manager\ResourceProviderManager
  * @see plugin_api
  *
  * @Annotation

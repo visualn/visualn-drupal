@@ -10,8 +10,8 @@ use Drupal\Core\Url;
 use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\RawResourceFormatManager;
+use Drupal\visualn\Manager\DrawerManager;
+use Drupal\visualn\Manager\RawResourceFormatManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Form\SubformStateInterface;
@@ -45,7 +45,7 @@ class UrlReaderDrawingFetcher extends GenericDrawingFetcherBase {
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn\Plugin\RawResourceFormatManager
+   * @var \Drupal\visualn\Manager\RawResourceFormatManager
    */
   protected $visualNResourceFormatManager;
 
@@ -79,14 +79,14 @@ class UrlReaderDrawingFetcher extends GenericDrawingFetcherBase {
    *   The plugin implementation definition
    * @param \Drupal\Core\Entity\EntityStorageInterface $visualn_style_storage
    *   The visualn style entity storage service.
-   * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
+   * @param \Drupal\visualn\Manager\DrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    * @param \Drupal\visualn\BuilderService $visualn_builder
    *   The visualn builder service.
-   * @param \Drupal\visualn\Plugin\RawResourceFormatManager $visualn_resource_format_manager
+   * @param \Drupal\visualn\Manager\RawResourceFormatManager $visualn_resource_format_manager
    *   The visualn resource format manager service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, BuilderService $visualn_builder, RawResourceFormatManager $visualn_resource_format_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, DrawerManager $visualn_drawer_manager, BuilderService $visualn_builder, RawResourceFormatManager $visualn_resource_format_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $visualn_style_storage, $visualn_drawer_manager, $visualn_builder);
 
     $this->visualNResourceFormatManager = $visualn_resource_format_manager;

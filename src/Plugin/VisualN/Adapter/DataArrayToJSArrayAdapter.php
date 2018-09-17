@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Adapter;
 
-use Drupal\visualn\Plugin\AdapterWithJsBase;
+use Drupal\visualn\Core\AdapterWithJsBase;
 use Drupal\visualn\ResourceInterface;
 
 /**

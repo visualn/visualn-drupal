@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_dataset\Plugin\VisualN\ResourceProvider;
 
-use Drupal\visualn\Plugin\VisualNResourceProviderBase;
+use Drupal\visualn\Core\ResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
@@ -16,7 +16,7 @@ use Drupal\visualn\Helpers\VisualN;
  *  label = @Translation("VisualN Random resource provider (*** DO NOT USE ***)"),
  * )
  */
-class RandomResourceProvider extends VisualNResourceProviderBase {
+class RandomResourceProvider extends ResourceProviderBase {
 
   const RAW_RESOURCE_FORMAT = 'visualn_json';
 

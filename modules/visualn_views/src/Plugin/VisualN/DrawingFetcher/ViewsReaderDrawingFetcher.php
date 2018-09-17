@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_views\Plugin\VisualN\DrawingFetcher;
 
-use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
+use Drupal\visualn\Core\DrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -17,7 +17,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  label = @Translation("Views reader (*not working*)")
  * )
  */
-class ViewsReaderDrawingFetcher extends VisualNDrawingFetcherBase {
+class ViewsReaderDrawingFetcher extends DrawingFetcherBase {
 
   /**
    * {@inheritdoc}

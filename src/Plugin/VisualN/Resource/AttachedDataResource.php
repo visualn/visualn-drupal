@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Resource;
 
-use Drupal\visualn\Plugin\VisualNResourceBase;
+use Drupal\visualn\Core\VisualNResourceBase;
 
 // @todo: change "output" annotation value - resource returns just an array of data, the adapter itself attaches it
 //    as drupalSettings and sends to the client side as JSON data

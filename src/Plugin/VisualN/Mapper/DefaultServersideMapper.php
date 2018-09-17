@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Mapper;
 
-use Drupal\visualn\Plugin\VisualNMapperBase;
+use Drupal\visualn\Core\MapperBase;
 use Drupal\visualn\ResourceInterface;
 
 /**
@@ -17,7 +17,7 @@ use Drupal\visualn\ResourceInterface;
  *  output =  "generic_data_array",
  * )
  */
-class DefaultServersideMapper extends VisualNMapperBase {
+class DefaultServersideMapper extends MapperBase {
 
   /**
    * {@inheritdoc}

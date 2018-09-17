@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin;
 
-use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
+use Drupal\visualn\Core\DrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Link;
@@ -10,7 +10,7 @@ use Drupal\Core\Url;
 use Drupal\Component\Utility\NestedArray;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
+use Drupal\visualn\Manager\DrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Form\SubformStateInterface;
@@ -19,7 +19,7 @@ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
 use Drupal\visualn\BuilderService;
 
-abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase implements ContainerFactoryPluginInterface {
+abstract class GenericDrawingFetcherBase extends DrawingFetcherBase implements ContainerFactoryPluginInterface {
 
   // @todo: this is to avoid the error: "LogicException: The database connection is not serializable.
   // This probably means you are serializing an object that has an indirect reference to the database connection.
@@ -39,7 +39,7 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
   /**
    * The visualn drawer manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
@@ -78,12 +78,12 @@ abstract class GenericDrawingFetcherBase extends VisualNDrawingFetcherBase imple
    *   The plugin implementation definition
    * @param \Drupal\Core\Entity\EntityStorageInterface $visualn_style_storage
    *   The visualn style entity storage service.
-   * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
+   * @param \Drupal\visualn\Manager\DrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    * @param \Drupal\visualn\BuilderService $visualn_builder
    *   The visualn builder service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, BuilderService $visualn_builder) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $visualn_style_storage, DrawerManager $visualn_drawer_manager, BuilderService $visualn_builder) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->visualNStyleStorage = $visualn_style_storage;

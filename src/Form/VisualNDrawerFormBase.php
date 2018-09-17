@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
+use Drupal\visualn\Manager\DrawerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Render\Element;
 use Drupal\visualn\Helpers\VisualNFormsHelper;
@@ -20,17 +20,17 @@ class VisualNDrawerFormBase extends EntityForm {
   /**
    * The visualn drawer manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
   /**
    * Constructs an VisualNDrawerFormBase object
    *
-   * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
+   * @param \Drupal\visualn\Manager\DrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    */
-  public function __construct(VisualNDrawerManager $visualn_drawer_manager) {
+  public function __construct(DrawerManager $visualn_drawer_manager) {
     $this->visualNDrawerManager = $visualn_drawer_manager;
   }
 

@@ -73,7 +73,7 @@ class VisualNSetup extends ConfigEntityBase implements VisualNSetupInterface {
   /**
    * The VisualN setup specific baker plugin.
    *
-   * @var \Drupal\visualn\Plugin\VisualNSetupBakerInterface
+   * @var \Drupal\visualn\Core\SetupBakerInterface
    */
   protected $baker_plugin;
 

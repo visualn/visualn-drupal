@@ -7,7 +7,7 @@
 
 namespace Drupal\visualn\Plugin\DataType\Deriver;
 
-use Drupal\visualn\Plugin\VisualNResourceManager;
+use Drupal\visualn\Manager\ResourceManager;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -33,7 +33,7 @@ class ResourceDeriver implements ContainerDeriverInterface {
   /**
    * The resource type plugin manager.
    *
-   * @var \Drupal\visualn\Plugin\VisualNResourceManager
+   * @var \Drupal\visualn\Manager\ResourceManager
    */
   protected $visualNResourceManager;
 
@@ -42,10 +42,10 @@ class ResourceDeriver implements ContainerDeriverInterface {
    *
    * @param string $base_plugin_id
    *   The base plugin ID.
-   * @param \Drupal\visualn\Plugin\VisualNResourceManager $visualn_resource_manager
+   * @param \Drupal\visualn\Manager\ResourceManager $visualn_resource_manager
    *   The resource type plugin manager.
    */
-  public function __construct($base_plugin_id, VisualNResourceManager $visualn_resource_manager) {
+  public function __construct($base_plugin_id, ResourceManager $visualn_resource_manager) {
     $this->basePluginId = $base_plugin_id;
     $this->visualNResourceManager = $visualn_resource_manager;
   }

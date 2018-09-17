@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a Raw Resource Format item annotation object.
  *
- * @see \Drupal\visualn\Plugin\RawResourceFormatManager
+ * @see \Drupal\visualn\Manager\RawResourceFormatManager
  * @see plugin_api
  *
  * @Annotation

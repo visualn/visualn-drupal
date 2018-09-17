@@ -5,7 +5,7 @@ namespace Drupal\visualn_block\IFrameContent;
 use Drupal\visualn_iframe\IFrameContentProvider\ContentProviderInterface;
 use Drupal\block\Entity\Block;
 use Drupal\visualn_block\Plugin\Block\VisualNBlock;
-use Drupal\visualn\Plugin\VisualNDrawingFetcherManager;
+use Drupal\visualn\Manager\DrawingFetcherManager;
 
 /**
  * Provides content for VisualN blocks iframes.
@@ -17,17 +17,17 @@ class BlockIFrameContentProvider implements ContentProviderInterface {
   /**
    * The visualn drawing fetcher manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawingFetcherManager
+   * @var \Drupal\visualn\Manager\DrawingFetcherManager
    */
   protected $visualNDrawingFetcherManager;
 
   /**
    * Constructs a IFrameContentProvider service object.
    *
-   * @param \Drupal\visualn\Plugin\VisualNDrawingFetcherManager $visualn_drawing_fetcher_manager
+   * @param \Drupal\visualn\Manager\DrawingFetcherManager $visualn_drawing_fetcher_manager
    *   The visualn drawing fetcher manager service.
    */
-  public function __construct(VisualNDrawingFetcherManager $visualn_drawing_fetcher_manager) {
+  public function __construct(DrawingFetcherManager $visualn_drawing_fetcher_manager) {
     $this->visualNDrawingFetcherManager = $visualn_drawing_fetcher_manager;
   }
 

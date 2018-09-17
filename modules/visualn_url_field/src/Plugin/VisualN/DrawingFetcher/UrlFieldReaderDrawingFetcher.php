@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_url_field\Plugin\VisualN\DrawingFetcher;
 
-use Drupal\visualn\Plugin\VisualNDrawingFetcherBase;
+use Drupal\visualn\Core\DrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -20,7 +20,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-class UrlFieldReaderDrawingFetcher extends VisualNDrawingFetcherBase {
+class UrlFieldReaderDrawingFetcher extends DrawingFetcherBase {
 
   /**
    * {@inheritdoc}

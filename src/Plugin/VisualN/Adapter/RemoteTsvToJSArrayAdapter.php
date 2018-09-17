@@ -4,7 +4,7 @@ namespace Drupal\visualn\Plugin\VisualN\Adapter;
 
 use Drupal\visualn\ResourceInterface;
 
-//use Drupal\visualn\Plugin\VisualNAdapterBase;
+//use Drupal\visualn\Core\VisualNAdapterBase;
 
 /**
  * Provides a 'RemoteTsvToJSArray' VisualN adapter. Generally this is a wrapper around DSV Adapter.

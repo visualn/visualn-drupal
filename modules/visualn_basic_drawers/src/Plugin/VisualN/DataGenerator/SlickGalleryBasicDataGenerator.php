@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_basic_drawers\Plugin\VisualN\DataGenerator;
 
-use Drupal\visualn\Plugin\VisualNDataGeneratorBase;
+use Drupal\visualn\Core\DataGeneratorBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -18,7 +18,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-class SlickGalleryBasicDataGenerator extends VisualNDataGeneratorBase {
+class SlickGalleryBasicDataGenerator extends DataGeneratorBase {
 
   /**
    * {@inheritdoc}

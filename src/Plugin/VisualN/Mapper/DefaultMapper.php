@@ -4,7 +4,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Mapper;
 
-use Drupal\visualn\Plugin\MapperWithJsBase;
+use Drupal\visualn\Core\MapperWithJsBase;
 use Drupal\visualn\ResourceInterface;
 
 /**

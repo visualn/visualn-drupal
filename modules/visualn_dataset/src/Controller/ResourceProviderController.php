@@ -4,7 +4,7 @@ namespace Drupal\visualn_dataset\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\visualn\Plugin\VisualNResourceProviderManager;
+use Drupal\visualn\Manager\ResourceProviderManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
@@ -13,16 +13,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ResourceProviderController extends ControllerBase {
 
   /**
-   * Drupal\visualn\Plugin\VisualNResourceProviderManager definition.
+   * Drupal\visualn\Manager\ResourceProviderManager definition.
    *
-   * @var \Drupal\visualn\Plugin\VisualNResourceProviderManager
+   * @var \Drupal\visualn\Manager\ResourceProviderManager
    */
   protected $pluginManagerVisualnResourceProvider;
 
   /**
    * Constructs a new ResourceProviderController object.
    */
-  public function __construct(VisualNResourceProviderManager $plugin_manager_visualn_resource_provider) {
+  public function __construct(ResourceProviderManager $plugin_manager_visualn_resource_provider) {
     $this->pluginManagerVisualnResourceProvider = $plugin_manager_visualn_resource_provider;
   }
 

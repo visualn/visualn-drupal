@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\Resource;
 
-use Drupal\visualn\Plugin\VisualNResourceBase;
+use Drupal\visualn\Core\VisualNResourceBase;
 
 // @todo: maybe rename the plugin
 

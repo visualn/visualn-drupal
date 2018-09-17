@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a VisualN Adapter item annotation object.
  *
- * @see \Drupal\visualn\Plugin\VisualNAdapterManager
+ * @see \Drupal\visualn\Manager\AdapterManager
  * @see plugin_api
  *
  * @Annotation

@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_dataset\Plugin\VisualN\ResourceProvider;
 
-use Drupal\visualn\Plugin\VisualNResourceProviderBase;
+use Drupal\visualn\Core\ResourceProviderBase;
 use Drupal\Core\Form\FormStateInterface;
 //use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
@@ -19,7 +19,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-class DataSetReferenceResourceProvider extends VisualNResourceProviderBase {
+class DataSetReferenceResourceProvider extends ResourceProviderBase {
 
   /**
    * {@inheritdoc}

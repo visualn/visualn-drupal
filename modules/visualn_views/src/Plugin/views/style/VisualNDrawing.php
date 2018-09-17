@@ -7,8 +7,8 @@ use Drupal\rest\Plugin\views\style\Serializer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
-use Drupal\visualn\Plugin\RawResourceFormatManager;
+use Drupal\visualn\Manager\DrawerManager;
+use Drupal\visualn\Manager\RawResourceFormatManager;
 
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -63,14 +63,14 @@ class VisualNDrawing extends Serializer {
   /**
    * The visualn drawer manager service.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
   /**
    * The visualn resource format manager service.
    *
-   * @var \Drupal\visualn\Plugin\RawResourceFormatManager
+   * @var \Drupal\visualn\Manager\RawResourceFormatManager
    */
   protected $visualNResourceFormatManager;
 
@@ -118,9 +118,9 @@ class VisualNDrawing extends Serializer {
    * Constructs a Plugin object.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition,
-    SerializerInterface $serializer, array $serializer_formats, array $serializer_format_providers,
-    EntityStorageInterface $visualn_style_storage, VisualNDrawerManager $visualn_drawer_manager, RawResourceFormatManager $visualn_resource_format_manager,
-    BuilderService $visualn_builder) {
+                              SerializerInterface $serializer, array $serializer_formats, array $serializer_format_providers,
+                              EntityStorageInterface $visualn_style_storage, DrawerManager $visualn_drawer_manager, RawResourceFormatManager $visualn_resource_format_manager,
+                              BuilderService $visualn_builder) {
 
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer, $serializer_formats, $serializer_format_providers);
 

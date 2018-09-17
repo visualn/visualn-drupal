@@ -6,7 +6,7 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
+use Drupal\visualn\Manager\DrawerManager;
 use Drupal\visualn\Plugin\VisualNDrawerModifierManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\visualn\ConfigurableDrawerModifierInterface;
@@ -27,13 +27,13 @@ class VisualNDrawerEditForm extends VisualNDrawerFormBase {
   /**
    * Constructs an VisualNDrawerEditForm object.
    *
-   * @param \Drupal\visualn\Plugin\VisualNDrawerManager $visualn_drawer_manager
+   * @param \Drupal\visualn\Manager\DrawerManager $visualn_drawer_manager
    *   The visualn drawer manager service.
    *
    * @param \Drupal\visualn\Plugin\VisualNDrawerModifierManager $visualn_drawer_modifier_manager
    *   The visualn drawer modifier manager service.
    */
-  public function __construct(VisualNDrawerManager $visualn_drawer_manager, VisualNDrawerModifierManager $visualn_drawer_modifier_manager) {
+  public function __construct(DrawerManager $visualn_drawer_manager, VisualNDrawerModifierManager $visualn_drawer_modifier_manager) {
     parent:: __construct($visualn_drawer_manager);
     $this->visualNDrawerModifierManager = $visualn_drawer_modifier_manager;
   }

@@ -4,7 +4,7 @@
 
 namespace Drupal\visualn_basic_drawers\Plugin\VisualN\DataGenerator;
 
-use Drupal\visualn\Plugin\VisualNDataGeneratorBase;
+use Drupal\visualn\Core\DataGeneratorBase;
 use Drupal\Core\Form\FormStateInterface;
 
 // @todo: as a good practice, use the same machine name as for main compatible drawer
@@ -23,7 +23,7 @@ use Drupal\Core\Form\FormStateInterface;
  *  }
  * )
  */
-class LinechartBasicDataGenerator extends VisualNDataGeneratorBase {
+class LinechartBasicDataGenerator extends DataGeneratorBase {
 
   /**
    * {@inheritdoc}

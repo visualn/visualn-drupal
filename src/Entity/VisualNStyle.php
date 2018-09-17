@@ -90,7 +90,7 @@ class VisualNStyle extends ConfigEntityBase implements VisualNStyleInterface {
   /**
    * The VisualN style specific drawer plugin.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerInterface
+   * @var \Drupal\visualn\Core\DrawerInterface
    */
   protected $drawer_plugin;
 

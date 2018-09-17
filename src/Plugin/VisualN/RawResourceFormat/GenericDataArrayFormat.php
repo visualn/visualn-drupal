@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn\Plugin\VisualN\RawResourceFormat;
 
-use Drupal\visualn\Plugin\RawResourceFormatBase;
+use Drupal\visualn\Core\RawResourceFormatBase;
 
 /**
  * Provides a 'Generic Data Array' VisualN raw resource format.

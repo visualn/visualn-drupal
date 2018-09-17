@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a VisualN Setup Baker item annotation object.
  *
- * @see \Drupal\visualn\Plugin\VisualNSetupBakerManager
+ * @see \Drupal\visualn\Manager\SetupBakerManager
  * @see plugin_api
  *
  * @Annotation

@@ -2,7 +2,7 @@
 
 namespace Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer;
 
-use Drupal\visualn\Plugin\DrawerWithJsBase;
+use Drupal\visualn\Core\DrawerWithJsBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\ResourceInterface;
 

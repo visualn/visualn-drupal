@@ -4,7 +4,7 @@ namespace Drupal\visualn\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\visualn\Plugin\VisualNDrawerManager;
+use Drupal\visualn\Manager\DrawerManager;
 use Drupal\Core\Form\FormBuilder;
 use Drupal\visualn\Form\DrawerPreviewForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -15,9 +15,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class DrawerPreviewController extends ControllerBase {
 
   /**
-   * Drupal\visualn\Plugin\VisualNDrawerManager definition.
+   * Drupal\visualn\Manager\DrawerManager definition.
    *
-   * @var \Drupal\visualn\Plugin\VisualNDrawerManager
+   * @var \Drupal\visualn\Manager\DrawerManager
    */
   protected $visualNDrawerManager;
 
@@ -41,7 +41,7 @@ class DrawerPreviewController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(VisualNDrawerManager $plugin_manager_visualn_drawer, FormBuilder $form_builder) {
+  public function __construct(DrawerManager $plugin_manager_visualn_drawer, FormBuilder $form_builder) {
     $this->visualNDrawerManager = $plugin_manager_visualn_drawer;
     $this->formBuilder = $form_builder;
   }
