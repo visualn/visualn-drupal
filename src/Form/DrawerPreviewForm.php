@@ -193,7 +193,13 @@ class DrawerPreviewForm extends FormBase {
   }
 
   public function processDrawingBuild(array $element, FormStateInterface $form_state, $form) {
-    $drawer_config = $form_state->getValue('drawer_config', []);
+    // Instead of getting values directy from $form_state->getValue('drawer_config', []),
+    // use plugin extractFormValues() method since config structure may differ from
+    // config form structure and thus the config form values structure.
+    $drawer_plugin = $form['drawer_config']['#drawer_plugin'];
+    $subform_state = SubformState::createForSubform($form['drawer_config'], $form, $form_state);
+    $drawer_config = $drawer_plugin->extractFormValues($form['drawer_config'], $subform_state);
+
 
     $provider_plugin = $form['resource_provider_config']['#resource_provider_plugin'];
     $provider_config = $form_state->getValue('resource_provider_config');
