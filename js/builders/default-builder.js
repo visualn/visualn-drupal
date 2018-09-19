@@ -50,7 +50,15 @@
           // @todo: pass also a callback to run when adapter result is ready (e.g. for requesting urls)
           // @todo: use js Promises feature
           var callback = function(data){
-            drawing.adapter.responseData = data;
+
+            // @todo: adapters etc. should operate not on data directly but on resource object
+            //   and return resource object (variable) as well
+
+            var resource = {};
+            resource.data = data;
+
+            drawing.resource = resource;
+
 
             // apply mapper if any
             if (typeof drawing.mapper != 'undefined') {

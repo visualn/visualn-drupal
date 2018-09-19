@@ -3,7 +3,7 @@
     var drawing = drawings[vuid];
     var html_selector = drawing.html_selector;
     //$('.' + html_selector).append('<div width="960" height="500">');
-    var data = drawing.adapter.responseData;
+    var data = drawing.resource.data;
     var slick_gallery_selector = '.' + html_selector;
 
     var controls_color = drawing.drawer.config.controls_color;

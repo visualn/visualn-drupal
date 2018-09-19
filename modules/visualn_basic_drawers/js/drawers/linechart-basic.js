@@ -3,7 +3,7 @@
     var drawing = drawings[vuid];
     var html_selector = drawing.html_selector;
     //$('.' + html_selector).append('<div width="960" height="500">');
-    var data = drawing.adapter.responseData;
+    var data = drawing.resource.data;
     var linechart_selector = '.' + html_selector;
 
     // @todo: check if data exists for all series

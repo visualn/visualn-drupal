@@ -1,7 +1,9 @@
 (function ($, Drupal, L) {
   Drupal.visualnData.drawers.visualnLeafletMapBasicDrawer = function(drawings, vuid) {
     var drawing = drawings[vuid];
-    var data = drawing.adapter.responseData;
+
+    var data = drawing.resource.data;
+
     var html_selector = drawing.html_selector;
 
     var center_lat = drawing.drawer.config.center_lat;

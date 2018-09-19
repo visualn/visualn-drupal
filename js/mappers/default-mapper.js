@@ -3,7 +3,7 @@
   Drupal.visualnData.mappers.visualnDefaultMapper = function(drawings, vuid) {
 
     var drawing = drawings[vuid];
-    var data = drawing.adapter.responseData;
+    var data = drawing.resource.data;
 
     // @todo: Array.prototype.filter() can be used instead
 
@@ -16,8 +16,9 @@
     // also a flag can be set by the mapper itself if there was a chance to remap values while
     // adapter processing
 
+    // @todo: keysMap must containt all keys even if no mapping is provided for some of them,
+    //   see remapping code below
     var keysMap = drawing.mapper.dataKeysMap;
-    //console.log(keysMap);
 
     var count = 0;
     var key;
@@ -33,6 +34,21 @@
       }
     }
 
+    // convert keys map into array to avoid checking hasOwnProperty() for every row
+    // @todo: check for a best practice
+    var keysMapArr = [];
+    for (key in keysMap) {
+      if (keysMap.hasOwnProperty(key)) {
+        keysMapArr.push({ newKey: key, dataKey: keysMap[key] });
+
+        // add a flag for the case when remapping is really needed
+        if (keysMap[key] != '' && keysMap[key] != key) {
+          count++;
+        }
+
+      }
+    }
+
     // @todo: it is also possible to generate function code here (see basic-tree-mapper.js)
 
     // add mapping functionality (replace data keys)
@@ -43,7 +59,22 @@
       // create temporary value for that key
 
       //console.log(newKeysMap);
-      data.forEach( function (o) {
+      data.forEach( function (o, index, arr) {
+        // @todo: use temporary object to keep all data of the current row
+
+        // create a new object with remapped data keys and use it instead the original one
+        var currentRow = {};
+        keysMapArr.forEach(function(keyMapping) {
+          currentRow[keyMapping.newKey] = o[keyMapping.dataKey];
+        });
+        arr[index] = currentRow;
+
+        // @todo: delete unused objects
+
+
+
+
+/*
         for (key in newKeysMap) {
           if (newKeysMap.hasOwnProperty(key)) {
             var oldKey = newKeysMap[key];
@@ -52,10 +83,16 @@
             if (oldKey !== newKey) {
               Object.defineProperty(o, newKey,
                 Object.getOwnPropertyDescriptor(o, oldKey));
-              delete o[oldKey];
+              // @todo: this doesn't work in case multiple data keys are using the same data column
+              //   the key should be removed after all new keys are checked, fix it
+              //   to leave it also is not correct, only used (required) keys should be left
+              //delete o[oldKey];
             }
           }
         }
+*/
+
+
       });
     }
     //console.log(data);

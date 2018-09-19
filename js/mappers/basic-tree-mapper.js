@@ -2,7 +2,7 @@
   Drupal.visualnData.mappers.visualnBasicTreeMapper = function(drawings, vuid) {
 
     var drawing = drawings[vuid];
-    var data = drawing.adapter.responseData;
+    var data = drawing.resource.data;
     //var dataKeysMap = drawing.mapper.dataKeysMap;
     var dataKeysStructure = drawing.mapper.dataKeysStructure;
 
@@ -42,6 +42,6 @@
 
     // @todo: this line doesn't work
     data = newData;
-    drawing.adapter.responseData = newData;
+    drawing.resource.data = newData;
   };
 })(jQuery, Drupal, d3);

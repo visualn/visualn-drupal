@@ -3,6 +3,8 @@
   Drupal.visualnData.adapters.visualnRemoteDsvToJSArrayAdapter = function(drawings, vuid, managerCallback) {
     var fileType = drawings[vuid].adapter.fileType;
 
+    // @todo: use resource.data and managerCallback(resource) instead of using data
+
     if (typeof(fileType) == 'undefined' || fileType == '') {
       // @todo: set a warning and return empty data (or false or some kind of result code)
     }
