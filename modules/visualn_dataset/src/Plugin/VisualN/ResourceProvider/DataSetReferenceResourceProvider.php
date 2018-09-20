@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @VisualNResourceProvider(
  *  id = "visualn_dataset_reference",
- *  label = @Translation("VisualN Data Set Reference resource provider"),
+ *  label = @Translation("Data set entity reference"),
  *  context = {
  *    "entity_type" = @ContextDefinition("string", label = @Translation("Entity type")),
  *    "bundle" = @ContextDefinition("string", label = @Translation("Bundle")),

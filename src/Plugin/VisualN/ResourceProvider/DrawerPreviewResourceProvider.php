@@ -5,6 +5,8 @@
 //    and additional controls, e.g. to reset to default or show/hide relevant
 //    data generators
 
+// @todo: rename to "Compatible generator data (for drawer preview)"
+
 namespace Drupal\visualn\Plugin\VisualN\ResourceProvider;
 
 use Drupal\Core\Form\FormStateInterface;
@@ -49,6 +51,7 @@ class DrawerPreviewResourceProvider extends GeneratedResourceProvider {
     //   about "compatible drawers" which can share generator providers
     //   with them
 
+    $default_data_generator_id = '';
 
     // keep compatible generators for ::preRenderShowCompatible() callback
     $form['#compatible_dgs'] = [];
@@ -78,7 +81,7 @@ class DrawerPreviewResourceProvider extends GeneratedResourceProvider {
     $form['show_compatible'] = [
       '#type' => 'checkbox',
       '#title' => t('Show only compatible generators'),
-      '#default_value' => !is_null($default_data_generator_id),
+      '#default_value' => !empty($default_data_generator_id),
       '#ajax' =>  [
         'callback' => [get_called_class(), 'ajaxCallbackShowCompatible'],
         'wrapper' => $ajax_wrapper_id,

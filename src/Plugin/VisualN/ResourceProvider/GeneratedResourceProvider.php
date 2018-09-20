@@ -20,7 +20,7 @@ use Drupal\visualn\Helpers\VisualN;
  *
  * @VisualNResourceProvider(
  *  id = "visualn_generated_data",
- *  label = @Translation("VisualN Generated Resource Provider"),
+ *  label = @Translation("Generated data"),
  * )
  */
 class GeneratedResourceProvider extends ResourceProviderBase implements ContainerFactoryPluginInterface {

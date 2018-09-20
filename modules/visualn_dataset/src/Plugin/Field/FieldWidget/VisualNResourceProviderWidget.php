@@ -78,6 +78,21 @@ class VisualNResourceProviderWidget extends WidgetBase {
     $definitions = \Drupal::service('plugin.manager.visualn.resource_provider')->getDefinitions();
     $resource_providers = [];
     foreach ($definitions as $definition) {
+      // Check for requried contexts, allow only entity_type and bundle contexts (also
+      // exclude current_entity since it is expected to be set when getting
+      // resource object based on the entity), no other contexts available are expected
+      // @see \Drupal\visualn\Plugin\VisualN\DrawingFetcher\ResourceProviderSwitcherDrawingFetcher
+      // @todo: review the code here
+      if (!empty($definition['context'])) {
+        foreach ($definition['context'] as $name => $context_definition) {
+          if (!in_array($name, array('entity_type', 'bundle'))) {
+            if ($context_definition->isRequired() && $name != 'current_entity') {
+              continue 2;
+            }
+          }
+        }
+      }
+
       $resource_providers[$definition['id']] = $definition['label'];
     }
 
