@@ -158,9 +158,47 @@ class DrawingActionsController extends ControllerBase {
     return $response;
   }
 
+  /**
+   * Prepare ajax response commands for 'Save and embed' drawing entity dialog submit
+   *
+   * Close all dialogs and embed the newly created drawing if no errors found.
+   *
+   * @see visualn_embed_form_visualn_drawing_form_alter()
+   */
+  public static function ajaxSaveEmbedCallback(array &$form, FormStateInterface $form_state) {
+    // Get main ajax response commands and proceed with closing and embedding if no errors found
+    $response = static::ajaxGoToListCallback($form, $form_state);
+    if (!$form_state->hasAnyErrors()) {
+      // close the main dialog and embed the drawing (see main dialog commands)
+      // @see DrawingEmbedListDialogForm::ajaxSubmitForm()
+      $entity = $form_state->getFormObject()->getEntity();
+      $drawing_id = $entity->id();
+      $data = [
+        'drawing_id' => $drawing_id,
+        'tag_attributes' => [
+          'data-visualn-drawing-id' => $drawing_id,
+        ],
+      ];
+
+      $response->addCommand(new EditorDialogSave($data));
+      $response->addCommand(new CloseModalDialogCommand());
+    }
+
+    return $response;
+  }
+
+  /**
+   * Prepare ajax response commands for 'Save' drawing entity dialog submit
+   *
+   * Close the newly created drawing dialog form drawing if no errors found.
+   *
+   * @see visualn_embed_form_visualn_drawing_form_alter()
+   */
   public static function ajaxUpdateCallback(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
+    // Also possible to get drawing_id from $form_state->getFormObject()->getEntity()
+    // though visualn_update_drawing_id is still needed to initialize the drawing edit form
     $drawing_id = $form_state->get('visualn_update_drawing_id');
     //$drawing_id = $form_state->getValue('drawing_id', 0);
     $data = [

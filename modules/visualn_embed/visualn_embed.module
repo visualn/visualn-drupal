@@ -101,6 +101,18 @@ function visualn_embed_form_visualn_drawing_form_alter(&$form, FormStateInterfac
       'event' => 'click',
     ];
 
+    // Add an additional 'Save and embed' submit to the newly created drawings forms (opened in modal dialog)
+    $entity = $form_state->getFormObject()->getEntity();
+    // actually no need to check visualn_update_widget since it can't be updated
+    // from ckeditor context menu if the drawing is new
+    if ($entity->isNew() && !$form_state->get('visualn_update_widget')) {
+      $form['actions']['submit_embed'] = [
+        '#value' => t('Save and embed'),
+      ] + $form['actions']['submit'];
+      // set a different callback to close all dialogs and embed the new drawing
+      $form['actions']['submit_embed']['#ajax']['callback'] = [DrawingActionsController::class, 'ajaxSaveEmbedCallback'];
+    }
+
     // @todo: convert link to #ajax instead of hiding it
     if (isset($form['actions']['delete'])) {
       unset($form['actions']['delete']);
