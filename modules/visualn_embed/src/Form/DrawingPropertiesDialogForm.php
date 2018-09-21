@@ -294,7 +294,7 @@ class DrawingPropertiesDialogForm extends FormBase {
       'drawing_id' => $drawing_id,
       'tag_attributes' => [
         'data-visualn-drawing-id' => $drawing_id,
-        // @todo: add align and dimensions properties
+        // add align and dimensions properties
         'width' => $width,
         'height' => $height,
 
@@ -307,6 +307,17 @@ class DrawingPropertiesDialogForm extends FormBase {
         'data-visualn-drawing-hash' => $iframe_hash,
       ],
     ];
+
+    // @todo: it will always add align since in any case (at least 'none' option)
+    // exclude empty values and zeros
+    foreach (array_keys($data['tag_attributes']) as $key) {
+      if (empty($data['tag_attributes'][$key])) {
+        unset($data['tag_attributes'][$key]);
+      }
+      elseif ($key == 'data-visualn-drawing-settings' && $data['tag_attributes'][$key] == '[]') {
+        unset($data['tag_attributes'][$key]);
+      }
+    }
 
     $response->addCommand(new EditorDialogSave($data));
     $response->addCommand(new CloseModalDialogCommand());
@@ -351,6 +362,15 @@ class DrawingPropertiesDialogForm extends FormBase {
       // @todo: what if drawings sharing is enabled while properties form and editing before submit?
       $additional_config = \Drupal::config('visualn_embed.iframe.settings');
       if ($additional_config->get('allow_drawings_sharing')) {
+        // @todo: drawer properties form should check if the hash belongs to the given drawer
+        // technically user can manually replace one hash by another and that one
+        // will be used in drawer properties form
+        // it is not possible to check it if the new hash belong to the drawing with the same id
+        // though possible to check if is another id
+
+        // also user may manually delete the hash, this can not be checked
+        // since it may be the normal case when user embeds multiple drawings with the same id
+
         // @todo: if sharing settings empty and sharing is disabled for embedded drawings, do not add any values
         // @todo: check iframe settings
 
@@ -373,8 +393,18 @@ class DrawingPropertiesDialogForm extends FormBase {
 
         // Set/create iframe hash property here if needed (if empty or defaults are used)
         $iframe_hash = $form_state->getValue('iframe_hash');
+        // no need to check anything and create new hash if sharing is not enabled and no hash set, just do nothing
+        if (empty($iframe_hash) && !$form_state->getValue('sharing_enabled')) {
+          if (!isset($original_settings['shared'])) {
+            // ignore all the other sharing settings if 'shared' is not set for original_settings
+            // and thus supposed to be never shared
+            $settings = $original_settings;
+          }
+          // else still allow to update sharing settings even if disabled
+        }
         // @todo: also no need to generate hash for empty drawings - FALSE should be returned
-        if (empty($iframe_hash)) {
+        elseif (empty($iframe_hash)) {
+
           // @todo: generate new hash only if there are overridden default settings
           //   or non-empty extra settings in original_settings array
           //   so that a single visualn_iframe entry could be used for multiple drawings
