@@ -26,7 +26,7 @@ use Drupal\visualn\Helpers\VisualN;
  *
  * @FieldWidget(
  *   id = "visualn_file",
- *   label = @Translation("VisualN"),
+ *   label = @Translation("VisualN file"),
  *   field_types = {
  *     "visualn_file"
  *   }
