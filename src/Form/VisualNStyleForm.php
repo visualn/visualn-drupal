@@ -176,6 +176,14 @@ class VisualNStyleForm extends EntityForm {
 
     // get drawer configuration form
 
+    // @todo: allow to set custom descriptions for subdrawers and show it here
+    $drawer_description = $drawer_plugin->getDescription() ?: t('<em>No description provided by the drawer plugin</em>');
+    $element['drawer_description'] = [
+      '#markup' => t('<strong>Description</strong><br /> @description', ['@description' => $drawer_description]),
+      '#prefix' => '<div>',
+      '#suffix' => '</div>',
+    ];
+
     $element[$drawer_container_key]['drawer_config'] = [];
     $element[$drawer_container_key]['drawer_config'] += [
       '#parents' => array_merge($element['#parents'], [$drawer_container_key, 'drawer_config']),

@@ -20,6 +20,13 @@ use Drupal\visualn\ResourceInterface;
 class NewsfeedHtmlBasicDrawer extends DrawerBase {
 
   /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    return t('List of news feed items with image, link title and short text on each line');
+  }
+
+  /**
    * @inheritdoc
    */
   public function defaultConfiguration() {

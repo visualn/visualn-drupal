@@ -4,6 +4,11 @@
 <div class="redraw-button">
   {{ children.submit }}
 </div>
+{% if children.drawer_description %}
+<div class="drawer-description">
+  {{ children.drawer_description }}
+</div>
+{% endif %}
 <div class="config-subforms">
   <div class="drawer-config-subform">
     {{ children.drawer_config }}

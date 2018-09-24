@@ -16,6 +16,13 @@ use Drupal\visualn\Core\VisualNPluginInterface;
 interface DrawerInterface extends VisualNPluginInterface, PluginFormInterface {
 
   /**
+   * Get drawer description text
+   *
+   * Drawer may use current configuration to provide actual description.
+   */
+  public function getDescription();
+
+  /**
    * Extract drawer configuration array values from $form_state for drawer configuration form.
    *
    * @param array $form

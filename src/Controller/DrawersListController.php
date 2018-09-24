@@ -89,7 +89,12 @@ class DrawersListController extends ControllerBase {
         'visualn.drawer_preview_controller_page', ['id' => $id])->toString();
       $preview_link = Link::createFromRoute(t('preview'),
         'visualn.drawer_preview_controller_page', ['id' => $id])->toString();
-      $row = [$label_link, $id, $module, $preview_link];
+
+      // @todo: limit number of shown drawers in the preview list to avoid loading all the plugins
+      // @todo: try check for errors not to break the list in case of errors when loading plugins
+      $drawer_plugin = $this->visualNDrawerManager->createInstance($id);
+      $description = $drawer_plugin->getDescription();
+      $row = [$label_link, $id, $module, $preview_link, $description];
       if (isset($compatible_dgs[$id])) {
         // highlight green drawers having compatible data generators,
         $rows[] = ['data' => $row, 'class' => 'available-drawer-with-generator-row'];
@@ -100,7 +105,8 @@ class DrawersListController extends ControllerBase {
     }
 
 
-    $header = [t('Label'), t('Machine name'), t('Module'), t('Preview')];
+    // @todo: add 'Create style' to operations
+    $header = [t('Label'), t('Machine name'), t('Module'), t('Operations'), t('Description')];
 
     // @todo: add some description help text on top of the table
 

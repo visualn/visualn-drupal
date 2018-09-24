@@ -20,6 +20,13 @@ use Drupal\visualn\ResourceInterface;
 class TableHtmlBasicDrawer extends DrawerBase {
 
   /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    return t('Table with variable number of rows and columns');
+  }
+
+  /**
    * @inheritdoc
    */
   public function defaultConfiguration() {

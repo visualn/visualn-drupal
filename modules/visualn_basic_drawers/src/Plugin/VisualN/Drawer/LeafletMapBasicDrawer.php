@@ -19,6 +19,13 @@ use Drupal\visualn\ResourceInterface;
 class LeafletMapBasicDrawer extends DrawerWithJsBase {
 
   /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    return t('Openstreetmap based leaflet map with geotags support');
+  }
+
+  /**
    * @inheritdoc
    */
   public function defaultConfiguration() {

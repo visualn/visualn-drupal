@@ -21,6 +21,13 @@ abstract class DrawerBase extends VisualNPluginBase implements DrawerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getDescription() {
+    return '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
   }
 

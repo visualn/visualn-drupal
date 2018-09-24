@@ -20,6 +20,13 @@ use Drupal\Component\Utility\NestedArray;
 class LinechartBasicDrawer extends DrawerWithJsBase {
 
   /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    return t('Basic linechart with variable number of series');
+  }
+
+  /**
    * @inheritdoc
    */
   public function defaultConfiguration() {

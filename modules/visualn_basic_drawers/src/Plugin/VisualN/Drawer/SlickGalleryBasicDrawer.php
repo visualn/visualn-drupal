@@ -21,6 +21,13 @@ class SlickGalleryBasicDrawer extends DrawerWithJsBase {
   /**
    * {@inheritdoc}
    */
+  public function getDescription() {
+    return t('Slick.js based slideshow gallery of images or HTML markup with basic (optional) controls');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function defaultConfiguration() {
     return [
       'slide_content' => 'image_url',
