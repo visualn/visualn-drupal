@@ -17,11 +17,12 @@ function visualn_token_token_info() {
     'name' => t('VisualN'),
     'description' => ('Tokens to embed visualn drawings.'),
   );
-  $info['tokens']['visualn']['embed']['drawing'] = array(
+  $info['tokens']['visualn']['embed'] = array(
     'name' => t('Embed visualn drawing'),
-    'description' => t('Embed visualn drawing using tokens. The following values may be appended to the token: drawing-entity-id'),
+    'description' => t('Embed visualn drawing using tokens. The following values may be appended to the token: drawing:visualn-drawing-id'),
     // @todo: add an option to select fetcher field (and maybe even delta)
     //'description' => t('Embed visualn drawing using tokens. The following values may be appended to the token: drawing-entity-id:drawing-fetcher-field-name:delta'),
+    // @todo: the 'dynamic' key is not describe on hook_token_info() api page
     'dynamic' => TRUE,
   );
 
