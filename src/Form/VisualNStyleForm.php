@@ -198,6 +198,13 @@ class VisualNStyleForm extends EntityForm {
 
     // since drawer and fields onfiguration forms may be empty, do a check (then it souldn't be of details type)
     if (Element::children($element[$drawer_container_key]['drawer_config'])) {
+      // show open by default
+      $element[$drawer_container_key] = [
+        '#type' => 'details',
+        '#title' => t('VisualN Style configuration'),
+        '#open' => TRUE,
+      ] + $element[$drawer_container_key];
+/*
       $drawer_element_array_parents = array_slice($element['#array_parents'], 0, -1);
       // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
       if ($form_state->getTriggeringElement()) {
@@ -209,6 +216,15 @@ class VisualNStyleForm extends EntityForm {
           '#open' => $details_open,
         ] + $element[$drawer_container_key];
       }
+      else {
+        // show closed by default
+        $element[$drawer_container_key] = [
+          '#type' => 'details',
+          '#title' => t('VisualN Style configuration'),
+          '#open' => FALSE,
+        ] + $element[$drawer_container_key];
+      }
+*/
     }
 
     // @todo: uncomment validate callback
