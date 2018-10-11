@@ -4,5 +4,5 @@ description: 'Contains basic drawers with compatible data generators'
 core: 8.x
 package: 'VisualN'
 dependencies:
-  - visualn
-  - image
+  - drupal:image
+  - visualn:visualn

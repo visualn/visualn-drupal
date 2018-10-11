@@ -4,5 +4,5 @@ description: Enable visualizations share via iframe embed code.
 core: 8.x
 package: VisualN
 dependencies:
-  - visualn
-  - text
+  - drupal:text
+  - visualn:visualn

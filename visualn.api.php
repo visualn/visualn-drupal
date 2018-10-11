@@ -80,7 +80,7 @@
  * Chain plugins are base elements that compose a drawing building chain.
  *
  * Drawers, Adapters and Mappers are examples of chain plugins. They are
- * used by Mangers to build a chain that is used to create a drawing
+ * used by Builders to build a chain that is used to create a drawing
  * based on a given resource. All chain plugins implement a common
  * method ::prepareBuild() that allows each plugin to modify $build and $resource
  * and transfer it further down the chain to finally get a ready drawing build.

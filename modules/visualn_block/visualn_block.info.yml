@@ -4,5 +4,5 @@ description: Enables a block type to store reference url and draw a visualizatio
 core: 8.x
 package: VisualN
 dependencies:
-  - visualn
-  - visualn_drawing
+  - visualn:visualn
+  - visualn:visualn_drawing

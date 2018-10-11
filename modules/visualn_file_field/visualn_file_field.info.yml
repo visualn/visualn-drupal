@@ -4,6 +4,6 @@ description: Enables VisualN support for files.
 core: 8.x
 package: VisualN
 dependencies:
-  - visualn
-  - file
-  - image
+  - drupal:file
+  - drupal:image
+  - visualn:visualn

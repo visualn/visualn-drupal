@@ -4,5 +4,5 @@ description: VisualN support for url resources.
 core: 8.x
 package: VisualN (Experimental)
 dependencies:
-  - visualn
-  - link
+  - drupal:link
+  - visualn:visualn
