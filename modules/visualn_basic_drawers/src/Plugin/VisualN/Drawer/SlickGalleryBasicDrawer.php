@@ -90,6 +90,11 @@ class SlickGalleryBasicDrawer extends DrawerWithJsBase {
    * @inheritdoc
    */
   public static function ajaxCallback(array $form, FormStateInterface $form_state) {
+    // @todo: For now it is ok just to return an empty ajax command,
+    //   its primary purpose is to trigger ajax options replacement
+    //   for forms containing data keys subforms, see VisualNFormsHelper::replaceAjaxOptions()
+    //   since no other changes are made to the config form itself.
+
     $triggering_element = $form_state->getTriggeringElement();
     $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
     // slide_content radios add one additional level of array_parents hierarchy
