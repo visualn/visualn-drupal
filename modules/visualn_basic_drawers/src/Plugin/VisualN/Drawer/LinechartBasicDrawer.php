@@ -46,7 +46,7 @@ class LinechartBasicDrawer extends DrawerWithJsBase {
     $ajax_wrapper_id = !empty($form['#array_parents'])
       ? implode('-', $form['#array_parents']) . '--linechart-ajax-wrapper'
       : 'linechart-ajax-wrapper';
-    // @todo: check for other spcial chars
+    // @todo: check for other special chars
     // the "|" character is added to visualn_style list on visualn style config page
     $ajax_wrapper_id = str_replace('|', '-', $ajax_wrapper_id);
 

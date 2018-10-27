@@ -89,7 +89,12 @@ class DrawerPreviewForm extends FormBase {
 
     $drawer_plugin = $this->visualNDrawerManager->createInstance($base_drawer_id, $drawer_config);
 
-    $form['drawer_description'] = $drawer_plugin->getDescription();
+    $drawer_description = $drawer_plugin->getDescription();
+    $form['drawer_description'] = [
+      '#markup' => t('<strong>Description</strong><br /> @description', ['@description' => $drawer_description]),
+      '#prefix' => '<div>',
+      '#suffix' => '</div>',
+    ];
 
     // use '#process' to get '#parents' and '#array_parets' arrays
     //   though also can be set manually here without useing '#process' callback

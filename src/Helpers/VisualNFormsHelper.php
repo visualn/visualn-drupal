@@ -675,30 +675,37 @@ class VisualNFormsHelper {
    *
    * @todo: based on views display style VisualNDrawing::replaceAjaxOptions()
    */
-  protected static function replaceAjaxOptions(&$element, FormStateInterface $form_state, $ajax_wrapper_id, $element_depth = 0) {
+  protected static function replaceAjaxOptions(&$element, FormStateInterface $form_state, $ajax_wrapper_id, $base_depth = NULL) {
+    if (is_null($base_depth)) {
+      // get base_depth without 'drawer_container' key
+      $base_depth = count($element['#array_parents']) - 1;
+    }
     foreach (Element::children($element) as $key) {
       if (isset($element[$key]['#ajax'])) {
         $element[$key]['#ajax'] = [
           'callback' => [get_called_class(), 'ajaxCallback2'],
           'wrapper' => $ajax_wrapper_id,
-          // @todo: maybe set as $element[$key]['#drawer_config_element_depth']
-          'element_depth' => $element_depth,
+          // we can't use element_depth since in some cases it will contain wrong value,
+          // e.g. when using #ajax with 'radios', each radio button inherits parent element
+          // element_depth value (with all other #ajax settings) though the real value is greater by one
+          // @todo: maybe set as $element[$key]['#drawer_config_base_element_depth']
+          'base_depth' => $base_depth,
         ];
       }
 
       // check subtree elements
-      static::replaceAjaxOptions($element[$key], $form_state, $ajax_wrapper_id, $element_depth + 1);
+      static::replaceAjaxOptions($element[$key], $form_state, $ajax_wrapper_id, $base_depth);
     }
   }
 
   public static function ajaxCallback2(array $form, FormStateInterface $form_state, Request $request) {
     $triggering_element = $form_state->getTriggeringElement();
 
-    // triggering element can be at any level, the element_depth value is set in replaceAjaxOptions()
-    $element_depth = $triggering_element['#ajax']['element_depth'];
-    // the other two keys are 'drawer_container' and visualn_style id
-    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, - ($element_depth +  2));
+    // the base_depth value is set in replaceAjaxOptions()
+    $base_depth = $triggering_element['#ajax']['base_depth'];
 
+    // get parent element of the whole config form (parent element for drawer_container), including data keys subform
+    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, $base_depth);
     $element = NestedArray::getValue($form, $triggering_element_parents);
 
     return $element['drawer_container'];

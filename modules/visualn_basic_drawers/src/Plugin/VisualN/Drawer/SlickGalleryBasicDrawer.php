@@ -5,6 +5,7 @@ namespace Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer;
 use Drupal\visualn\Core\DrawerWithJsBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\ResourceInterface;
+use Drupal\Component\Utility\NestedArray;
 
 /**
  * Provides a 'Slick Gallery' VisualN drawer.
@@ -41,6 +42,14 @@ class SlickGalleryBasicDrawer extends DrawerWithJsBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    // ajax wrapper id must be unique
+    $ajax_wrapper_id = !empty($form['#array_parents'])
+      ? implode('-', $form['#array_parents']) . '--slick-ajax-wrapper'
+      : 'slick-ajax-wrapper';
+    // @todo: check for other special chars
+    // the "|" character is added to visualn_style list on visualn style config page
+    $ajax_wrapper_id = str_replace('|', '-', $ajax_wrapper_id);
+
     $options = [
       'image_url' => t('Image URL'),
       'html' => t('HTML markup'),
@@ -52,6 +61,12 @@ class SlickGalleryBasicDrawer extends DrawerWithJsBase {
       '#options' => $options,
       '#default_value' => $this->configuration['slide_content'],
       '#required' => TRUE,
+      '#ajax' => [
+        'callback' => [get_called_class(), 'ajaxCallback'],
+        'wrapper' => $ajax_wrapper_id,
+      ],
+      // limit_validation_errors is used only with buttons
+      //'#limit_validation_errors' => [],
     ];
     $form['controls_color'] = [
       '#type' => 'color',
@@ -65,7 +80,25 @@ class SlickGalleryBasicDrawer extends DrawerWithJsBase {
       '#default_value' => $this->configuration['show_dots'],
     ];
 
+    $form['#prefix'] = '<div id="' . $ajax_wrapper_id . '">';
+    $form['#suffix'] = '</div>';
+
     return $form;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public static function ajaxCallback(array $form, FormStateInterface $form_state) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
+    // slide_content radios add one additional level of array_parents hierarchy
+    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -2);
+    $element = NestedArray::getValue($form, $triggering_element_parents);
+
+    return $element;
+    // ajax_container could be used for slide_content type specific settings, e.g. image style
+    //return $element['ajax_container'];
   }
 
   /**
@@ -104,10 +137,20 @@ class SlickGalleryBasicDrawer extends DrawerWithJsBase {
    * @inheritdoc
    */
   public function dataKeys() {
-    $data_keys = [
-      'url',
-      'html',
-    ];
+    // use data keys corresponding to selected type
+    switch ($this->configuration['slide_content']) {
+      case 'image_url':
+        $data_keys = ['url'];
+        break;
+      case 'html':
+        $data_keys = ['html'];
+        break;
+      default :
+        $data_keys = [
+          'url',
+          'html',
+        ];
+    }
 
     return $data_keys;
   }
