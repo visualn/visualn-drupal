@@ -140,6 +140,21 @@
  */
 
 /**
+ * @defgroup visualn_styles Visualization styles
+ * @{
+ * Visualization styles store drawer configuration values for later reuse.
+ *
+ * Visualization style is a configuration entity used to store specific drawer
+ * plugin configuration. This allows to reuse the same configuration in multiple
+ * places and for multiple use cases without reentering the same values every time
+ * a specific configuration is needed. Also visualization styles can be considered
+ * as defaults or base settings since usually, when selected, UI allows to override
+ * selected style settings (e.g. change some values and leave others unchanged).
+ * There can be many visualization styles for the same drawer.
+ * @}
+ */
+
+/**
  * @defgroup fetcher_plugins Drawing Fetcher plugins
  * @{
  * Drawing Fetchers implement some arbitrary logic to deliver a drawing build.

@@ -6,3 +6,5 @@ package: VisualN
 dependencies:
   - drupal:text
   - visualn:visualn
+
+configure: visualn_iframe.visualn_iframe_configuration
