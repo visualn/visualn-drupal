@@ -79,12 +79,6 @@ class BuilderService implements BuilderServiceInterface {
     // generate html selector for the drawing (where to attach drawing selector)
     $html_selector = 'visualn-drawing--' . substr($vuid, 0, 8);
 
-    // @todo: maybe use a template instead of attaching html_selector as prefix when build is ready
-    //   or even attach it inside builder::prepareBuild() method
-    // @todo: attributes dont render if there is nothing to render
-    //$build['#attributes']['class'][] = $html_selector;
-    $build['visualn_build_markup'] = ['#markup' => '<div class="' . $html_selector . '"></div>'];
-
     // get builder configuration, load builder plugin and prepare drawing build
     $builder_config = [
       'visualn_style_id' => $visualn_style_id,
@@ -97,6 +91,15 @@ class BuilderService implements BuilderServiceInterface {
 
     $builder_plugin = $this->visualNBuilderManager->createInstance($builder_plugin_id, $builder_config);
     $builder_plugin->prepareBuild($build, $vuid, $resource);
+
+    // use a template instead of attaching html_selector as prefix when build is ready
+    // also this allows to override theming of all drawing wrappers
+    // @todo: or maybe even attach it inside builder::prepareBuild() method
+    $build = [
+      '#theme' => 'visualn_drawing_build_wrapper',
+      '#build' => $build,
+      '#html_selector' => $html_selector,
+    ];
 
     return $build;
 

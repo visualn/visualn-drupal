@@ -38,6 +38,13 @@ function visualn_theme($existing, $type, $theme, $path) {
       'render element' => 'children',
       'template' => 'forms/visualn-drawer-preview-form',
     ],
+    'visualn_drawing_build_wrapper' => [
+      'variables' => [
+        'build' => NULL,
+        'html_selector' => '',
+      ],
+      'template' => 'visualn-drawer-build-wrapper',
+    ],
   ];
 }
 
