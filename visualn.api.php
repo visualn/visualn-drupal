@@ -33,6 +33,7 @@
  * - @link visualn_styles Visualization styles @endlink
  * - @link setup_baker_plugins Setup Bakers @endlink
  * - @link fetcher_plugins Drawing Fetchers @endlink
+ * - @link drawer_skin_plugins Drawer Skins @endlink
  * - @link visualn_fields Fields @endlink
  * - @link visualn_blocks Blocks @endlink
  * - @link visualn_views Views integration @endlink
@@ -163,6 +164,21 @@
  * even without relying on chain plugins, even without drawers (as an edge case).
  * Fetchers are commonly used by VisualN blocks to create drawings as blocks,
  * and by Drawing entities and to embed them into content via tokens or iframes.
+ * @}
+ */
+
+/**
+ * @defgroup drawer_skin_plugins Drawer Skin plugins
+ * @{
+ * Drawer Skins extend drawer behaviour or change its drawings appearance.
+ *
+ * Skin plugins allow to extend drawer behaviour without creating a new drawer.
+ * Also skins can be used to change the look or structure of resultant drawings.
+ * There is no limit or strict suggestions on how skins should be implemented - it is
+ * specific to each drawer or family of drawers. Technically skins are just another
+ * type of plugin. Skins may also be divided into types if a drawer allows different
+ * types of skins, e.g. one type for resultant drawings appearance and another
+ * extending drawer functionality.
  * @}
  */
 

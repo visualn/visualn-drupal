@@ -10,6 +10,8 @@ use Drupal\Component\Annotation\Plugin;
  * @see \Drupal\visualn\Manager\DrawerManager
  * @see plugin_api
  *
+ * @ingroup drawer_plugins
+ *
  * @Annotation
  */
 class VisualNDrawer extends Plugin {

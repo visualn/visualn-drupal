@@ -32,6 +32,9 @@ services:
   plugin.manager.visualn.data_generator:
     class: Drupal\visualn\Manager\DataGeneratorManager
     parent: default_plugin_manager
+  plugin.manager.visualn.drawer_skin:
+    class: Drupal\visualn\Manager\DrawerSkinManager
+    parent: default_plugin_manager
   visualn.builder:
     class: Drupal\visualn\BuilderService
     arguments: ['@plugin.manager.visualn.builder', '@plugin.manager.visualn.drawer', '@entity_type.manager']

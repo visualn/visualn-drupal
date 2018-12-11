@@ -712,5 +712,125 @@ class VisualNFormsHelper {
   }
 
 
+  // @todo: mostly based on VisualNFormsHelper::doProcessGeneratorContainerSubform()
+  public static function doProcessSkinContainerSubform(array $element, FormStateInterface $form_state, $form, $configuration) {
+    $skin_element_parents = array_slice($element['#parents'], 0, -1);
+    $drawer_skin_id = $form_state->getValue(array_merge($skin_element_parents, ['drawer_skin_id']));
+
+    // If it is a fresh form (is_null($drawer_skin_id)) or an empty option selected ($drawer_skin_id == ""),
+    // there is nothing to attach for skin config.
+    if (!$drawer_skin_id) {
+      return $element;
+    }
+
+    if ($drawer_skin_id == $configuration['drawer_skin_id']) {
+      $drawer_skin_config = $configuration['drawer_skin_config'];
+    }
+    else {
+      $drawer_skin_config = [];
+    }
+
+    $visualNDrawerSkinManager = \Drupal::service('plugin.manager.visualn.drawer_skin');
+
+    $skin_plugin = $visualNDrawerSkinManager->createInstance($drawer_skin_id, $drawer_skin_config);
+
+    $skin_container_key = $drawer_skin_id;
+
+    // get skin configuration form
+
+    $element[$skin_container_key]['skin_config'] = [];
+    $element[$skin_container_key]['skin_config'] += [
+      '#parents' => array_merge($element['#parents'], [$skin_container_key, 'skin_config']),
+      '#array_parents' => array_merge($element['#array_parents'], [$skin_container_key, 'skin_config']),
+    ];
+
+    $subform_state = SubformState::createForSubform($element[$skin_container_key]['skin_config'], $form, $form_state);
+    // attach skin configuration form
+    $element[$skin_container_key]['skin_config']
+              = $skin_plugin->buildConfigurationForm($element[$skin_container_key]['skin_config'], $subform_state);
+
+
+    // since skin configuration form may be empty, do a check (then it souldn't be of details type)
+    if (Element::children($element[$skin_container_key]['skin_config'])) {
+      $skin_element_array_parents = array_slice($element['#array_parents'], 0, -1);
+      // check that the triggering element is drawer_skin_id but not fetcher_id or resource_provider_id select (or some other element) itself
+      $details_open = FALSE;
+      if ($form_state->getTriggeringElement()) {
+        $triggering_element = $form_state->getTriggeringElement();
+        $details_open = $triggering_element['#array_parents'] === array_merge($skin_element_array_parents, ['drawer_skin_id']);
+      }
+      // @todo: take it out everywhere else
+      $element[$skin_container_key] = [
+        '#type' => 'details',
+        '#title' => t('Skin configuration'),
+        '#open' => $details_open,
+      ] + $element[$skin_container_key];
+    }
+
+    // @todo: replace with #element_submit when introduced into core
+    // extract values for skin_container subform and skin_config
+    //    remove skin_container key from form_state values path
+    //    also it can be done in ::submitConfigurationForm()
+    $element[$skin_container_key]['#element_validate'] = [[get_called_class(), 'validateSkinContainerSubForm']];
+    //$element[$skin_container_key]['#element_validate'] = [[get_called_class(), 'submitDrawerContainerSubForm']];
+
+
+    return $element;
+  }
+
+  // @todo: Restructuring form_state values (removing skin_container key) should be moved
+  //    into #element_submit callback when introduced.
+  // This is based on VisualNFormHelper::validateDrawerContainerSubForm().
+  public static function validateSkinContainerSubForm(&$form, FormStateInterface $form_state, $full_form) {
+    // @todo: the code here should actually go to #element_submit, but it is not implemented at the moment in Drupal core
+
+    // Here the full form_state (e.g. not SubformStateInterface) is supposed to be
+    // since validation is done after the whole form is rendered.
+
+
+    // get skin_container_key (for selected skin is equal by convention to drawer_skin_id,
+    // see processGeneratorContainerSubform() #process callback)
+    $element_parents = $form['#parents'];
+    // use $skin_container_key for clarity though may get rid of array_pop() here and use end($element_parents)
+    $skin_container_key = array_pop($element_parents);
+
+    // remove 'skin_container' key
+    $base_element_parents = array_slice($element_parents, 0, -1);
+
+
+
+    // Call skin_plugin submitConfigurationForm(),
+    // submitting should be done before $form_state->unsetValue() after restructuring the form_state values, see below.
+
+    // @todo: it is not correct to call submit inside a validate method (validateDrawerContainerSubForm())
+    //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
+    //$full_form = $form_state->getCompleteForm();
+    $subform = $form['skin_config'];
+    $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
+
+    $visualNDataGeneratorManager = \Drupal::service('plugin.manager.visualn.drawer_skin');
+    $drawer_skin_id  = $form_state->getValue(array_merge($base_element_parents, ['drawer_skin_id']));
+    // The submit callback shouldn't depend on plugin configuration, it relies only on form_state values.
+    $drawer_skin_config  = [];
+    $skin_plugin = $visualNDataGeneratorManager->createInstance($drawer_skin_id, $drawer_skin_config);
+    $skin_plugin->submitConfigurationForm($subform, $sub_form_state);
+
+
+    // move skin_config two levels up (remove 'skin_container' and $skin_container_key) in form_state values
+    $skin_config_values = $form_state->getValue(array_merge($element_parents, [$skin_container_key, 'skin_config']));
+    if (!is_null($skin_config_values)) {
+      $form_state->setValue(array_merge($base_element_parents, ['drawer_skin_config']), $skin_config_values);
+    }
+
+    // remove remove 'skin_container' key itself from form_state
+    $form_state->unsetValue(array_merge($element_parents, [$skin_container_key]));
+    // also unset 'skin_container' key if empty
+    // this check is added in case something else is added to the container by extending classes
+    // @todo: actually the same check should be added before unsetting skin_container_key (and
+    //    to other places where the same logic with config forms is implemented)
+    if (!$form_state->getValue($element_parents)) {
+      $form_state->unsetValue($element_parents);
+    }
+  }
 
 }
