@@ -15,18 +15,21 @@ use Drupal\Core\Link;
 /**
  * Build drawing embed form with list of available drawings
  *
- * @todo: add description
+ * The form provides the list of available drawing entities with preview, edit
+ * and delete action links for each. Allows to embed (or replace) selected drawings
+ * into ckeditor content. Also the form allows to open new drawing (drawing types list) dialog.
  *
  * @ingroup ckeditor_integration
  */
 class DrawingEmbedListDialogForm extends FormBase {
 
+  // @todo: rename the class to DrawingSelectDialogForm
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'visualn_drawing_embed_dialog';
+    return 'visualn_embed_drawing_select_dialog';
   }
 
   /**
@@ -43,25 +46,42 @@ class DrawingEmbedListDialogForm extends FormBase {
     $selected_drawing_id = isset($input['editor_object']['data-visualn-drawing-id']) ? $input['editor_object']['data-visualn-drawing-id'] : 0;
 
     // @todo: If it loads full entites, just get ids and labels using an sql query
-    //   also check permission and published status
+    // @todo: also check permission and published status
     $drawing_entities  = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->loadMultiple();
-    foreach ($drawing_entities as $drawing_entity) {
+    if (count($drawing_entities)) {
+      $drawing_type_thumbnails = static::getDrawingTypesThumbnails();
 
-      $drawing_id = $drawing_entity->id();
+      foreach ($drawing_entities as $drawing_entity) {
 
-      // get preview, edit and delete links markup
-      $preview_link = Link::createFromRoute($this->t('preview'), 'visualn_embed.drawing_embed_controller_real_preview', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
-      $edit_link = Link::createFromRoute($this->t('edit'), 'visualn_embed.drawing_controller_edit', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
-      $delete_link = Link::createFromRoute($this->t('delete'), 'visualn_embed.drawing_controller_delete', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        $drawing_id = $drawing_entity->id();
 
+        // get preview, edit and delete links markup
+        $preview_link = '';
+        $edit_link = '';
+        $delete_link = '';
 
-      $drawing_entities_list[$drawing_entity->id()] = [
-        'name' => $drawing_entity->label(),
-        'id' => $drawing_entity->id(),
-        'preview' => $preview_link,
-        'edit' => $edit_link,
-        'delete' => $delete_link,
-      ];
+        // @todo: add per drawing type permissions
+        // check permissions
+        $user = \Drupal::currentUser();
+        if ($user->hasPermission('view published visualn drawing entities')) {
+          $preview_link = Link::createFromRoute($this->t('preview'), 'visualn_embed.drawing_embed_controller_real_preview', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        }
+        if ($user->hasPermission('edit visualn drawing entities')) {
+          $edit_link = Link::createFromRoute($this->t('edit'), 'visualn_embed.drawing_controller_edit', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        }
+        if ($user->hasPermission('delete visualn drawing entities')) {
+          $delete_link = Link::createFromRoute($this->t('delete'), 'visualn_embed.drawing_controller_delete', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        }
+
+        $drawing_entities_list[$drawing_entity->id()] = [
+          'name' => $drawing_entity->label(),
+          'id' => $drawing_entity->id(),
+          'thumbnail_path' => $drawing_type_thumbnails[$drawing_entity->bundle()],
+          'preview_link' => $preview_link,
+          'edit_link' => $edit_link,
+          'delete_link' => $delete_link,
+        ];
+      }
     }
 
 
@@ -94,21 +114,11 @@ class DrawingEmbedListDialogForm extends FormBase {
       '#submit' => ['::emptySubmit'],
     ];
 
-    $header = [
-      'name' => t('Name'),
-      'id' => t('ID'),
-      'preview' => t('Preview'),
-      'edit' => t('Edit'),
-      'delete' => t('Delete'),
-    ];
+
     $form['drawing_id'] = [
-      '#type' => 'tableselect',
-      '#caption' => t('Drawings'),
-      '#header' => $header,
+      '#type' => 'drawing_radios',
       '#options' => $drawing_entities_list,
-      '#multiple' => FALSE,
       '#empty' => $this->t('No drawings found'),
-      //'#required' => TRUE,
     ];
 
     // preselect current drawing if set (user selected embedded drawing)
@@ -234,11 +244,6 @@ class DrawingEmbedListDialogForm extends FormBase {
     // @todo: on difference between open dialog and open dialog commands
     //   see https://www.drupal.org/project/entity_browser/issues/2727031
 
-    $content = [];
-    $content['links'] = [
-      '#theme' => 'links',
-      '#links' => [],
-    ];
 
 
     // @todo: here all downstream dialogs are opened in a simple dialog
@@ -246,13 +251,22 @@ class DrawingEmbedListDialogForm extends FormBase {
     //   * it doesn't work ...
     //   * for UX reasons
 
-
+    $links = [];
     // @todo: EntityManager::getBundleInfo() deprecated
     $drawing_bundles = \Drupal::entityManager()->getBundleInfo('visualn_drawing');
+    // get drawing type thumbnails
+    $drawing_type_thumbnails = static::getDrawingTypesThumbnails();
     foreach ($drawing_bundles as $key => $drawing_bundle) {
+      $title = [
+        '#theme' => 'visualn_embed_new_drawing_type_select_item_label',
+        '#name' => $drawing_bundle['label'],
+        '#id' => $key,
+        '#thumbnail_path' => $drawing_type_thumbnails[$key],
+      ];
+
       // see https://www.drupal.org/node/1989646
-      $content['links']['#links']['link_'.$key] = [
-        'title' => $drawing_bundle['label'],
+      $links['link_'.$key] = [
+        'title' => $title,
         'url' => Url::fromRoute('visualn_embed.new_drawing_controller_build', ['type' => $key]),
         'attributes' => [
           'class' => ['use-ajax'],
@@ -264,10 +278,16 @@ class DrawingEmbedListDialogForm extends FormBase {
           ]),
         ],
       ];
-
-
-
     }
+
+    // prepare dialog content
+    $content = [
+      '#theme' => 'visualn_embed_new_drawing_type_select_links',
+      '#items' => [
+        '#theme' => 'links',
+        '#links' => $links,
+      ],
+    ];
 
     // @todo: some outline appering around the modal and on the left when not using CloseModalDialogCommand
     //   though it shouldn't be required, maybe because of focus
@@ -279,6 +299,21 @@ class DrawingEmbedListDialogForm extends FormBase {
       ['classes' => ['ui-dialog' => 'ui-dialog-visualn'], 'modal' => TRUE]));
 
     return $response;
+  }
+
+  // @todo: move into drawing entity type class (or manager class)
+  public static function getDrawingTypesThumbnails() {
+    $drawing_type_thumbnails = [];
+    // @todo: maybe move default thumbnail path into a constant
+    // use default drawing type thumbnail
+    $default_thumbnail = drupal_get_path('module', 'visualn_drawing') . '/images/drawing-thumbnail-default.png';
+    $drawing_types  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->loadMultiple();
+    foreach ($drawing_types as $drawing_type) {
+      $thumbnail_path = !empty($drawing_type->get('thumbnail_path')) ? $drawing_type->get('thumbnail_path') : $default_thumbnail;
+      $drawing_type_thumbnails[$drawing_type->id()] = file_url_transform_relative(file_create_url($thumbnail_path));
+    }
+
+    return $drawing_type_thumbnails;
   }
 
 }

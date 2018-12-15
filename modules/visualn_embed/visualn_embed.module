@@ -48,6 +48,33 @@ function visualn_embed_theme($existing, $type, $theme, $path) {
         //   or together with fetcher field part of the drawing summary
       ],
     ],
+    // drawings list dialog form
+    'visualn_embed_drawing_select_dialog' => [
+      'render element' => 'form',
+    ],
+    'visualn_embed_drawing_select_item_label' => [
+      'variables' => [
+        'name' => '',
+        'id' => '',
+        'thumbnail_path' => '',
+        'preview_link' => '',
+        'edit_link' => '',
+        'delete_link' => '',
+      ],
+    ],
+    // drawing types links with thumbnails wrapper
+    'visualn_embed_new_drawing_type_select_links' => [
+      'variables' => [
+        'items' => '',
+      ],
+    ],
+    'visualn_embed_new_drawing_type_select_item_label' => [
+      'variables' => [
+        'name' => '',
+        'id' => '',
+        'thumbnail_path' => '',
+      ],
+    ],
   ];
 }
 

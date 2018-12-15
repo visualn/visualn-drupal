@@ -37,7 +37,6 @@ class VisualNDrawingTypeForm extends EntityForm {
       '#disabled' => !$visualn_drawing_type->isNew(),
     ];
 
-
     // get the list of visualn_fetcher fields attached to the entity type / bundle
     // also considered  base and bundle fields
     // see ContentEntityBase::bundleFieldDefinitions() and ::baseFieldDefinitions()
@@ -78,6 +77,34 @@ class VisualNDrawingTypeForm extends EntityForm {
       '#required' => !empty($options),
     ];
 
+    $form['thumbnail'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Thumbnail'),
+      '#open' => TRUE,
+    ];
+
+    // @todo: validate path or check if files exists, add image upload field
+    $form['thumbnail']['thumbnail_path'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Thumbnail path'),
+      '#maxlength' => 255,
+      '#default_value' => $this->entity->get('thumbnail_path'),
+      '#description' => $this->t('Examples: <code>@implicit-public-file</code> (for a file in the public filesystem), <code>@explicit-file</code>, or <code>@local-file</code>.', [
+        '@implicit-public-file' => 'thumbnail.png',
+        '@explicit-file' => 'public://thumbnail.png',
+        '@local-file' => 'modules/custom/my_module/thumbnail.png',
+      ]),
+    ];
+    $form['thumbnail']['thumbnail_upload'] = [
+      '#type' => 'file',
+      '#title' => $this->t('Upload thumbnail'),
+      '#maxlength' => 40,
+      '#description' => t("If you don't have direct file access to the server, use this field to upload your thumbnail."),
+      '#upload_validators' => [
+        'file_validate_is_image' => [],
+      ],
+    ];
+
     return $form;
   }
 
@@ -106,11 +133,38 @@ class VisualNDrawingTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+
+    // @see Drupal\system\Form\ThemeSettingsForm::validateForm()
+    $file = _file_save_upload_from_form($form['thumbnail']['thumbnail_upload'], $form_state, 0);
+    if ($file) {
+      // Put the temporary file in form_values so we can save it on submit.
+      $form_state->setValue('thumbnail_upload_value', $file);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    $drawing_fetcher_field = $form_state->getValue('drawing_fetcher_field') ?: '';
+    $drawing_fetcher_field = $form_state->getValue('drawing_fetcher_field', '');
     $this->entity->set('drawing_fetcher_field', $drawing_fetcher_field);
+
+    // @see Drupal\system\Form\ThemeSettingsForm::submitForm()
+    $values = $form_state->getValues();
+    if (!empty($values['thumbnail_upload_value'])) {
+      $filename = file_unmanaged_copy($values['thumbnail_upload_value']->getFileUri());
+      $thumbnail = $filename;
+    }
+    else {
+      $thumbnail = $form_state->getValue('thumbnail_path', '');
+    }
+    unset($values['thumbnail_upload_value']);
+
+    $this->entity->set('thumbnail_path', $thumbnail);
   }
 
 }

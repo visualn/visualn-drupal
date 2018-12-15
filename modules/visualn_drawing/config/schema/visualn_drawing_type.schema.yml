@@ -8,6 +8,9 @@ visualn_drawing.visualn_drawing_type.*:
     label:
       type: label
       label: 'Label'
+    thumbnail_path:
+      type: string
+      label: 'Thumbnail path'
     uuid:
       type: string
     drawing_fetcher_field:
