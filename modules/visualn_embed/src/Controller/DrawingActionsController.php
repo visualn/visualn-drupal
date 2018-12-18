@@ -20,6 +20,11 @@ use Drupal\Core\Ajax\OpenDialogCommand;
  */
 class DrawingActionsController extends ControllerBase {
 
+  public function getNewDrawingDialogTitle($type) {
+    $drawing_type  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->load($type);
+    return t('Create %drawing_type', ['%drawing_type' => $drawing_type->label()]);
+  }
+
   /**
    * Build.
    *
