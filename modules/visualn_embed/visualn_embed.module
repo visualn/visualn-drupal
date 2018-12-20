@@ -10,6 +10,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn_embed\Controller\DrawingActionsController;
 use Drupal\Core\Cache\Cache;
 
+use Drupal\Core\Template\Attribute;
+
 /**
  * Implements hook_help().
  */
@@ -76,6 +78,35 @@ function visualn_embed_theme($existing, $type, $theme, $path) {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_preprocess_pager().
+ */
+function visualn_embed_preprocess_pager(&$variables) {
+
+  // @todo: the hook is called for every pager on the site though needed only
+  //   for one specific pager
+
+  // see DrawingEmbedListDialogForm::processDrawingsOptionsList()
+  if (empty($variables['pager']['#visualn_embed_pager'])) {
+    return;
+  }
+
+  // add ajax behaviour to dialog pager links
+  $attributes = new Attribute([
+    'class' => ['use-ajax'],
+  ]);
+  if (!empty($variables['items']['pages'])) {
+    foreach ($variables['items']['pages'] as $k => $item) {
+      $variables['items']['pages'][$k]['attributes'] = $attributes;
+    }
+  }
+  foreach (['first', 'previous', 'next', 'last'] as $key) {
+    if (!empty($variables['items'][$key])) {
+      $variables['items'][$key]['attributes'] = $attributes;
+    }
+  }
 }
 
 

@@ -7,11 +7,12 @@ use Drupal\visualn_drawing\Entity\VisualNDrawing;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\editor\Ajax\EditorDialogSave;
-use Drupal\Core\Ajax\OpenModalDialogCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\visualn_embed\Form\DrawingEmbedListDialogForm;
 use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\OpenDialogCommand;
+use Drupal\Core\Form\FormState;
 
 /**
  * Class DrawingActionsController.
@@ -67,10 +68,24 @@ class DrawingActionsController extends ControllerBase {
     return $drawing_form;
   }
 
+  public function getEditContentTitle($id) {
+    // @todo: validate id, check if entity exists
+    $entity = VisualNDrawing::load($id);
+    if ($entity) {
+      // @todo: add <em> tags wrapper
+      $drawing_type  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->load($entity->bundle());
+      $title = t('Edit %drawing_type %drawing_label', ['%drawing_type' => $drawing_type->label(), '%drawing_label' => $entity->label()]);
+    }
+
+    // @todo: return NotFound or AccessDenied
+    return $title;
+  }
+
   // @todo: reuse method in ::edit()
   public function edit_content($id) {
     $build = [];
 
+    // @todo: validate id, check if entity exists
     $entity = VisualNDrawing::load($id);
     if ($entity) {
       // add a flag to form state to be used in visualn_embed_form_visualn_drawing_form_alter()
@@ -90,7 +105,6 @@ class DrawingActionsController extends ControllerBase {
     return $build;
   }
 
-  // @todo:
   public function edit($id) {
     $response = new AjaxResponse();
 
@@ -101,11 +115,38 @@ class DrawingActionsController extends ControllerBase {
       // @todo: maybe use 'add' action instead of 'default'
       $drawing_form = \Drupal::service('entity.form_builder')->getForm($entity, 'default', $form_state_additions);
 
-      $title = 'Edit';
+      // @todo: add <em> tags wrapper
+      $drawing_type  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->load($entity->bundle());
+      $title = t('Edit %drawing_type %drawing_label', ['%drawing_type' => $drawing_type->label(), '%drawing_label' => $entity->label()]);
+
       $response->addCommand(new OpenDialogCommand('#new-drawing-dialog', $title, $drawing_form, ['classes' => ['ui-dialog' => 'ui-dialog-visualn'], 'modal' => TRUE]));
     }
 
     // @todo: return NotFound or AccessDenied
+    return $response;
+  }
+
+  public function updateDialogContentByPager() {
+    $response = new AjaxResponse();
+
+    // set form values if any
+    // @todo: also selected_drawing_id may be required
+    $params = \Drupal::request()->query->all();
+
+    $form_args = [];
+    // @todo: check if additional parameters validation is required here
+    foreach (['drawing_type', 'drawing_name', 'items_per_page'] as $data_key) {
+      if (!empty($params[$data_key])) {
+        $form_args[$data_key] = $params[$data_key];
+      }
+    }
+
+    // the pager value is used by the query behind the scenes
+    $drawing_embed_form = \Drupal::formBuilder()->getForm(DrawingEmbedListDialogForm::class, $form_args);
+
+    $drawing_embed_subform = $drawing_embed_form['items_container'];
+    $response->addCommand(new ReplaceCommand('#visualn-embed-drawing-select-dialog-options-ajax-wrapper', $drawing_embed_subform));
+
     return $response;
   }
 
@@ -118,7 +159,8 @@ class DrawingActionsController extends ControllerBase {
       $form_state_additions = ['visualn_drawing_preview_dialog' => TRUE];
       $drawing_form = \Drupal::service('entity.form_builder')->getForm($entity, 'delete', $form_state_additions);
 
-      $title = 'Delete';
+      // @todo: add <em> tags wrapper
+      $title = t('Are you sure you want to delete the drawing %drawing_label', ['%drawing_label' => $entity->label()]);
       $response->addCommand(new OpenDialogCommand('#new-drawing-dialog', $title, $drawing_form, ['width' => 'auto', 'modal' => TRUE]));
     }
 

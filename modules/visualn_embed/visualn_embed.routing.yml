@@ -9,6 +9,15 @@ visualn_embed.visualn_drawing_embed_dialog:
   requirements:
     _permission: 'access visualn drawing overview'
 
+# @todo: rename
+# get dialog content for pager links via ajax (using get request)
+visualn_embed.visualn_drawing_embed_dialog_from_pager:
+  path: '/visualn_embed/form/drawing_embed_dialog/page'
+  defaults:
+    _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::updateDialogContentByPager'
+  requirements:
+    _permission: 'access visualn drawing overview'
+
 # @todo: set correct permissions
 # @todo: based on embed.routing.yml
 visualn_embed.drawing_embed_controller_preview:
@@ -55,8 +64,6 @@ visualn_embed.drawing_controller_edit:
   path: '/visualn-ckeditor/drawing/{id}/edit'
   defaults:
     _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::edit'
-    # @todo: implemente title() method
-    _title: 'Edit'
   requirements:
     _permission: 'edit visualn drawing entities'
 
@@ -67,8 +74,7 @@ visualn_embed.drawing_controller_edit_content:
   path: '/visualn-ckeditor/drawing/{id}/edit_content'
   defaults:
     _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::edit_content'
-    # @todo: implemente title() method
-    _title: 'Edit'
+    _title_callback: '\Drupal\visualn_embed\Controller\DrawingActionsController::getEditContentTitle'
   requirements:
     _permission: 'edit visualn drawing entities'
 
@@ -76,7 +82,7 @@ visualn_embed.drawing_controller_delete:
   path: '/visualn-ckeditor/drawing/{id}/delete'
   defaults:
     _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::delete'
-    # @todo: implemente title() method
+    # @todo: implement title() method
     _title: 'Delete'
   requirements:
     _permission: 'delete visualn drawing entities'

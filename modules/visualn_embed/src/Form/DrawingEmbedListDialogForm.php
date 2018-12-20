@@ -38,51 +38,68 @@ class DrawingEmbedListDialogForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     // @todo: the library should be connected outside of the form
     $form['#attached']['library'][] = 'visualn_embed/preview-drawing-dialog';
+
+    // The args may be set to manually init default values, e.g. for pager links,
+    // see DrawingActionsController::openDialogFromPager().
+    $init_params = [];
+    $args = $form_state->getBuildInfo()['args'];
+    if (!empty($args[0]) && is_array($args[0])) {
+      foreach (['drawing_type', 'drawing_name', 'items_per_page'] as $data_key) {
+        if (!empty($args[0][$data_key]) && is_string($args[0][$data_key])) {
+          $init_params[$data_key] = $args[0][$data_key];
+        }
+      }
+    }
+
     $drawing_entities_list = [];
+
+    // add filters
+    $drawing_type_options  = [];
+    $drawing_types  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->loadMultiple();
+    foreach ($drawing_types as $drawing_type) {
+      $drawing_type_options[$drawing_type->id()]  = $drawing_type->label();
+    }
+    $form['filters'] = [
+      '#type' => 'container',
+    ];
+    $form['filters']['drawing_type'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Drawing type'),
+      '#options' => $drawing_type_options,
+      '#default_value' => !empty($init_params['drawing_type']) ? $init_params['drawing_type'] : '',
+      '#empty_option' => $this->t('- All -'),
+    ];
+    $form['filters']['drawing_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Name'),
+      '#default_value' => !empty($init_params['drawing_name']) ? $init_params['drawing_name'] : '',
+    ];
+    $form['filters']['items_per_page'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Items per page'),
+      '#options' => [10 => 10, 20 => 20, 30 => 30, 40 => 40, 50 => 50],
+      '#default_value' => !empty($init_params['items_per_page']) ? $init_params['items_per_page'] : '20',
+      //'#default_value' => 10,
+    ];
+    // @todo: add 'reset filters' button
+    $form['filters']['apply'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Apply'),
+      // copy-paste from update_list submit
+      '#ajax' => [
+        'callback' => '::ajaxUpdateDrawingsListCallback',
+        'event' => 'click',
+      ],
+      '#limit_validation_errors' => [],
+      '#submit' => ['::emptySubmit'],
+    ];
 
 
     // @todo: check comments in DrawingEmbedListDialogForm::buildForm()
     $input = $form_state->getUserInput();
     $selected_drawing_id = isset($input['editor_object']['data-visualn-drawing-id']) ? $input['editor_object']['data-visualn-drawing-id'] : 0;
 
-    // @todo: If it loads full entites, just get ids and labels using an sql query
-    // @todo: also check permission and published status
-    $drawing_entities  = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->loadMultiple();
-    if (count($drawing_entities)) {
-      $drawing_type_thumbnails = static::getDrawingTypesThumbnails();
 
-      foreach ($drawing_entities as $drawing_entity) {
-
-        $drawing_id = $drawing_entity->id();
-
-        // get preview, edit and delete links markup
-        $preview_link = '';
-        $edit_link = '';
-        $delete_link = '';
-
-        // @todo: add per drawing type permissions
-        // check permissions
-        $user = \Drupal::currentUser();
-        if ($user->hasPermission('view published visualn drawing entities')) {
-          $preview_link = Link::createFromRoute($this->t('preview'), 'visualn_embed.drawing_embed_controller_real_preview', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
-        }
-        if ($user->hasPermission('edit visualn drawing entities')) {
-          $edit_link = Link::createFromRoute($this->t('edit'), 'visualn_embed.drawing_controller_edit', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
-        }
-        if ($user->hasPermission('delete visualn drawing entities')) {
-          $delete_link = Link::createFromRoute($this->t('delete'), 'visualn_embed.drawing_controller_delete', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
-        }
-
-        $drawing_entities_list[$drawing_entity->id()] = [
-          'name' => $drawing_entity->label(),
-          'id' => $drawing_entity->id(),
-          'thumbnail_path' => $drawing_type_thumbnails[$drawing_entity->bundle()],
-          'preview_link' => $preview_link,
-          'edit_link' => $edit_link,
-          'delete_link' => $delete_link,
-        ];
-      }
-    }
 
 
     // @todo: maybe add 'Update' button, but open 'New drawing' in a dialog but not modal dialog
@@ -91,6 +108,7 @@ class DrawingEmbedListDialogForm extends FormBase {
       // @todo: rename to refresh
       '#value' => $this->t('Update list'),
       '#ajax' => [
+        // @todo: update list also applies filters, is that the expected behaviour?
         'callback' => '::ajaxUpdateDrawingsListCallback',
         'event' => 'click',
       ],
@@ -114,17 +132,11 @@ class DrawingEmbedListDialogForm extends FormBase {
       '#submit' => ['::emptySubmit'],
     ];
 
-
-    $form['drawing_id'] = [
-      '#type' => 'drawing_radios',
-      '#options' => $drawing_entities_list,
-      '#empty' => $this->t('No drawings found'),
-    ];
-
-    // preselect current drawing if set (user selected embedded drawing)
-    if ($selected_drawing_id) {
-      $form['drawing_id']['#default_value'] = $selected_drawing_id;
-    }
+    // use process callback for drawings list to have filters values already mapped and available
+    $form['items_container']['#process'] = [[get_called_class(), 'processDrawingsOptionsList']];
+    // the id is used in DrawingActionsController::openDialogFromPager()
+    $form['items_container']['#prefix'] = '<div id="visualn-embed-drawing-select-dialog-options-ajax-wrapper">';
+    $form['items_container']['#suffix'] = '</div>';
 
     // @todo: make it sticky at the bottom of the table
     $form['actions'] = [
@@ -148,6 +160,118 @@ class DrawingEmbedListDialogForm extends FormBase {
     $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
 
     return $form;
+  }
+
+  /**
+   * Attach drawing items list process callback
+   */
+  public static function processDrawingsOptionsList(array $element, FormStateInterface $form_state, $form) {
+
+    // @todo: check comments in DrawingEmbedListDialogForm::buildForm()
+    $input = $form_state->getUserInput();
+    $selected_drawing_id = isset($input['editor_object']['data-visualn-drawing-id']) ? $input['editor_object']['data-visualn-drawing-id'] : 0;
+
+    // @todo: the values are not using #tree (i.e. set to FALSE)
+    $values = $form_state->getValues();
+    $drawing_type = $values['drawing_type'];
+    $drawing_name = $values['drawing_name'];
+    // @todo: actually it is always set, same as other values
+    $items_per_page = $values['items_per_page'] ?: 20;
+
+    // @todo: uses \Drupal::entityTypeManager() internally
+    //   $query = $this->entityTypeManager->getStorage('node');
+    //   $query_result = $query->getQuery()
+    $query = \Drupal::entityQuery('visualn_drawing');
+    $query->pager($items_per_page);
+    // show only published drawing entities
+    $query->condition('status', 1);
+    if ($drawing_type) {
+      $query->condition('type', $drawing_type);
+    }
+    if ($drawing_name) {
+      // @todo: any need to safe-format (?)
+      // the query is already case-insensitive
+      $query->condition('name', '%' . $drawing_name . '%', 'LIKE');
+    }
+    $drawing_ids = $query->execute();
+
+    // @todo: also add selected id or default value if any to show selected item
+    //   or reset the value?
+
+
+    $drawing_entities_list = [];
+
+    // @todo: If it loads full entites, just get ids and labels using an sql query
+    // @todo: also check permission and published status
+    $drawing_entities  = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->loadMultiple($drawing_ids);
+    if (count($drawing_entities)) {
+      $drawing_type_thumbnails = static::getDrawingTypesThumbnails();
+
+      foreach ($drawing_entities as $drawing_entity) {
+
+        $drawing_id = $drawing_entity->id();
+
+        // get preview, edit and delete links markup
+        $preview_link = '';
+        $edit_link = '';
+        $delete_link = '';
+
+        // @todo: add per drawing type permissions
+        // check permissions
+        $user = \Drupal::currentUser();
+        if ($user->hasPermission('view published visualn drawing entities')) {
+          $preview_link = Link::createFromRoute(t('preview'), 'visualn_embed.drawing_embed_controller_real_preview', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        }
+        if ($user->hasPermission('edit visualn drawing entities')) {
+          $edit_link = Link::createFromRoute(t('edit'), 'visualn_embed.drawing_controller_edit', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        }
+        if ($user->hasPermission('delete visualn drawing entities')) {
+          $delete_link = Link::createFromRoute(t('delete'), 'visualn_embed.drawing_controller_delete', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        }
+
+        $drawing_entities_list[$drawing_entity->id()] = [
+          'name' => $drawing_entity->label(),
+          'id' => $drawing_entity->id(),
+          'thumbnail_path' => $drawing_type_thumbnails[$drawing_entity->bundle()],
+          'preview_link' => $preview_link,
+          'edit_link' => $edit_link,
+          'delete_link' => $delete_link,
+        ];
+      }
+    }
+
+    // attach drawing items list
+    $element['drawing_id'] = [
+      '#type' => 'drawing_radios',
+      '#options' => $drawing_entities_list,
+      '#empty' => t('No drawings found'),
+      //'#required' => TRUE,
+    ];
+
+    // preselect current drawing if set (user selected embedded drawing)
+    if ($selected_drawing_id) {
+      $element['drawing_id']['#default_value'] = $selected_drawing_id;
+    }
+
+    // @todo: check if value exists to avoid "An illegal choice has been detected. Please contact the site administrator." message
+    //   actually if any value if set and is not present in filtered result, the message shows up
+
+    // @todo:
+    // add parameters to the pager link if set: selected_drawing_id, filters values
+    $params = [];
+    foreach (['drawing_type', 'drawing_name', 'items_per_page'] as $data_key) {
+      if ($$data_key) {
+        $params[$data_key] = $$data_key;
+      }
+    }
+    $element['pager'] = [
+      '#visualn_embed_pager' => TRUE,
+      '#type' => 'pager',
+      '#parameters' => $params,
+      '#route_name' => 'visualn_embed.visualn_drawing_embed_dialog_from_pager',
+    ];
+
+    return $element;
   }
 
   /**
