@@ -73,6 +73,8 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
 
   use EntityChangedTrait;
 
+  const THUMBNAIL_IMAGE_STYLE = 'visualn_drawing_thumbnail';
+
   /**
    * {@inheritdoc}
    */
@@ -280,6 +282,32 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
       //   same for Name field
       //->setTranslatable(TRUE);
       //->setRevisionable(TRUE)
+
+    $fields['thumbnail'] = BaseFieldDefinition::create('image')
+      ->setLabel(t('Thumbnail'))
+      ->setDescription(t('The thumbnail of the drawing.'))
+      ->setSettings([
+        'file_directory' => 'drawing_thumbnails/[date:custom:Y]-[date:custom:m]',
+        // hide alt field
+        'alt_field' => FALSE,
+        //'alt_field_required' => FALSE,
+        'file_extensions' => 'png jpg jpeg',
+      ])
+      ->setDisplayOptions('view', array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'weight' => 0,
+        'settings' => [
+          'image_style' => 'thumbnail',
+        ],
+      ))
+      ->setDisplayOptions('form', array(
+        'label' => 'hidden',
+        'type' => 'image_image',
+        'weight' => 0,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     return $fields;
   }

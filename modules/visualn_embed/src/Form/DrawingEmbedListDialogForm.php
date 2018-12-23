@@ -11,6 +11,8 @@ use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\Core\Ajax\OpenDialogCommand;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
+use Drupal\image\Entity\ImageStyle;
+use Drupal\visualn_drawing\Entity\VisualNDrawing;
 
 /**
  * Build drawing embed form with list of available drawings
@@ -229,10 +231,16 @@ class DrawingEmbedListDialogForm extends FormBase {
           $delete_link = Link::createFromRoute(t('delete'), 'visualn_embed.drawing_controller_delete', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
         }
 
+        // check drawing thumbnail field
+        $drawing_thumbnail = '';
+        if ($drawing_entity->get('thumbnail')->entity) {
+          $drawing_thumbnail = $drawing_entity->get('thumbnail')->entity->getFileUri();
+          $drawing_thumbnail = ImageStyle::load(VisualNDrawing::THUMBNAIL_IMAGE_STYLE)->buildUrl($drawing_thumbnail);
+        }
         $drawing_entities_list[$drawing_entity->id()] = [
           'name' => $drawing_entity->label(),
           'id' => $drawing_entity->id(),
-          'thumbnail_path' => $drawing_type_thumbnails[$drawing_entity->bundle()],
+          'thumbnail_path' => $drawing_thumbnail ?: $drawing_type_thumbnails[$drawing_entity->bundle()],
           'preview_link' => $preview_link,
           'edit_link' => $edit_link,
           'delete_link' => $delete_link,
@@ -435,6 +443,8 @@ class DrawingEmbedListDialogForm extends FormBase {
     foreach ($drawing_types as $drawing_type) {
       $thumbnail_path = !empty($drawing_type->get('thumbnail_path')) ? $drawing_type->get('thumbnail_path') : $default_thumbnail;
       $drawing_type_thumbnails[$drawing_type->id()] = file_url_transform_relative(file_create_url($thumbnail_path));
+      // @todo: image styles can be applied only to files in public:// (or private://) directory
+      //$drawing_type_thumbnails[$drawing_type->id()] = ImageStyle::load(VisualNDrawing::THUMBNAIL_IMAGE_STYLE)->buildUrl($thumbnail_path);
     }
 
     return $drawing_type_thumbnails;
