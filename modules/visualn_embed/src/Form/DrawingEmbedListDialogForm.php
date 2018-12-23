@@ -383,6 +383,12 @@ class DrawingEmbedListDialogForm extends FormBase {
     //   * it doesn't work ...
     //   * for UX reasons
 
+    $drawing_descriptions = [];
+    $drawing_types  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->loadMultiple();
+    foreach ($drawing_types as $drawing_type) {
+      $drawing_descriptions[$drawing_type->id()] = $drawing_type->get('description');
+    }
+
     $links = [];
     // @todo: EntityManager::getBundleInfo() deprecated
     $drawing_bundles = \Drupal::entityManager()->getBundleInfo('visualn_drawing');
@@ -394,6 +400,7 @@ class DrawingEmbedListDialogForm extends FormBase {
         '#name' => $drawing_bundle['label'],
         '#id' => $key,
         '#thumbnail_path' => $drawing_type_thumbnails[$key],
+        '#description' => trim($drawing_descriptions[$key]),
       ];
 
       // see https://www.drupal.org/node/1989646

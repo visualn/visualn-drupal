@@ -14,4 +14,14 @@ delete
   <div class="drawing-type-name">
     {{ name }}
   </div>
+  <div class="actions-wrapper">
+    {% if description %}
+    <div class="icon show-info">
+      <i></i>
+      <div class="drawing-type-description">
+        <div class="drawing-type-description-inner">{{ description }}</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
 </div>

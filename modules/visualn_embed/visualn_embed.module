@@ -75,6 +75,7 @@ function visualn_embed_theme($existing, $type, $theme, $path) {
         'name' => '',
         'id' => '',
         'thumbnail_path' => '',
+        'description' => '',
       ],
     ],
   ];

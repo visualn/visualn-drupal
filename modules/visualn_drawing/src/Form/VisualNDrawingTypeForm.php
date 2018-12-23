@@ -37,6 +37,14 @@ class VisualNDrawingTypeForm extends EntityForm {
       '#disabled' => !$visualn_drawing_type->isNew(),
     ];
 
+    $form['description'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Description'),
+      '#maxlength' => 255,
+      '#default_value' => $this->entity->get('description'),
+      '#description' => $this->t("Description for the VisualN Drawing type."),
+    ];
+
     // get the list of visualn_fetcher fields attached to the entity type / bundle
     // also considered  base and bundle fields
     // see ContentEntityBase::bundleFieldDefinitions() and ::baseFieldDefinitions()
