@@ -203,7 +203,7 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
       ])
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
-        'weight' => 5,
+	'weight' => 100,
         'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => '60',
@@ -239,6 +239,14 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Publishing status'))
       ->setDescription(t('A boolean indicating whether the VisualN Drawing is published.'))
+      ->setDisplayOptions('form', [
+	'type' => 'boolean_checkbox',
+	'settings' => [
+	  'display_label' => TRUE,
+	],
+	'weight' => 100,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
       ->setRevisionable(TRUE)
       ->setDefaultValue(TRUE);
 
