@@ -2,7 +2,6 @@
 
 namespace Drupal\visualn\Core;
 
-use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\visualn\Core\VisualNPluginInterface;
 
 /**

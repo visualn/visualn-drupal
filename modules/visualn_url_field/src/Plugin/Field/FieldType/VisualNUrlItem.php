@@ -32,7 +32,7 @@ class VisualNUrlItem extends LinkItem {
     // the default settings are used when attaching a field to an entity bundle
     // here only override_style_id seems to have sense
     return array(
-      'override_style_id' => 0,
+      //'override_style_id' => 0,
       'drawer_config' => [],
       'drawer_fields' => [],
       'resource_format' => '',
@@ -85,12 +85,15 @@ class VisualNUrlItem extends LinkItem {
 
     $settings = $this->getSettings();
 
+    // @todo: doesn't work yet
+/*
     $element['override_style_id'] = array(
       '#type' => 'checkbox',
       '#title' => t('Override style'),
       '#default_value' => $settings['override_style_id'],
       '#description' => t('This allows to override default VisualN Style that is set in field formatter settings.'),
     );
+*/
 
     return $element;
   }

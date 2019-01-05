@@ -93,7 +93,7 @@ class VisualNUrlWidget extends LinkWidget implements ContainerFactoryPluginInter
 
 
     // @todo: there should be some default behaviour for the 'None' choice (actually, this refers to formatter)
-    $resource_formats = ['' => $this->t('- None -')];
+    $resource_formats = [];
     foreach ($definitions as $definition) {
       $resource_formats[$definition['id']] = $definition['label'];
     }
@@ -104,6 +104,7 @@ class VisualNUrlWidget extends LinkWidget implements ContainerFactoryPluginInter
       '#description' => $this->t('The format of the data source'),
       '#default_value' => $visualn_data['resource_format'],
       '#options' => $resource_formats,
+      '#empty_option' => $this->t('- None -'),
       '#weight' => '2',
     ];
 
@@ -115,7 +116,7 @@ class VisualNUrlWidget extends LinkWidget implements ContainerFactoryPluginInter
       '#title' => t('VisualN style'),
       '#type' => 'select',
       '#default_value' => $visualn_style_id,
-      '#empty_option' => t('Default'),
+      '#empty_option' => t('- Select -'),
       '#options' => $visualn_styles,
       '#weight' => '3',
       '#ajax' => [
@@ -177,7 +178,7 @@ class VisualNUrlWidget extends LinkWidget implements ContainerFactoryPluginInter
 
 
       $visualn_data = [
-        'resource_format' => $value['resource_format'],
+        'resource_format' => isset($value['resource_format']) ? $value['resource_format'] : '',
         'drawer_config' => $drawer_config,
         'drawer_fields' => $drawer_fields,
       ];

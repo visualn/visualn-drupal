@@ -14,6 +14,14 @@ abstract class SetupBakerBase extends PluginBase implements SetupBakerInterface 
   /**
    * {@inheritdoc}
    */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->setConfiguration($configuration);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   // @todo: should bakeSetup() allow optional arguments (?)
   public function bakeSetup() {
     // @todo: this is not a good practice to return configuration, at least for implementing instances.

@@ -23,6 +23,15 @@ class JSONGenericSetupBaker extends SetupBakerBase {
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration() {
+    return [
+      'json_setup' => '',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form['json_setup'] = [
       '#type' => 'textarea',

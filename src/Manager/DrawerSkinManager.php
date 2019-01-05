@@ -13,7 +13,7 @@ class DrawerSkinManager extends DefaultPluginManager {
 
 
   /**
-   * Constructs a new VisualNDrawerSkinManager object.
+   * Constructs a new DrawerSkinManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths

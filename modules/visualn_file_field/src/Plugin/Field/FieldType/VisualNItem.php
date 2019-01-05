@@ -32,7 +32,7 @@ class VisualNItem extends FileItem {
   public static function defaultFieldSettings() {
     // @todo: check
     return array(
-      'override_style_id' => 0,
+      //'override_style_id' => 0,
       'drawer_config' => [],
       'drawer_fields' => [],
     ) + parent::defaultFieldSettings();
@@ -87,12 +87,15 @@ class VisualNItem extends FileItem {
 
     $settings = $this->getSettings();
 
+    // @todo: doesn't work yet
+/*
     $element['override_style_id'] = array(
       '#type' => 'checkbox',
       '#title' => t('Override style'),
       '#default_value' => $settings['override_style_id'],
       '#description' => t('This allows to override default VisualN Style that is set in field formatter settings.'),
     );
+*/
 
     return $element;
   }

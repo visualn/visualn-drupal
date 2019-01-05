@@ -2,7 +2,6 @@
 
 namespace Drupal\visualn\Core;
 
-use Drupal\Component\Plugin\PluginBase;
 use Drupal\visualn\ChainPluginJsTrait;
 use Drupal\visualn\Core\BuilderInterface;
 use Drupal\visualn\Core\VisualNPluginBase;

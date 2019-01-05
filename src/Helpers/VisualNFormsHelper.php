@@ -808,11 +808,11 @@ class VisualNFormsHelper {
     $subform = $form['skin_config'];
     $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
 
-    $visualNDataGeneratorManager = \Drupal::service('plugin.manager.visualn.drawer_skin');
+    $visualNDrawerSkinManager = \Drupal::service('plugin.manager.visualn.drawer_skin');
     $drawer_skin_id  = $form_state->getValue(array_merge($base_element_parents, ['drawer_skin_id']));
     // The submit callback shouldn't depend on plugin configuration, it relies only on form_state values.
     $drawer_skin_config  = [];
-    $skin_plugin = $visualNDataGeneratorManager->createInstance($drawer_skin_id, $drawer_skin_config);
+    $skin_plugin = $visualNDrawerSkinManager->createInstance($drawer_skin_id, $drawer_skin_config);
     $skin_plugin->submitConfigurationForm($subform, $sub_form_state);
 
 
