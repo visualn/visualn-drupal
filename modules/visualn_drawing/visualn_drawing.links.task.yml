@@ -21,3 +21,7 @@ entity.visualn_drawing.delete_form:
   title: Delete
   weight: 10
 
+entity.visualn_drawing_type.edit_form:
+  title: 'Edit'
+  route_name: entity.visualn_drawing_type.edit_form
+  base_route: entity.visualn_drawing_type.edit_form
