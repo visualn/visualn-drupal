@@ -127,10 +127,10 @@
   background-image: url("../images/icons/ffd25c/menu.svg");
 }
 .visualn-embed-drawing-select-dialog-wrapper label .drawing-actions-wrapper .icon.action-preview a:before {
-  background-image: url("../images/icons/787878/binoculars.svg");
+  background-image: url("../images/icons/787878/eye.svg");
 }
 .visualn-embed-drawing-select-dialog-wrapper label .drawing-actions-wrapper .icon.action-preview:hover a:before {
-  background-image: url("../images/icons/ffd25c/binoculars.svg");
+  background-image: url("../images/icons/ffd25c/eye.svg");
 }
 .visualn-embed-drawing-select-dialog-wrapper label .drawing-actions-wrapper .icon.action-edit a:before {
   background-image: url("../images/icons/787878/edit.svg");
