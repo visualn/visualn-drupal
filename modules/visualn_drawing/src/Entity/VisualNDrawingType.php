@@ -57,6 +57,13 @@ class VisualNDrawingType extends ConfigEntityBundleBase implements VisualNDrawin
   protected $label;
 
   /**
+   * Default value of the 'Create new revision' checkbox of this drawing type.
+   *
+   * @var bool
+   */
+  protected $new_revision = TRUE;
+
+  /**
    * The VisualN Drawing Fetcher field ID.
    *
    * @var string
@@ -68,6 +75,21 @@ class VisualNDrawingType extends ConfigEntityBundleBase implements VisualNDrawin
    */
   public function getDrawingFetcherField() {
     return $this->drawing_fetcher_field;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function shouldCreateNewRevision() {
+    // @todo: the method is used instead of isNewRevision()
+    return $this->new_revision;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setNewRevision($new_revision) {
+    $this->new_revision = $new_revision;
   }
 
 }

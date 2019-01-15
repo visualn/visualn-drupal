@@ -11,6 +11,9 @@ visualn_drawing.visualn_drawing_type.*:
     description:
       type: string
       label: 'Description'
+    new_revision:
+      type: boolean
+      label: 'Whether a new revision should be created by default'
     thumbnail_path:
       type: string
       label: 'Thumbnail path'

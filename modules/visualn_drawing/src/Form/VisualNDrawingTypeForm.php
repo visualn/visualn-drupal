@@ -113,6 +113,35 @@ class VisualNDrawingTypeForm extends EntityForm {
       ],
     ];
 
+    // @note: based on NodeTypeForm::form()
+    $form['additional_settings'] = [
+      '#type' => 'vertical_tabs',
+    ];
+    $form['workflow'] = [
+      '#type' => 'details',
+      '#title' => t('Publishing options'),
+      '#group' => 'additional_settings',
+    ];
+    $workflow_options = [
+      // @todo: in NodeTypeForm::form() a fake entity is created to get base field default value
+      //   here we just set it manually
+      //'status' => $drawing->status->value,
+      'revision' => $visualn_drawing_type->shouldCreateNewRevision(),
+    ];
+    // Prepare workflow options to be used for 'checkboxes' form element.
+    $keys = array_keys(array_filter($workflow_options));
+    $workflow_options = array_combine($keys, $keys);
+    $form['workflow']['options'] = [
+      '#type' => 'checkboxes',
+      '#title' => t('Default options'),
+      '#default_value' => $workflow_options,
+      '#options' => [
+        //'status' => t('Published'),
+        'revision' => t('Create new revision'),
+      ],
+      '#description' => t('Users with the <em>Administer VisualN Drawing entities</em> permission will be able to override these options.'),
+    ];
+
     return $form;
   }
 
@@ -121,6 +150,8 @@ class VisualNDrawingTypeForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $visualn_drawing_type = $this->entity;
+    $visualn_drawing_type->setNewRevision($form_state->getValue(['options', 'revision']));
+
     $status = $visualn_drawing_type->save();
 
     switch ($status) {
