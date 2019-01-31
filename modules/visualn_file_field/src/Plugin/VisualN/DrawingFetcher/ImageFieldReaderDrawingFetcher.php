@@ -4,6 +4,7 @@ namespace Drupal\visualn_file_field\Plugin\VisualN\DrawingFetcher;
 
 use Drupal\visualn\Plugin\GenericDrawingFetcherBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 
 /**
  * Provides a 'Image field reader' VisualN drawing fetcher.
@@ -100,6 +101,59 @@ class ImageFieldReaderDrawingFetcher extends GenericDrawingFetcherBase {
     //$form['visualn_style_id']['#required'] = FALSE;
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  // @todo: should be static, review parent class method
+  public function processDrawerContainerSubform(array $element, FormStateInterface $form_state, $form) {
+    $element = parent::processDrawerContainerSubform($element, $form_state, $form);
+
+    // Add a process callback to convert drawer_fields mapping textfields into select
+    // lists since the number and names of keys used by image field to provide data are
+    // known and unchangeable.
+    // @see VisualNFormsHelper::processDrawerContainerSubform()
+    // @see VisualNImageFormatter::processDrawerContainerSubform()
+    $style_element_parents = array_slice($element['#parents'], 0, -1);
+    $visualn_style_id = $form_state->getValue(array_merge($style_element_parents, ['visualn_style_id']));
+    if (!$visualn_style_id) {
+      return $element;
+    }
+    $drawer_container_key = $visualn_style_id;
+    // $element[$drawer_container_key]['drawer_fields']['#process'] is supposed to be always set
+    // if $visualn_style_id is defined, see VisualNFormsHelper::processDrawerContainerSubform()
+    if ($element[$drawer_container_key]['drawer_fields']['#process']) {
+      $element[$drawer_container_key]['drawer_fields']['#process'][] = [get_called_class(), 'processDrawerFieldsSubform'];
+    }
+
+    return $element;
+  }
+
+  /**
+   * Replace drawer_fields configuration textfields with select lists.
+   */
+  public static function processDrawerFieldsSubform(array $element, FormStateInterface $form_state, $form) {
+
+    $drawer_fields = $element['#drawer_fields'];
+
+    // @todo: check for additional data keys, e.g. image alt and title values
+    // Image field provides data with a fixed set of data keys
+    $data_keys_options = [
+      'url' => 'url',
+    ];
+
+    // replace textfields with selects
+    foreach (Element::children($element) as $key) {
+      $element[$key]['field'] = [
+        '#type' => 'select',
+        '#options' => $data_keys_options,
+        '#empty_option' => t('- None -'),
+        '#default_value' => isset($drawer_fields[$key]) ? $drawer_fields[$key] : '',
+      ];
+    }
+
+    return $element;
   }
 
   /**
