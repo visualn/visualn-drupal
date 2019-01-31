@@ -300,7 +300,7 @@ class DefaultBuilder extends BuilderBase implements ContainerFactoryPluginInterf
 
     $mapper_required = count(array_filter($input_options['drawer_fields']));
     // return chain if drawer doesn't need adapters or mappers
-    if ($drawer_input == $input_type) {
+    if ($drawer_input == $input_type && !$mapper_required) {
       return $chain;
     }
 
