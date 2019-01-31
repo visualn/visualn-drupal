@@ -153,10 +153,13 @@ class VisualNImageFormatter extends ImageFormatter {
 
     $drawer_fields = $element['#drawer_fields'];
 
-    // @todo: check for additional data keys, e.g. image alt and title values
+    // @todo: check for additional data keys, e.g. size values though some of them
+    //   could be considered secure and shouldn't be exposed for every case
     // Image field provides data with a fixed set of data keys
     $data_keys_options = [
       'url' => 'url',
+      'title' => 'title',
+      'alt' => 'alt',
     ];
 
     // replace textfields with selects
@@ -221,11 +224,11 @@ class VisualNImageFormatter extends ImageFormatter {
     ];
 
 
-    $urls = [];
-
     // @see ImageFormatter::viewElements()
     // @todo: try to get urls list from $elements
     //$deltas = Element::children($elements);
+
+    $data = [];
 
     $files = $this->getEntitiesToView($items, $langcode);
     foreach ($files as $delta => $file) {
@@ -233,12 +236,15 @@ class VisualNImageFormatter extends ImageFormatter {
       // @todo: see the note in ImageFormatter::viewElements() relating a bug
       //$url = Url::fromUri(file_create_url($image_uri));
       $url = file_create_url($image_uri);
-      $urls[$delta] = $url;
-    }
 
-    $data = [];
-    foreach ($urls as $url) {
-      $data[] = ['url' => $url];
+      // @todo: some other properties could be added, e.g. size etc.
+      //   though some of them may be considered secure and shouldn't be added in every
+      //   case (e.g. for js data it would be always exposed) and thus should be configured
+      $data[] = [
+        'url' => $url,
+        'title' => $items->get($delta)->get('title')->getString(),
+        'alt' => $items->get($delta)->get('alt')->getString(),
+      ];
     }
 
     $drawer_config = $this->getSetting('drawer_config');

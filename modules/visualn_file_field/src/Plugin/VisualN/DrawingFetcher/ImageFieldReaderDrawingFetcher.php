@@ -137,10 +137,13 @@ class ImageFieldReaderDrawingFetcher extends GenericDrawingFetcherBase {
 
     $drawer_fields = $element['#drawer_fields'];
 
-    // @todo: check for additional data keys, e.g. image alt and title values
+    // @todo: check for additional data keys, e.g. size values though some of them
+    //   could be considered secure and shouldn't be exposed for every case
     // Image field provides data with a fixed set of data keys
     $data_keys_options = [
       'url' => 'url',
+      'title' => 'title',
+      'alt' => 'alt',
     ];
 
     // replace textfields with selects
@@ -188,27 +191,23 @@ class ImageFieldReaderDrawingFetcher extends GenericDrawingFetcherBase {
     $drawer_fields = $this->configuration['drawer_fields'];
 
 
-    $urls = [];
+    $data = [];
+
     //foreach($field_instance->referencedEntities() as $delta => $image_file) {
     foreach($field_instance->referencedEntities() as $delta => $file) {
       $image_uri = $file->getFileUri();
       // @todo: see the note in ImageFormatter::viewElements() relating a bug
       //$url = Url::fromUri(file_create_url($image_uri));
       $url = file_create_url($image_uri);
-      $urls[$delta] = $url;
-    }
 
-    // @todo: here $data is attached to the drupal settings by the adapter
-    //    though a router could be also used instead of this with a generic resource adapter
-    $data = [
-      'urls' => $urls,
-    ];
-
-    // @todo: since data is always keyed by url, maybe resemble it in formatter
-    //   keys mapping settings
-    $data = [];
-    foreach ($urls as $url) {
-      $data[] = ['url' => $url];
+      // @todo: some other properties could be added, e.g. size etc.
+      //   though some of them may be considered secure and shouldn't be added in every
+      //   case (e.g. for js data it would be always exposed) and thus should be configured
+      $data[] = [
+        'url' => $url,
+        'title' => $field_instance->get($delta)->get('title')->getString(),
+        'alt' => $field_instance->get($delta)->get('alt')->getString(),
+      ];
     }
 
 
