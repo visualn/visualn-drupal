@@ -5,6 +5,7 @@ namespace Drupal\visualn_embed\Controller;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\embed\Ajax\EmbedInsertCommand;
+use Drupal\filter\FilterFormatInterface;
 
 /**
  * Class DrawingEmbedController.
@@ -17,7 +18,7 @@ class DrawingWidgetEmbedController extends ControllerBase {
    * @return \Drupal\Core\Ajax\AjaxResponse
    *   Return VisualN Drawing placeholder markup for ckeditor
    */
-  public function previewWidget($id) {
+  public function previewWidget(FilterFormatInterface $filter_format, $id) {
 
     // @todo: set as dependency injections
     $request = \Drupal::request();

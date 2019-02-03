@@ -330,7 +330,7 @@
             element: element.$,
 
             // @todo: use 'widget' or 'placeholder' in the url instead of 'preview'
-            url: Drupal.url('visualn-drawing-embed/preview/' + drawing_id + '?' + $.param(params)),
+            url: Drupal.url('visualn-drawing-embed/preview/' + editor.config.drupal.format + '/' + drawing_id + '?' + $.param(params)),
             /*
             url: Drupal.url('embed/preview/' + editor.config.drupal.format + '?' + $.param({
               value: element.getOuterHtml()
