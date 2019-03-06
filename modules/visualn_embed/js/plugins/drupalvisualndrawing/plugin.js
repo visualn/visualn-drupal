@@ -59,7 +59,7 @@
           };
           // Open dialog form.
           Drupal.ckeditor.openDialog(editor,
-            Drupal.url('visualn_embed/form/drawing_embed_dialog'),
+            Drupal.url('visualn_embed/form/drawing_embed_dialog/' + editor.config.drupal.format),
             existingValues,
             myPluginSaveCallback,
             dialogSettings
@@ -116,7 +116,7 @@
           // Open dialog form.
           // @todo: how to pass dialog id so that it could be close on save by ajax commands response?
           Drupal.ckeditor.openDialog(editor,
-            //Drupal.url('visualn_embed/form/drawing_embed_dialog'),
+            //Drupal.url('visualn_embed/form/drawing_embed_dialog/' + editor.config.drupal.format),
             Drupal.url('visualn-ckeditor/drawing/' + drawing_id + '/edit_content'),
 
             //Drupal.url('visualn-ckeditor/drawing/' + drawing_id + '/edit'),
@@ -204,7 +204,7 @@
           };
           // Open dialog form.
           Drupal.ckeditor.openDialog(editor,
-            Drupal.url('visualn_embed/form/drawing_embed_dialog'),
+            Drupal.url('visualn_embed/form/drawing_embed_dialog/' + editor.config.drupal.format),
             existingValues,
             myPluginSaveCallback,
             dialogSettings

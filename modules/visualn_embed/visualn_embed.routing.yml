@@ -2,21 +2,21 @@
 # @todo: review permissions
 
 visualn_embed.visualn_drawing_embed_dialog:
-  path: '/visualn_embed/form/drawing_embed_dialog'
+  path: '/visualn_embed/form/drawing_embed_dialog/{editor}'
   defaults:
     _form: '\Drupal\visualn_embed\Form\DrawingEmbedListDialogForm'
     _title: 'Choose Drawing'
   requirements:
-    _permission: 'access visualn drawing overview'
+    _visualn_embed_button_editor_access: 'TRUE'
 
 # @todo: rename
 # get dialog content for pager links via ajax (using get request)
 visualn_embed.visualn_drawing_embed_dialog_from_pager:
-  path: '/visualn_embed/form/drawing_embed_dialog/page'
+  path: '/visualn_embed/form/drawing_embed_dialog/{editor}/page'
   defaults:
     _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::updateDialogContentByPager'
   requirements:
-    _permission: 'access visualn drawing overview'
+    _visualn_embed_button_editor_access: 'TRUE'
 
 # @todo: based on embed.routing.yml
 visualn_embed.drawing_embed_controller_preview:

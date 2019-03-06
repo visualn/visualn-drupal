@@ -13,6 +13,7 @@ use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\OpenDialogCommand;
 use Drupal\Core\Form\FormState;
+use Drupal\editor\EditorInterface;
 
 /**
  * Class DrawingActionsController.
@@ -126,23 +127,29 @@ class DrawingActionsController extends ControllerBase {
     return $response;
   }
 
-  public function updateDialogContentByPager() {
+  /**
+   * {@inheritdoc}
+   *
+   * @param \Drupal\editor\EditorInterface $editor
+   *   The editor to which this dialog corresponds.
+   */
+  public function updateDialogContentByPager(EditorInterface $editor) {
     $response = new AjaxResponse();
 
     // set form values if any
     // @todo: also selected_drawing_id may be required
     $params = \Drupal::request()->query->all();
 
-    $form_args = [];
+    $init_params = [];
     // @todo: check if additional parameters validation is required here
     foreach (['drawing_type', 'drawing_name', 'items_per_page'] as $data_key) {
       if (!empty($params[$data_key])) {
-        $form_args[$data_key] = $params[$data_key];
+        $init_params[$data_key] = $params[$data_key];
       }
     }
 
     // the pager value is used by the query behind the scenes
-    $drawing_embed_form = \Drupal::formBuilder()->getForm(DrawingEmbedListDialogForm::class, $form_args);
+    $drawing_embed_form = \Drupal::formBuilder()->getForm(DrawingEmbedListDialogForm::class, $editor, $init_params);
 
     $drawing_embed_subform = $drawing_embed_form['items_container'];
     $response->addCommand(new ReplaceCommand('#visualn-embed-drawing-select-dialog-options-ajax-wrapper', $drawing_embed_subform));
@@ -191,11 +198,12 @@ class DrawingActionsController extends ControllerBase {
       return $response;
     }
 
-    // @todo: the form doesn't work again as ajaxified
+    // @todo: the form doesn't work again as ajaxified (is it still an issue?)
     // seems to be related to https://www.drupal.org/project/drupal/issues/2504115
 /*
     $initial_dialog_form = \Drupal::service('form_builder')->getForm(DrawingEmbedListDialogForm::class);
-    $initial_dialog_form['#action'] = '/visualn_embed/form/drawing_embed_dialog';
+    $editor = 'current-editor-id';
+    $initial_dialog_form['#action'] = '/visualn_embed/form/drawing_embed_dialog/' . $editor;
     $content = $initial_dialog_form;
 */
 

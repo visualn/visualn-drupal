@@ -13,6 +13,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\visualn_drawing\Entity\VisualNDrawing;
+use Drupal\editor\EditorInterface;
 
 /**
  * Build drawing embed form with list of available drawings
@@ -36,19 +37,20 @@ class DrawingEmbedListDialogForm extends FormBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @param \Drupal\editor\EditorInterface $editor
+   *   The editor to which this dialog corresponds.
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state, EditorInterface $editor = NULL, $init_params = array()) {
     // @todo: the library should be connected outside of the form
     $form['#attached']['library'][] = 'visualn_embed/preview-drawing-dialog';
 
     // The args may be set to manually init default values, e.g. for pager links,
     // see DrawingActionsController::openDialogFromPager().
-    $init_params = [];
-    $args = $form_state->getBuildInfo()['args'];
-    if (!empty($args[0]) && is_array($args[0])) {
+    if (!empty($init_params) && is_array($init_params)) {
       foreach (['drawing_type', 'drawing_name', 'items_per_page'] as $data_key) {
-        if (!empty($args[0][$data_key]) && is_string($args[0][$data_key])) {
-          $init_params[$data_key] = $args[0][$data_key];
+        if (!empty($init_params[$data_key]) && is_string($init_params[$data_key])) {
+          $init_params[$data_key] = $init_params[$data_key];
         }
       }
     }
@@ -134,12 +136,6 @@ class DrawingEmbedListDialogForm extends FormBase {
       '#submit' => ['::emptySubmit'],
     ];
 
-    // use process callback for drawings list to have filters values already mapped and available
-    $form['items_container']['#process'] = [[get_called_class(), 'processDrawingsOptionsList']];
-    // the id is used in DrawingActionsController::openDialogFromPager()
-    $form['items_container']['#prefix'] = '<div id="visualn-embed-drawing-select-dialog-options-ajax-wrapper">';
-    $form['items_container']['#suffix'] = '</div>';
-
     // @todo: make it sticky at the bottom of the table
     $form['actions'] = [
       '#type' => 'actions',
@@ -161,6 +157,12 @@ class DrawingEmbedListDialogForm extends FormBase {
     $form['#suffix'] = '</div>';
     $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
 
+    // use process callback for drawings list to have filters values already mapped and available
+    $form['items_container']['#process'] = [[get_called_class(), 'processDrawingsOptionsList']];
+    // the id is used in DrawingActionsController::openDialogFromPager()
+    $form['items_container']['#prefix'] = '<div id="visualn-embed-drawing-select-dialog-options-ajax-wrapper">';
+    $form['items_container']['#suffix'] = '</div>';
+
     return $form;
   }
 
@@ -168,6 +170,38 @@ class DrawingEmbedListDialogForm extends FormBase {
    * Attach drawing items list process callback
    */
   public static function processDrawingsOptionsList(array $element, FormStateInterface $form_state, $form) {
+
+    // Currently, pager ajax callback response returns only part of the dialog form containing the list of drawing items
+    // and thus other form values and attributes do not change, including #action attribute.
+    // This takes effect when trying to embed a drawing from a page other than the first one, which causes an error,
+    // since when the form is getting rebuilt for subsequent submit, pager value is not getting considered in the
+    // database query below.
+
+    // Here pager value is kept in a hidden form element and reused by Embed Drawing button, other submits such
+    // as Apply filters and Update list reset the value to show the updated list starting with the first page.
+    // @todo: an alternative could be to change form '#action' attribute value in pager ajax response using js command
+    //   in DrawingActionsController::updateDialogContentByPager() though Apply filters and Update list submits would
+    //   still need to reset it then.
+    $triggering_element = $form_state->getTriggeringElement();
+    if (!empty($triggering_element)) {
+      if (implode(':', $triggering_element['#array_parents']) == 'actions:submit') {
+        // it is required to explicitly set pager value only at embed submit
+        $input = $form_state->getUserInput();
+        if (isset($input['current_page']) && $input['current_page'] !== "") {
+          // @note: this implies only one pager on the dialog form, which is always the case
+          \Drupal::request()->query->set('page', $input['current_page']);
+        }
+      }
+      else {
+        $input = $form_state->getUserInput();
+        unset($input['current_page']);
+        $form_state->setUserInput($input);
+      }
+    }
+    $element['current_page'] = [
+      '#type' => 'hidden',
+      '#default_value' => \Drupal::request()->query->get('page', ''),
+    ];
 
     // @todo: check comments in DrawingEmbedListDialogForm::buildForm()
     $input = $form_state->getUserInput();
@@ -272,11 +306,13 @@ class DrawingEmbedListDialogForm extends FormBase {
         $params[$data_key] = $$data_key;
       }
     }
+    $editor = \Drupal::routeMatch()->getParameter('editor');
     $element['pager'] = [
       '#visualn_embed_pager' => TRUE,
       '#type' => 'pager',
       '#parameters' => $params,
       '#route_name' => 'visualn_embed.visualn_drawing_embed_dialog_from_pager',
+      '#route_parameters' => ['editor' => $editor->getFilterFormat()->Id()],
     ];
 
     return $element;
