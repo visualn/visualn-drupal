@@ -255,14 +255,14 @@ class DrawingEmbedListDialogForm extends FormBase {
         // @todo: add per drawing type permissions
         // check permissions
         $user = \Drupal::currentUser();
-        if ($user->hasPermission('view published visualn drawing entities')) {
-          $preview_link = Link::createFromRoute(t('preview'), 'visualn_embed.drawing_embed_controller_real_preview', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        if ($drawing_entity->access('view')) {
+          $preview_link = Link::createFromRoute(t('preview'), 'visualn_embed.drawing_embed_controller_real_preview', ['visualn_drawing' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
         }
-        if ($user->hasPermission('edit visualn drawing entities')) {
-          $edit_link = Link::createFromRoute(t('edit'), 'visualn_embed.drawing_controller_edit', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        if ($drawing_entity->access('update')) {
+          $edit_link = Link::createFromRoute(t('edit'), 'visualn_embed.drawing_controller_edit', ['visualn_drawing' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
         }
-        if ($user->hasPermission('delete visualn drawing entities')) {
-          $delete_link = Link::createFromRoute(t('delete'), 'visualn_embed.drawing_controller_delete', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        if ($drawing_entity->access('delete')) {
+          $delete_link = Link::createFromRoute(t('delete'), 'visualn_embed.drawing_controller_delete', ['visualn_drawing' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
         }
 
         // check drawing thumbnail field

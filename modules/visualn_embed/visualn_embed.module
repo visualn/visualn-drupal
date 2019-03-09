@@ -37,6 +37,7 @@ function visualn_embed_theme($existing, $type, $theme, $path) {
       'variables' => [
         'id' => '',
         'label' => '',
+        'has_access' => true,
         'fetcher_field' => '',
         'fetcher_plugin' => '',
 

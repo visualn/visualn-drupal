@@ -113,6 +113,9 @@
             dialogClass: 'ui-dialog-visualn'
           };
 
+          // @todo: check permissions if user has access to edit the drawing (same for preview and other actions)
+          //   also do not show inactive menu items for 'Drawing not found' case
+
           // Open dialog form.
           // @todo: how to pass dialog id so that it could be close on save by ajax commands response?
           Drupal.ckeditor.openDialog(editor,

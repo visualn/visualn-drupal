@@ -40,9 +40,13 @@ function visualn_token_tokens($type, $tokens, array $data, array $options, Bubbl
       $entity_id = $args[2];
       // @todo: maybe do additional checks (e.g. permissions)
       $entity = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->load($entity_id);
-      if (!empty($entity)) {
+      if (!empty($entity) && $entity->access('view')) {
         $drawing_markup = $entity->buildDrawing();
         $replacements[$original] = \Drupal::service('renderer')->render($drawing_markup);
+      }
+      elseif (!empty($entity) && !$entity->access('view')) {
+        // @todo: show 'no view permission' drawing placeholder
+        $replacements[$original] = '';
       }
       // @todo: add cache tags
     }

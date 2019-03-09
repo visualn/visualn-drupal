@@ -22,10 +22,14 @@
 
 {% if id %}
   <div>
-    Drawing name: {{ label }}
+  {% if has_access %}
+    {{ 'Drawing name'|t }}: {{ label }}
+  {% else %}
+    {{ 'You don\'t have permissions to view the drawing'|t }}
+  {% endif %}
   </div>
   <div>
-    Drawing id: {{ id }}
+    {{ 'Drawing id'|t }}: {{ id }}
   </div>
 {#
   <div>

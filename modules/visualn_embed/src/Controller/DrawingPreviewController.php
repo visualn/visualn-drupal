@@ -6,6 +6,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Ajax\OpenDialogCommand;
 use Drupal\Core\Link;
+use Drupal\visualn_drawing\Entity\VisualNDrawingInterface;
 
 //use Drupal\Core\Ajax\SettingsCommand;
 
@@ -16,13 +17,12 @@ use Drupal\Core\Link;
  */
 class DrawingPreviewController extends ControllerBase {
 
-  public function drawingPreviewResponse($id) {
+  public function drawingPreviewResponse(VisualNDrawingInterface $visualn_drawing) {
     $response = new AjaxResponse();
 
-    $preview_build = $this->drawingPreviewBuild($id);
+    $preview_build = $this->drawingPreviewBuild($visualn_drawing);
 
-    $entity_id = $id;
-    $entity = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->load($entity_id);
+    $entity = $visualn_drawing;
     if (!empty($preview_build)) {
       $content = $preview_build;
 
@@ -45,10 +45,9 @@ class DrawingPreviewController extends ControllerBase {
     return $response;
   }
 
-  public function drawingPreviewBuild($id) {
+  public function drawingPreviewBuild(VisualNDrawingInterface $visualn_drawing) {
     $build = [];
-    $entity_id = $id;
-    $entity = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->load($entity_id);
+    $entity = $visualn_drawing;
     if (!empty($entity)) {
       $drawing_markup = $entity->buildDrawing();
       // @todo: the class is also used in preview-drawing-dialog.css library
@@ -58,14 +57,16 @@ class DrawingPreviewController extends ControllerBase {
       $drawing_markup['#prefix'] = '<div class="preview-content">';
       $drawing_markup['#suffix'] = '</div>';
 
-      $drawing_id = $entity_id;
-      $edit_link = Link::createFromRoute($this->t('edit'), 'visualn_embed.drawing_controller_edit', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
-      $edit_link = [
-        '#markup' => $edit_link->toString(),
-      ];
+      if ($entity->access('update')) {
+        $drawing_id = $entity->Id();
+        $edit_link = Link::createFromRoute($this->t('edit'), 'visualn_embed.drawing_controller_edit', ['visualn_drawing' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+        $edit_link = [
+          '#markup' => $edit_link->toString(),
+        ];
+      }
 
 /*
-      $delete_link = Link::createFromRoute($this->t('delete'), 'visualn_embed.drawing_controller_delete', ['id' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
+      $delete_link = Link::createFromRoute($this->t('delete'), 'visualn_embed.drawing_controller_delete', ['visualn_drawing' => $drawing_id], ['attributes' => ['class' => ['use-ajax']]]);
       $delete_link = [
         '#markup' => $delete_link->toString(),
       ];

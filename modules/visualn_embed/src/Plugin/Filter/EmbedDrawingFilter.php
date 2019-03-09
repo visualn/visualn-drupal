@@ -77,7 +77,8 @@ class EmbedDrawingFilter extends FilterBase {
         $this->changeNodeName($node, 'div');
 
         $entity = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->load($drawing_id);
-        if (!empty($entity)) {
+        // @todo: add cachePerPermissions() to the drawing build
+        if (!empty($entity) && $entity->access('view')) {
           $drawing_markup = $entity->buildDrawing();
           // @todo: check allow_drawings_sharing setting or maybe add an additional setting
           //   to show/hide already exposed share links
@@ -260,13 +261,19 @@ class EmbedDrawingFilter extends FilterBase {
           $entity_output = \Drupal::service('renderer')->render($drawing_markup);
         }
         else {
+          // this will also work if user has no permission to view the drawing
 
           // @todo: return some better markup or even empty output
           // @todo: add some background opaque image to empty drawings markup
 
           $img_path = '/' . drupal_get_path('module', 'visualn_embed') . '/images/paint-brush-solid.svg';
 
-          $text = $this->t('Drawing not found');
+          if (!empty($entity) && !$entity->access('view')) {
+            $text = $this->t('You don\'t have permission to view the drawing');
+          }
+          else {
+            $text = $this->t('Drawing not found');
+          }
           $empty_drawing_markup = [
             '#markup' => '<div class="text">' . $text . '</div><div class="bkg"><img src="' . $img_path . '" /></div>',
             '#attached' => [

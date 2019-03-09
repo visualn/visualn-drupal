@@ -41,13 +41,19 @@ class DrawingWidgetEmbedController extends ControllerBase {
       'width' => $width,
       'height' => $height,
     ];
-    //if (FALSE) {
     if (!empty($entity)) {
-      $label = $entity->label();
+      if ($entity->access('view')) {
+        $label = $entity->label();
+      }
+      else {
+        // check if user is allowed to view the drawing (and its info)
+        $label = t('You don\'t have permissions to access the drawing');
+      }
 
       $build = [
         '#theme' => 'visualn_embed_drawing',
         '#label' => $label,
+        '#has_access' => $entity->access('view'),
         '#id' => $id,
         '#properties' => $properties,
       ];

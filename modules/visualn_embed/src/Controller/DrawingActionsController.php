@@ -4,6 +4,7 @@ namespace Drupal\visualn_embed\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\visualn_drawing\Entity\VisualNDrawing;
+use Drupal\visualn_drawing\Entity\VisualNDrawingInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\editor\Ajax\EditorDialogSave;
@@ -69,9 +70,8 @@ class DrawingActionsController extends ControllerBase {
     return $drawing_form;
   }
 
-  public function getEditContentTitle($id) {
-    // @todo: validate id, check if entity exists
-    $entity = VisualNDrawing::load($id);
+  public function getEditContentTitle(VisualNDrawingInterface $visualn_drawing) {
+    $entity = $visualn_drawing;
     if ($entity) {
       // @todo: add <em> tags wrapper
       $drawing_type  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->load($entity->bundle());
@@ -83,16 +83,15 @@ class DrawingActionsController extends ControllerBase {
   }
 
   // @todo: reuse method in ::edit()
-  public function edit_content($id) {
+  public function edit_content(VisualNDrawingInterface $visualn_drawing) {
     $build = [];
 
-    // @todo: validate id, check if entity exists
-    $entity = VisualNDrawing::load($id);
+    $entity = $visualn_drawing;
     if ($entity) {
       // add a flag to form state to be used in visualn_embed_form_visualn_drawing_form_alter()
       $form_state_additions = ['visualn_drawing_preview_dialog' => TRUE];
       $form_state_additions['visualn_update_widget'] = TRUE;
-      $form_state_additions['visualn_update_drawing_id'] = $id;
+      $form_state_additions['visualn_update_drawing_id'] = $entity->Id();
       // @todo: maybe use 'add' action
       $drawing_form = \Drupal::service('entity.form_builder')->getForm($entity, 'default', $form_state_additions);
       $drawing_form['#attached']['library'][] = 'visualn_embed/preview-drawing-dialog';
@@ -106,10 +105,10 @@ class DrawingActionsController extends ControllerBase {
     return $build;
   }
 
-  public function edit($id) {
+  public function edit(VisualNDrawingInterface $visualn_drawing) {
     $response = new AjaxResponse();
 
-    $entity = VisualNDrawing::load($id);
+    $entity = $visualn_drawing;
     if ($entity) {
       // add a flag to form state to be used in visualn_embed_form_visualn_drawing_form_alter()
       $form_state_additions = ['visualn_drawing_preview_dialog' => TRUE];
@@ -157,10 +156,10 @@ class DrawingActionsController extends ControllerBase {
     return $response;
   }
 
-  public function delete($id) {
-     $response = new AjaxResponse();
+  public function delete(VisualNDrawingInterface $visualn_drawing) {
+    $response = new AjaxResponse();
 
-    $entity = VisualNDrawing::load($id);
+    $entity = $visualn_drawing;
     if ($entity) {
       // add a flag to form state to be used in visualn_embed_form_visualn_drawing_form_alter()
       $form_state_additions = ['visualn_drawing_preview_dialog' => TRUE];

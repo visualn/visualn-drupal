@@ -20,23 +20,42 @@ class VisualNDrawingAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /** @var \Drupal\visualn_drawing\Entity\VisualNDrawingInterface $entity */
+    if ($account->hasPermission('administer visualn drawing entities')) {
+      return AccessResult::allowed()->cachePerPermissions();
+    }
+
+    $type = $entity->bundle();
+    $is_owner = ($account->id() && $account->id() === $entity->getOwnerId());
     switch ($operation) {
+      // @todo: cache permissions?
       case 'view':
+        // @todo: review
         if (!$entity->isPublished()) {
           return AccessResult::allowedIfHasPermission($account, 'view unpublished visualn drawing entities');
         }
         return AccessResult::allowedIfHasPermission($account, 'view published visualn drawing entities');
 
       case 'update':
-        return AccessResult::allowedIfHasPermission($account, 'edit visualn drawing entities');
+        if ($account->hasPermission('edit any ' . $type . ' visualn drawing')) {
+          return AccessResult::allowed()->cachePerPermissions();
+        }
+        if ($account->hasPermission('edit own ' . $type . ' visualn drawing') && $is_owner) {
+          return AccessResult::allowed()->cachePerPermissions()->cachePerUser()->addCacheableDependency($entity);
+        }
+        return AccessResult::neutral("The following permissions are required: '$type: edit any visualn drawing' OR '$type: edit own visualn drawing'.")->cachePerPermissions();
 
       case 'delete':
-        return AccessResult::allowedIfHasPermission($account, 'delete visualn drawing entities');
-    }
+        if ($account->hasPermission('delete any ' . $type . ' visualn drawing')) {
+          return AccessResult::allowed()->cachePerPermissions();
+        }
+        if ($account->hasPermission('delete own ' . $type . ' visualn drawing') && $is_owner) {
+          return AccessResult::allowed()->cachePerPermissions()->cachePerUser()->addCacheableDependency($entity);
+        }
+        return AccessResult::neutral("The following permissions are required: '$type: delete any visualn drawing' OR '$type: delete own visualn drawing'.")->cachePerPermissions();
 
-    // Unknown operation, no opinion.
-    return AccessResult::neutral();
+      default:
+        return AccessResult::neutral()->cachePerPermissions();
+    }
   }
 
   /**
@@ -72,7 +91,13 @@ class VisualNDrawingAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    return AccessResult::allowedIfHasPermission($account, 'add visualn drawing entities');
+    // @todo: rename 'add to 'create' permissions
+    $permissions = [
+      'administer visualn drawing entities',
+      'add visualn drawing entities',
+      'create ' . $entity_bundle . ' visualn drawing',
+    ];
+    return AccessResult::allowedIfHasPermissions($account, $permissions, 'OR');
   }
 
 }
