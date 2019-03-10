@@ -5,6 +5,7 @@ namespace Drupal\visualn_iframe\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\block\Entity\Block;
 use Drupal\visualn_iframe\Entity\VisualNIFrame;
+use Drupal\visualn_drawing\Entity\VisualNDrawing;
 
 /**
  * Provides content for the given iframe path by hash.
@@ -28,7 +29,10 @@ class IFrameController extends ControllerBase {
     $iframe_entity = VisualNIFrame::getIFrameEntityByHash($hash);
     if ($iframe_entity) {
 
-      if (!$iframe_entity->isPublished()) {
+      // Do not show unpublished content even if user has permission to view it
+      $drawing_id = $iframe_entity->getDrawingId();
+      $visualn_drawing = VisualNDrawing::load($drawing_id);
+      if (!$iframe_entity->isPublished() || !$visualn_drawing->access('view') || !$iframe_entity->access('view')) {
         // @todo: use template for default "not available" markup
         //   to allow developers override it
         $cache_tags = ['visualn_iframe:' . $iframe_entity->id()];
