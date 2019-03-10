@@ -4,6 +4,7 @@ namespace Drupal\visualn_basic_drawers\Plugin\VisualN\DataGenerator;
 
 use Drupal\visualn\Core\DataGeneratorBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Random;
 
 /**
  * Provides an 'Table Html Basic' VisualN data generator.
@@ -60,34 +61,17 @@ class TableHtmlBasicDataGenerator extends DataGeneratorBase {
   public function generateData() {
     $data = [];
 
+    $random = new Random();
     for ($i = 0; $i < $this->configuration['number_rows']; $i++) {
       $data_row = [];
       for ($j = 0; $j < $this->configuration['number_columns']; $j++) {
         $key = 'column' . ($j+1);
-        $data_row[$key] = $this->readableRandomString(mt_rand(2, 9));
+        $data_row[$key] = $random->word(mt_rand(2, 9));
       }
       $data[] = $data_row;
     }
 
     return $data;
-  }
-
-  // @see https://gist.github.com/sepehr/3371339
-  protected function readableRandomString($length = 6) {
-    $string     = '';
-    $vowels     = array("a","e","i","o","u");
-    $consonants = array(
-      'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm',
-      'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'
-    );
-
-    $max = $length/2;
-    for ($i = 1; $i <= $max; $i++)
-    {
-      $string .= $consonants[rand(0,19)];
-      $string .= $vowels[rand(0,4)];
-    }
-    return $string;
   }
 
 }
