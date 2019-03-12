@@ -100,4 +100,14 @@ class DrawingPreviewController extends ControllerBase {
     return $build;
   }
 
+  public function drawingPreviewBuildTitle(VisualNDrawingInterface $visualn_drawing) {
+    $title = '';
+    $entity = $visualn_drawing;
+    if (!empty($entity)) {
+      $title = $this->t('@label [drawing preview]', ['@label' => $entity->label()]);
+    }
+
+    return $title;
+  }
+
 }

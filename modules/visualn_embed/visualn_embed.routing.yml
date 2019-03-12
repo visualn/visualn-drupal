@@ -46,6 +46,7 @@ visualn_embed.drawing_embed_controller_real_preview_content:
   path: '/visualn-drawing-embed/real-preview-content/{visualn_drawing}'
   defaults:
     _controller: '\Drupal\visualn_embed\Controller\DrawingPreviewController::drawingPreviewBuild'
+    _title_callback: '\Drupal\visualn_embed\Controller\DrawingPreviewController::drawingPreviewBuildTitle'
   #options:
     #_theme: ajax_base_page
   requirements:
