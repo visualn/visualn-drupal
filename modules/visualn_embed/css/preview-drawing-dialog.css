@@ -2,7 +2,7 @@
 /* @todo: consider responsive styles also */
 /* the class is also used for visualn-core.js context_wrapper setting */
 .preview-content {
-  min-width: 800px;
+  /*min-width: 800px;*/
   border: 1px solid #ccc;
   margin: 5px;
   padding: 5px;
