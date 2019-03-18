@@ -5,11 +5,18 @@ namespace Drupal\visualn\Core;
 use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\Core\DrawingFetcherInterface;
+use Drupal\visualn\WindowParametersTrait;
 
 /**
  * Base class for VisualN Drawing Fetcher plugins.
  */
 abstract class DrawingFetcherBase extends ContextAwarePluginBase implements DrawingFetcherInterface {
+
+  use WindowParametersTrait;
+
+  // @todo: override setWindowParameters() for the case when fetcher is used to generate
+  //   drawing build by its own, without drawer plugin
+  //   @see \Drupal\visualn\Core\DrawerBase::setWindowParameters()
 
   /**
    * {@inheritdoc}
@@ -18,7 +25,6 @@ abstract class DrawingFetcherBase extends ContextAwarePluginBase implements Draw
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->setConfiguration($configuration);
   }
-
 
   /**
    * {@inheritdoc}

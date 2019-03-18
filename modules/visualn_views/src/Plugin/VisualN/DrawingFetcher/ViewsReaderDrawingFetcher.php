@@ -23,6 +23,10 @@ class ViewsReaderDrawingFetcher extends DrawingFetcherBase {
    * {@inheritdoc}
    */
   public function fetchDrawing() {
+
+    // Get drawing window parameters
+    //$window_parameters = $this->getWindowParameters();
+
     $drawing_markup = parent::fetchDrawing();
 
     return $drawing_markup;

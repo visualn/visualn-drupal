@@ -63,7 +63,6 @@ class GeneratedResourceProvider extends ResourceProviderBase implements Containe
       'data_generator_id' => '',
       'data_generator_config' => [],
     ] + parent::defaultConfiguration();
-
   }
 
   public function getResource() {

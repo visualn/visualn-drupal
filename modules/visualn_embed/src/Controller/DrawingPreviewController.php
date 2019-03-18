@@ -88,9 +88,6 @@ class DrawingPreviewController extends ControllerBase {
       }
       */
 
-
-      $title = $this->t('@label [drawing preview]', ['@label' => $entity->label()]);
-
       $build = $content;
 
       // @todo: update dialog position center since its diminsions could change due to js drawers

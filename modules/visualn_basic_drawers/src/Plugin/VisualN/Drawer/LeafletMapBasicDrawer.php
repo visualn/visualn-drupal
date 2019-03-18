@@ -97,6 +97,13 @@ class LeafletMapBasicDrawer extends DrawerWithJsBase {
    * @inheritdoc
    */
   public function prepareBuild(array &$build, $vuid, ResourceInterface $resource) {
+
+    // check drawing window parameters
+    $window_parameters = $this->getWindowParameters();
+    if (!empty($window_parameters['height'])) {
+      $this->configuration['map_height'] = $window_parameters['height'];
+    }
+
     // Attach drawer config to js settings
     parent::prepareBuild($build, $vuid, $resource);
     // @todo: $resource = parent::prepareBuild($build, $vuid, $resource); (?)

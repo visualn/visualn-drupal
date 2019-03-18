@@ -184,6 +184,9 @@ class DataSourceReaderDrawingFetcher extends GenericDrawingFetcherBase {
     $visualNDrawingFetcherManager = \Drupal::service('plugin.manager.visualn.drawing_fetcher');
     $fetcher_plugin = $visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
 
+    // Set drawing window parameters
+    $fetcher_plugin->setWindowParameters($this->getWindowParameters());
+
     return $fetcher_plugin->fetchDrawing();
   }
 

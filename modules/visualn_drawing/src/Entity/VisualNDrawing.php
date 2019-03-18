@@ -8,6 +8,7 @@ use Drupal\Core\Entity\RevisionableContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\UserInterface;
+use Drupal\visualn\WindowParametersTrait;
 
 /**
  * Defines the VisualN Drawing entity.
@@ -72,6 +73,7 @@ use Drupal\user\UserInterface;
 class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDrawingInterface {
 
   use EntityChangedTrait;
+  use WindowParametersTrait;
 
   const THUMBNAIL_IMAGE_STYLE = 'visualn_drawing_thumbnail';
 
@@ -340,7 +342,9 @@ class VisualNDrawing extends RevisionableContentEntityBase implements VisualNDra
       if (!$this->get($drawing_fetcher_field)->isEmpty()) {
         // fetcher field load the corresponding drawing fetcher plugin to build drawing markup
         // @todo: what if fetcher field has multiple items (can we also configure delta)?
-        $drawing_markup = $this->get($drawing_fetcher_field)->first()->buildDrawing();
+        $fetcher_field_item = $this->get($drawing_fetcher_field)->first();
+        $fetcher_field_item->setWindowParameters($this->getWindowParameters());
+        $drawing_markup = $fetcher_field_item->buildDrawing();
         //$drawing_markup = $this->get($drawing_fetcher_field)->get(0)->buildDrawing();
       }
       else {

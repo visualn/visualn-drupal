@@ -5,6 +5,7 @@ namespace Drupal\visualn\Core;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\Core\VisualNPluginInterface;
+use Drupal\visualn\WindowParametersInterface;
 
 /**
  * Defines an interface for VisualN Drawer plugins.
@@ -13,7 +14,7 @@ use Drupal\visualn\Core\VisualNPluginInterface;
  *
  * @ingroup drawer_plugins
  */
-interface DrawerInterface extends VisualNPluginInterface, PluginFormInterface {
+interface DrawerInterface extends VisualNPluginInterface, PluginFormInterface, WindowParametersInterface {
 
   /**
    * Get drawer description text

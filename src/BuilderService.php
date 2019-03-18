@@ -51,8 +51,10 @@ class BuilderService implements BuilderServiceInterface {
    *
    * @todo: add docblock
    * @todo: add to the service interface
+   * @todo: review arguments order:
+   *   base_drawer_id and window_parameters
    */
-  public function makeBuildByResource(ResourceInterface $resource, $visualn_style_id, array $drawer_config, array $drawer_fields, $base_drawer_id = '') {
+  public function makeBuildByResource(ResourceInterface $resource, $visualn_style_id, array $drawer_config, array $drawer_fields, $base_drawer_id = '', $window_parameters = []) {
 
     $build = [];
 
@@ -90,6 +92,7 @@ class BuilderService implements BuilderServiceInterface {
     ];
 
     $builder_plugin = $this->visualNBuilderManager->createInstance($builder_plugin_id, $builder_config);
+    $builder_plugin->setWindowParameters($window_parameters);
     $builder_plugin->prepareBuild($build, $vuid, $resource);
 
     // use a template instead of attaching html_selector as prefix when build is ready

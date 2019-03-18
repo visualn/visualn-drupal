@@ -6,13 +6,14 @@ use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\user\EntityOwnerInterface;
+use Drupal\visualn\WindowParametersInterface;
 
 /**
  * Provides an interface for defining VisualN Drawing entities.
  *
  * @ingroup visualn_drawing
  */
-interface VisualNDrawingInterface extends RevisionableInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface {
+interface VisualNDrawingInterface extends RevisionableInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface, WindowParametersInterface {
 
   // Add get/set methods for your configuration properties here.
 

@@ -12,6 +12,8 @@ use Drupal\Core\TypedData\DataDefinition;
 
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
+use Drupal\visualn\WindowParametersInterface;
+use Drupal\visualn\WindowParametersTrait;
 
 /**
  * Plugin implementation of the 'visualn_fetcher' field type.
@@ -24,7 +26,9 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
  *   default_formatter = "visualn_fetcher",
  * )
  */
-class VisualNFetcherItem extends FieldItemBase {
+class VisualNFetcherItem extends FieldItemBase implements WindowParametersInterface {
+
+  use WindowParametersTrait;
 
   /**
    * {@inheritdoc}
@@ -117,6 +121,7 @@ class VisualNFetcherItem extends FieldItemBase {
       // @todo: see the note regarding setting context in VisualNResourceProviderItem class
 
 
+      $fetcher_plugin->setWindowParameters($this->getWindowParameters());
       $drawing_markup = $fetcher_plugin->fetchDrawing();
     }
     else {

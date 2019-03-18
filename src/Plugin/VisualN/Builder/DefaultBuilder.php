@@ -152,6 +152,8 @@ class DefaultBuilder extends BuilderBase implements ContainerFactoryPluginInterf
       return;
     }
 
+    $drawer->setWindowParameters($this->getWindowParameters());
+
     //$chain = $this->composePluginsChain($drawer, $input_type, $input_data);
     // @todo: $additional_options
     $chain = $this->composePluginsChain($drawer, $output_type, ['drawer_fields' => $options['drawer_fields']]); // $drawer, $input_type, $input_options

@@ -5,6 +5,7 @@ namespace Drupal\visualn\Core;
 use Drupal\visualn\ChainPluginJsTrait;
 use Drupal\visualn\Core\BuilderInterface;
 use Drupal\visualn\Core\VisualNPluginBase;
+use Drupal\visualn\WindowParametersTrait;
 
 /**
  * Base class for VisualN Builder plugins.
@@ -18,6 +19,7 @@ abstract class BuilderBase extends VisualNPluginBase implements BuilderInterface
   // @todo: actually this should be moved to BuilderWithJsBase (see DrawerWithJsBase for example)
   //   and used as base class for DefaultBuilder plugin
   use ChainPluginJsTrait;
+  use WindowParametersTrait;
 
   /**
    * @inheritdoc

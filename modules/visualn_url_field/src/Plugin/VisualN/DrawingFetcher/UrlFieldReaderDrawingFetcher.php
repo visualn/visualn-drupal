@@ -74,8 +74,11 @@ class UrlFieldReaderDrawingFetcher extends DrawingFetcherBase {
                         ->createInstance($resource_format_plugin_id, [])
                         ->buildResource($raw_input);
 
+          // Get drawing window parameters
+          $window_parameters = $this->getWindowParameters();
+
           // Get drawing build
-          $build = \Drupal::service('visualn.builder')->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+          $build = \Drupal::service('visualn.builder')->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields, '', $window_parameters);
           $drawing_markup = $build;
         }
 

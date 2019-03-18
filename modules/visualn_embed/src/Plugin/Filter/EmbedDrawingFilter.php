@@ -79,7 +79,15 @@ class EmbedDrawingFilter extends FilterBase {
         $entity = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->load($drawing_id);
         // @todo: add cachePerPermissions() to the drawing build
         if (!empty($entity) && $entity->access('view')) {
+          // @todo: use only required parameters (width and height)
+          //   implement getWindowParamtersFromSettings($settings)
+          //   validate or clean values if needed
+          //   @see \Drupal\visualn\Core\DrawerBase::setWindowParameters()
+          $window_parameters = ['width' => $width, 'height' => $height];
+          $window_parameters = array_filter($window_parameters);
+          $entity->setWindowParameters($window_parameters);
           $drawing_markup = $entity->buildDrawing();
+
           // @todo: check allow_drawings_sharing setting or maybe add an additional setting
           //   to show/hide already exposed share links
           //   reset only required cache tags then (e.g. changing default link title

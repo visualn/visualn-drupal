@@ -221,8 +221,11 @@ class ImageFieldReaderDrawingFetcher extends GenericDrawingFetcherBase {
       ->createInstance($raw_resource_plugin_id, [])
       ->buildResource($raw_input);
 
+    // Get drawing window parameters
+    $window_parameters = $this->getWindowParameters();
+
     // Get drawing build
-    $build = $this->visualNBuilder->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields);
+    $build = $this->visualNBuilder->makeBuildByResource($resource, $visualn_style_id, $drawer_config, $drawer_fields, '', $window_parameters);
 
 
     $drawing_markup = $build;

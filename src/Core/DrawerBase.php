@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\visualn\Core\DrawerInterface;
 use Drupal\visualn\Core\VisualNPluginBase;
 use Drupal\visualn\ResourceInterface;
+use Drupal\visualn\WindowParametersTrait;
 
 /**
  * Base class for VisualN Drawer plugins.
@@ -17,6 +18,17 @@ use Drupal\visualn\ResourceInterface;
  * @ingroup drawer_plugins
  */
 abstract class DrawerBase extends VisualNPluginBase implements DrawerInterface {
+
+  use WindowParametersTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setWindowParameters(array $window_parameters) {
+    $this->window_parameters = $window_parameters;
+    $this->cleanWindowParameters();
+    return $this;
+  }
 
   /**
    * {@inheritdoc}
