@@ -58,7 +58,7 @@ visualn_embed.new_drawing_controller_build:
     _controller: '\Drupal\visualn_embed\Controller\DrawingActionsController::createNew'
     _title_callback: '\Drupal\visualn_embed\Controller\DrawingActionsController::getNewDrawingDialogTitle'
   requirements:
-    _permission: 'add visualn drawing entities'
+    _entity_create_access: 'visualn_drawing:{type}'
 
 visualn_embed.drawing_controller_edit:
   path: '/visualn-ckeditor/drawing/{visualn_drawing}/edit'

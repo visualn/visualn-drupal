@@ -134,7 +134,20 @@ class DrawingEmbedListDialogForm extends FormBase {
       ],
       '#limit_validation_errors' => [],
       '#submit' => ['::emptySubmit'],
+      // disable button by default, check permissions below
+      // also the button is disabled for no available drawing types
+      '#disabled' => TRUE,
     ];
+
+    // Check is user has permission to create at least one type of drawings
+    $entity_manager = \Drupal::entityTypeManager();
+    $access_handler = $entity_manager->getAccessControlHandler('visualn_drawing');
+    foreach ($drawing_types as $drawing_type) {
+      if ($access_handler->createAccess($drawing_type->id())) {
+        $form['new_drawing']['#disabled'] = FALSE;
+        break;
+      }
+    }
 
     // @todo: make it sticky at the bottom of the table
     $form['actions'] = [
@@ -419,40 +432,44 @@ class DrawingEmbedListDialogForm extends FormBase {
     //   * it doesn't work ...
     //   * for UX reasons
 
-    $drawing_descriptions = [];
-    $drawing_types  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->loadMultiple();
-    foreach ($drawing_types as $drawing_type) {
-      $drawing_descriptions[$drawing_type->id()] = $drawing_type->get('description');
-    }
 
     $links = [];
-    // @todo: EntityManager::getBundleInfo() deprecated
-    $drawing_bundles = \Drupal::entityManager()->getBundleInfo('visualn_drawing');
+
+    // @todo: output a message in case of no available types
+    //   or no permission to create any
+
     // get drawing type thumbnails
     $drawing_type_thumbnails = static::getDrawingTypesThumbnails();
-    foreach ($drawing_bundles as $key => $drawing_bundle) {
-      $title = [
-        '#theme' => 'visualn_embed_new_drawing_type_select_item_label',
-        '#name' => $drawing_bundle['label'],
-        '#id' => $key,
-        '#thumbnail_path' => $drawing_type_thumbnails[$key],
-        '#description' => trim($drawing_descriptions[$key]),
-      ];
 
-      // see https://www.drupal.org/node/1989646
-      $links['link_'.$key] = [
-        'title' => $title,
-        'url' => Url::fromRoute('visualn_embed.new_drawing_controller_build', ['type' => $key]),
-        'attributes' => [
-          'class' => ['use-ajax'],
-          'data-dialog-type' => 'dialog',
-          'data-dialog-options' => json_encode([
-            'target' => 'new-drawing-dialog',
-            'classes' => ['ui-dialog' => 'ui-dialog-visualn'],
-            'modal' => TRUE,
-          ]),
-        ],
-      ];
+    $entity_manager = \Drupal::entityTypeManager();
+    $drawing_types  = $entity_manager->getStorage('visualn_drawing_type')->loadMultiple();
+    $access_handler = $entity_manager->getAccessControlHandler('visualn_drawing');
+    foreach ($drawing_types as $drawing_type) {
+      $type_id = $drawing_type->id();
+      if ($access_handler->createAccess($type_id)) {
+        $title = [
+          '#theme' => 'visualn_embed_new_drawing_type_select_item_label',
+          '#name' => $drawing_type->label(),
+          '#id' => $type_id,
+          '#thumbnail_path' => $drawing_type_thumbnails[$type_id],
+          '#description' => trim($drawing_type->get('description')),
+        ];
+
+        // see https://www.drupal.org/node/1989646
+        $links['link_'.$type_id] = [
+          'title' => $title,
+          'url' => Url::fromRoute('visualn_embed.new_drawing_controller_build', ['type' => $type_id]),
+          'attributes' => [
+            'class' => ['use-ajax'],
+            'data-dialog-type' => 'dialog',
+            'data-dialog-options' => json_encode([
+              'target' => 'new-drawing-dialog',
+              'classes' => ['ui-dialog' => 'ui-dialog-visualn'],
+              'modal' => TRUE,
+            ]),
+          ],
+        ];
+      }
     }
 
     // prepare dialog content

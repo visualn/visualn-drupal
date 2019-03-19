@@ -95,8 +95,10 @@ class VisualNDrawingAccessControlHandler extends EntityAccessControlHandler {
     $permissions = [
       'administer visualn drawing entities',
       'add visualn drawing entities',
-      'create ' . $entity_bundle . ' visualn drawing',
     ];
+    if ($entity_bundle) {
+      $permissions[] = 'create ' . $entity_bundle . ' visualn drawing';
+    }
     return AccessResult::allowedIfHasPermissions($account, $permissions, 'OR');
   }
 
