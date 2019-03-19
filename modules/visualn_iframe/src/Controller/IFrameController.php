@@ -28,11 +28,20 @@ class IFrameController extends ControllerBase {
   public function build($hash) {
     $iframe_entity = VisualNIFrame::getIFrameEntityByHash($hash);
     if ($iframe_entity) {
+      $deny_access = FALSE;
 
       // Do not show unpublished content even if user has permission to view it
-      $drawing_id = $iframe_entity->getDrawingId();
-      $visualn_drawing = VisualNDrawing::load($drawing_id);
-      if (!$iframe_entity->isPublished() || !$visualn_drawing->access('view') || !$iframe_entity->access('view')) {
+      if (!$iframe_entity->isPublished() || !$iframe_entity->access('view')) {
+        $deny_access = TRUE;
+      }
+      elseif ($drawing_id = $iframe_entity->getDrawingId()) {
+        $visualn_drawing = VisualNDrawing::load($drawing_id);
+        if ($visualn_drawing && !$visualn_drawing->access('view')) {
+          $deny_access = TRUE;
+        }
+      }
+
+      if ($deny_access) {
         // @todo: use template for default "not available" markup
         //   to allow developers override it
         $cache_tags = ['visualn_iframe:' . $iframe_entity->id()];

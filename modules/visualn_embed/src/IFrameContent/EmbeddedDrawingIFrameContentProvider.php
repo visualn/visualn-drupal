@@ -46,8 +46,29 @@ class EmbeddedDrawingIFrameContentProvider implements ContentProviderInterface {
       $drawing_id = $data['drawing_id'];
       $entity = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->load($drawing_id);
       if (!empty($entity)) {
+        // add window_parameters (width and height) support to iframes
+        // @todo: maybe set query_parameters (possibly with other name) as part of $settings
+        // @todo: validate window_parameters
+        //
+        // @todo: allowed sizes support should be implemented to avoid cache overflow
+        //   due to multiple possible combinations of width and height values,
+        //   all other sizes should be rounded down to allowed values
+        //   @see DrawingWindowParameters::getContext() for more info
+        //   Allowed sizes and combinations could be set on iframe settings page,
+        //   on per iframe entity basis, or disabled completely.
+        // @todo: iframe_parameters (should be obtained from query_parameters) should be
+        //   distinguished from window_parameters though are used here for the same purposes
+        //   and have the same names.
+        //   @see comments in \Drupal\visualn_iframe\CacheContext\DrawingWindowParameters::getContext()
+        $query_parameters =  \Drupal::request()->query->all();
+        $width = !empty($query_parameters['width']) ? $query_parameters['width'] : '';
+        $height = !empty($query_parameters['height']) ? $query_parameters['height'] : '';
+        $window_parameters = ['width' => $width, 'height' => $height];
+        $entity->setWindowParameters($window_parameters);
         $render = $entity->buildDrawing();
+        // visualn_iframe specific cache tags are set in IFrameController::build()
         $render['#cache']['tags'][] = $entity->getEntityTypeId() . ':' . $drawing_id;
+        $render['#cache']['contexts'][] = 'visualn_iframe_drawing_window_parameters';
       }
       else {
         // @todo: use template for default "not found" markup to allow developers override it

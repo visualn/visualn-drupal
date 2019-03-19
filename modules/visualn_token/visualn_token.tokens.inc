@@ -41,6 +41,10 @@ function visualn_token_tokens($type, $tokens, array $data, array $options, Bubbl
       // @todo: maybe do additional checks (e.g. permissions)
       $entity = \Drupal::entityTypeManager()->getStorage('visualn_drawing')->load($entity_id);
       if (!empty($entity) && $entity->access('view')) {
+        // @todo: add window_parameters (width and height) support to tokens
+        //   also requires custom cache context type (see visualn_iframes.services.yml)
+        $window_parameters = [];
+        $entity->setWindowParameters($window_parameters);
         $drawing_markup = $entity->buildDrawing();
         $replacements[$original] = \Drupal::service('renderer')->render($drawing_markup);
       }

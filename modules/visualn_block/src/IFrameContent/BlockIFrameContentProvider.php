@@ -77,7 +77,16 @@ class BlockIFrameContentProvider implements ContentProviderInterface {
     $fetcher_config = $data['fetcher_config'];
     if ($fetcher_id) {
       $fetcher_plugin = $this->visualNDrawingFetcherManager->createInstance($fetcher_id, $fetcher_config);
+      // add window_parameters (width and height) support to iframes
+      // @todo: @see comments in \Drupal\visualn_embed\IFrameContent\EmbeddedDrawingIFrameContentProvider::provideContent()
+      $query_parameters =  \Drupal::request()->query->all();
+      $width = !empty($query_parameters['width']) ? $query_parameters['width'] : '';
+      $height = !empty($query_parameters['height']) ? $query_parameters['height'] : '';
+      $window_parameters = ['width' => $width, 'height' => $height];
+      $fetcher_plugin->setWindowParameters($window_parameters);
       $render = $fetcher_plugin->fetchDrawing();
+      // visualn_iframe specific cache tags are set in IFrameController::build()
+      $render['#cache']['contexts'][] = 'visualn_iframe_drawing_window_parameters';
     }
     else {
       // @todo: use some default content
