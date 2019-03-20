@@ -280,7 +280,7 @@
           };
           // Open dialog form.
           Drupal.ckeditor.openDialog(editor,
-            Drupal.url('visualn_embed/form/drawing_properties_dialog'),
+            Drupal.url('visualn_embed/form/drawing_properties_dialog/' + editor.config.drupal.format),
             existingValues,
             myPluginSaveCallback,
             dialogSettings

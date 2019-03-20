@@ -8,6 +8,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\visualn_iframe\Entity\VisualNIFrame;
+use Drupal\editor\EditorInterface;
 
 /**
  * Class DrawingPropertiesDialogForm.
@@ -31,7 +32,7 @@ class DrawingPropertiesDialogForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state, EditorInterface $editor = NULL) {
     // @todo: maybe add sharing settings to a different form with its own ckeditor menu item
     //   or a link or a button to the properties dialog form that would open another sharing
     //   dialog form
