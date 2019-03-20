@@ -426,6 +426,7 @@
 
       // Execute widget editing action on double click.
       editor.on('doubleclick', function (evt) {
+        editor.execCommand('configurevisualndrawing');
         // @todo: open 'edit' dialog
         /*
         var element = getSelectedEmbeddedEntity(editor) || evt.data.element;
