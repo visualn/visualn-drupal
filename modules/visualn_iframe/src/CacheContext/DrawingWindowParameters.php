@@ -1,5 +1,8 @@
 <?php
 
+// @todo: for iframe entities cache allowed ranges to not load entity
+//   every time (if needed)
+
 namespace Drupal\visualn_iframe\CacheContext;
 
 use Drupal\Core\Cache\Context\CacheContextInterface;

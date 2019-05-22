@@ -8,6 +8,10 @@ use Drupal\visualn\Core\ResourceProviderInterface;
 
 /**
  * Base class for VisualN Resource Provider plugins.
+ *
+ * @see \Drupal\visualn\Core\ResourceProviderInterface
+ *
+ * @ingroup resource_provider_plugins
  */
 abstract class ResourceProviderBase extends ContextAwarePluginBase implements ResourceProviderInterface {
 

@@ -8,6 +8,10 @@ use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Defines an interface for VisualN Data Generator plugins.
+ *
+ * @see \Drupal\visualn\Core\DataGeneratorBase
+ *
+ * @ingroup data_generator_plugins
  */
 interface DataGeneratorInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
 
@@ -23,7 +27,7 @@ interface DataGeneratorInterface extends PluginInspectionInterface, Configurable
    *
    * Usually generateData() is expected to generate plain array
    * though there may be cases when some other structure will be
-   * return e.g. nested array. For that case a different resource
+   * returned e.g. a nested array. For that case a different resource
    * and thus a different raw resource format should be used.
    *
    * @see \Drupal\visualn\Annotation\VisualNDataGenerator

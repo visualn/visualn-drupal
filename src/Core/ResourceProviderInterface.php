@@ -8,8 +8,11 @@ use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Defines an interface for VisualN Resource Provider plugins.
+ *
+ * @see \Drupal\visualn\Core\ResourceProviderBase
+ *
+ * @ingroup resource_provider_plugins
  */
-//interface VisualNResourceProviderInterface extends PluginInspectionInterface {
 interface ResourceProviderInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
 
   /**

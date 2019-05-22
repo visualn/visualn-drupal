@@ -9,6 +9,10 @@ use Drupal\visualn\Core\DataGeneratorInterface;
 
 /**
  * Base class for VisualN Data Generator plugins.
+ *
+ * @see \Drupal\visualn\Core\DataGeneratorInterface
+ *
+ * @ingroup data_generator_plugins
  */
 abstract class DataGeneratorBase extends PluginBase implements DataGeneratorInterface {
 

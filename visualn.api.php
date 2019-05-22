@@ -42,7 +42,7 @@
  * @section data_sources Data sources
  *
  * - @link resource_plugins Resource plugins @endlink
- * - @link resource_proivder_plugins Resource providers @endlink
+ * - @link resource_provider_plugins Resource providers @endlink
  * - @link data_generator_plugins Data generators @endlink
  * - @link data_set_entities Data Set entities @endlink
  * - @link data_sources Data Sources @endlink
@@ -213,7 +213,7 @@
  */
 
 /**
- * @defgroup resource_proivder_plugins Resource providers
+ * @defgroup resource_provider_plugins Resource providers
  * @{
  * Provide Resource objects objects to create drawings.
  *
@@ -225,6 +225,23 @@
  * which also return a resource but are more about format of *raw* resources trying
  * to describe real envorinment than about contents of that raw resources. And also
  * being limited to one specific resource type.
+ * @}
+ */
+
+/**
+ * @defgroup data_generator_plugins Data generators
+ * @{
+ * Generate data for compatible drawer plugins.
+ *
+ * Data generators are typically used as a simple means to prepare data for a drawing
+ * or for drawer demonstration purposes. In the latter case Data generators usually
+ * automatically generate some random though realistically looking data. From a point
+ * of view they may seem similar to Resource providers. Though there are significant
+ * differences. Data generators usually create data on their own while Resource providers
+ * rely on other parts of the system to get a resource object. As a particualar case, they
+ * can rely on Data generators for that. On the other hand, Resource providers
+ * may invole complex logic to get a resource depending on its specifics, while for
+ * Data generators it is as simple as converting an array into a resource object.
  * @}
  */
 
