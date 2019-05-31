@@ -159,7 +159,7 @@ class LinechartBasicDrawer extends DrawerWithJsBase {
     $clean_values = $form_state->cleanValues()->getValues();
 
     // the element may be not set, e.g. when called before values mapping,
-    // see VisualNFormHelper::processDrawerFields() for example
+    // see VisualNFormsHelper::processDrawerFields() for example
     if (isset($clean_values['ajax_container'])) {
       $clean_values['series_labels'] = $clean_values['ajax_container']['series_labels'];
       foreach ($clean_values['series_labels'] as $k => $label) {

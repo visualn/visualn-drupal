@@ -313,7 +313,7 @@ class VisualNDrawing extends Serializer {
     // that would trigger after the drawer buildConfigurationForm() attaches the config form
     // and is completed. It is required for the case when drawer has a variable number of data keys.
     // see the code below
-    // @see VisualNFormHelper::processDrawerContainerSubform()
+    // @see VisualNFormsHelper::processDrawerContainerSubform()
     $element[$drawer_container_key]['drawer_fields']['#process'] = [[get_called_class(), 'processDrawerFieldsSubform']];
     $element[$drawer_container_key]['drawer_fields']['#drawer_plugin'] = $drawer_plugin;
     $element[$drawer_container_key]['drawer_fields']['#drawer_fields'] = $drawer_fields;
@@ -322,7 +322,7 @@ class VisualNDrawing extends Serializer {
 
 
     // @todo: technically, this should be moved to an #after_build callback (though it seems to work even as it is)
-    // @see VisualNFormHelper::processDrawerContainerSubform() for more info
+    // @see VisualNFormsHelper::processDrawerContainerSubform() for more info
     // since drawer and fields onfiguration forms may be empty, do a check (then it souldn't be of details type)
     if (Element::children($element[$drawer_container_key]['drawer_config'])
          || Element::children($element[$drawer_container_key]['drawer_fields'])) {
@@ -588,7 +588,7 @@ class VisualNDrawing extends Serializer {
    * @see \Drupal\visualn_basic_drawers\Plugin\VisualN\Drawer\LinechartBasicDrawer
    */
   public static function processDrawerFieldsSubform(array $element, FormStateInterface $form_state, $form) {
-    // this is mostly a copy-paste of the VisualNFormHelper::processDrawerContainerSubform()
+    // this is mostly a copy-paste of the VisualNFormsHelper::processDrawerContainerSubform()
     $field_names = $element['#field_names'];
 
     $element_parents = $element['#array_parents'];

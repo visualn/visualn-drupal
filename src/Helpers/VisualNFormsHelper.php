@@ -190,7 +190,7 @@ class VisualNFormsHelper {
    * Check  if 'details' element should be open after all drawer_config and drawer_fields elements are attached.
    */
   public static function afterBuildDrawerDetailsOpenSubform(array $element, FormStateInterface $form_state) {
-    // since drawer and fields configuration forms may be empty, do a check (then it souldn't be of details type)
+    // since drawer and fields configuration forms may be empty, do a check (then it shouldn't be of details type)
     if (Element::children($element['drawer_config']) || Element::children($element['drawer_fields'])) {
       // @todo: actually it is base_element_array_parents for both, visualn_style_id and drawer_config
       $style_element_array_parents = array_slice($element['#array_parents'], 0, -2);
@@ -327,7 +327,7 @@ class VisualNFormsHelper {
               = $drawer_plugin->buildConfigurationForm($element[$drawer_container_key]['drawer_config'], $subform_state);
 
 
-    // since drawer and fields onfiguration forms may be empty, do a check (then it souldn't be of details type)
+    // since drawer and fields onfiguration forms may be empty, do a check (then it shouldn't be of details type)
     if (Element::children($element[$drawer_container_key]['drawer_config'])) {
       $drawer_element_array_parents = array_slice($element['#array_parents'], 0, -1);
       // check that the triggering element is visualn_style_id but not fetcher_id select (or some other element) itself
@@ -458,7 +458,7 @@ class VisualNFormsHelper {
               = $provider_plugin->buildConfigurationForm($element[$provider_container_key]['provider_config'], $subform_state);
 
 
-    // since provider configuration form may be empty, do a check (then it souldn't be of details type)
+    // since provider configuration form may be empty, do a check (then it shouldn't be of details type)
     if (Element::children($element[$provider_container_key]['provider_config'])) {
       $provider_element_array_parents = array_slice($element['#array_parents'], 0, -1);
       // check that the triggering element is resource_provider_id but not fetcher_id select (or some other element) itself
@@ -488,7 +488,7 @@ class VisualNFormsHelper {
 
   // @todo: Restructuring form_state values (removing provider_container key) should be moved
   //    into #element_submit callback when introduced.
-  // This is based on VisualNFormHelper::validateDrawerContainerSubForm().
+  // This is based on VisualNFormsHelper::validateDrawerContainerSubForm().
   public static function validateProviderContainerSubForm(&$form, FormStateInterface $form_state, $full_form) {
     // @todo: the code here should actually go to #element_submit, but it is not implemented at the moment in Drupal core
 
@@ -582,7 +582,7 @@ class VisualNFormsHelper {
               = $generator_plugin->buildConfigurationForm($element[$generator_container_key]['generator_config'], $subform_state);
 
 
-    // since generator configuration form may be empty, do a check (then it souldn't be of details type)
+    // since generator configuration form may be empty, do a check (then it shouldn't be of details type)
     if (Element::children($element[$generator_container_key]['generator_config'])) {
       $generator_element_array_parents = array_slice($element['#array_parents'], 0, -1);
       // check that the triggering element is data_generator_id but not fetcher_id or resource_provider_id select (or some other element) itself
@@ -612,7 +612,7 @@ class VisualNFormsHelper {
 
   // @todo: Restructuring form_state values (removing generator_container key) should be moved
   //    into #element_submit callback when introduced.
-  // This is based on VisualNFormHelper::validateDrawerContainerSubForm().
+  // This is based on VisualNFormsHelper::validateDrawerContainerSubForm().
   public static function validateGeneratorContainerSubForm(&$form, FormStateInterface $form_state, $full_form) {
     // @todo: the code here should actually go to #element_submit, but it is not implemented at the moment in Drupal core
 
@@ -750,7 +750,7 @@ class VisualNFormsHelper {
               = $skin_plugin->buildConfigurationForm($element[$skin_container_key]['skin_config'], $subform_state);
 
 
-    // since skin configuration form may be empty, do a check (then it souldn't be of details type)
+    // since skin configuration form may be empty, do a check (then it shouldn't be of details type)
     if (Element::children($element[$skin_container_key]['skin_config'])) {
       $skin_element_array_parents = array_slice($element['#array_parents'], 0, -1);
       // check that the triggering element is drawer_skin_id but not fetcher_id or resource_provider_id select (or some other element) itself
@@ -780,7 +780,7 @@ class VisualNFormsHelper {
 
   // @todo: Restructuring form_state values (removing skin_container key) should be moved
   //    into #element_submit callback when introduced.
-  // This is based on VisualNFormHelper::validateDrawerContainerSubForm().
+  // This is based on VisualNFormsHelper::validateDrawerContainerSubForm().
   public static function validateSkinContainerSubForm(&$form, FormStateInterface $form_state, $full_form) {
     // @todo: the code here should actually go to #element_submit, but it is not implemented at the moment in Drupal core
 
@@ -832,5 +832,141 @@ class VisualNFormsHelper {
       $form_state->unsetValue($element_parents);
     }
   }
+
+
+
+
+
+
+
+
+  // @todo: convert into a generic doProcessPluginContainerSubform #process callback
+  //   since it is used for multiple plugins config subforms almost unchanged
+  // @todo: mostly based on VisualNFormsHelper::doProcessGeneratorContainerSubform()
+  public static function doProcessSetupBakerContainerSubform(array $element, FormStateInterface $form_state, $form, $configuration) {
+    $baker_element_parents = array_slice($element['#parents'], 0, -1);
+    $setup_baker_id = $form_state->getValue(array_merge($baker_element_parents, ['setup_baker_id']));
+
+    // If it is a fresh form (is_null($setup_baker_id)) or an empty option selected ($setup_baker_id == ""),
+    // there is nothing to attach for baker config.
+    if (!$setup_baker_id) {
+      return $element;
+    }
+
+    if ($setup_baker_id == $configuration['setup_baker_id']) {
+      $setup_baker_config = $configuration['setup_baker_config'];
+    }
+    else {
+      $setup_baker_config = [];
+    }
+
+    $visualNSetupBakerManager = \Drupal::service('plugin.manager.visualn.setup_baker');
+
+    $baker_plugin = $visualNSetupBakerManager->createInstance($setup_baker_id, $setup_baker_config);
+
+    $baker_container_key = $setup_baker_id;
+
+    // get baker configuration form
+
+    $element[$baker_container_key]['baker_config'] = [];
+    $element[$baker_container_key]['baker_config'] += [
+      '#parents' => array_merge($element['#parents'], [$baker_container_key, 'baker_config']),
+      '#array_parents' => array_merge($element['#array_parents'], [$baker_container_key, 'baker_config']),
+    ];
+
+    $subform_state = SubformState::createForSubform($element[$baker_container_key]['baker_config'], $form, $form_state);
+    // attach baker configuration form
+    $element[$baker_container_key]['baker_config']
+              = $baker_plugin->buildConfigurationForm($element[$baker_container_key]['baker_config'], $subform_state);
+
+
+    // since baker configuration form may be empty, do a check (then it shouldn't be of details type)
+    if (Element::children($element[$baker_container_key]['baker_config'])) {
+      $baker_element_array_parents = array_slice($element['#array_parents'], 0, -1);
+      // check that the triggering element is setup_baker_id but not fetcher_id or resource_provider_id select (or some other element) itself
+      $details_open = FALSE;
+      if ($form_state->getTriggeringElement()) {
+        $triggering_element = $form_state->getTriggeringElement();
+        $details_open = $triggering_element['#array_parents'] === array_merge($baker_element_array_parents, ['setup_baker_id']);
+      }
+      // @todo: take it out everywhere else
+      $element[$baker_container_key] = [
+        '#type' => 'details',
+        '#title' => t('Baker configuration'),
+        '#open' => $details_open,
+      ] + $element[$baker_container_key];
+    }
+
+    // @todo: replace with #element_submit when introduced into core
+    // extract values for baker_container subform and baker_config
+    //    remove baker_container key from form_state values path
+    //    also it can be done in ::submitConfigurationForm()
+    $element[$baker_container_key]['#element_validate'] = [[get_called_class(), 'validateSetupBakerContainerSubForm']];
+    //$element[$baker_container_key]['#element_validate'] = [[get_called_class(), 'submitDrawerContainerSubForm']];
+
+
+    return $element;
+  }
+
+  // @todo: Restructuring form_state values (removing baker_container key) should be moved
+  //    into #element_submit callback when introduced.
+  // This is based on VisualNFormsHelper::validateDrawerContainerSubForm().
+  public static function validateSetupBakerContainerSubForm(&$form, FormStateInterface $form_state, $full_form) {
+    // @todo: the code here should actually go to #element_submit, but it is not implemented at the moment in Drupal core
+
+    // Here the full form_state (e.g. not SubformStateInterface) is supposed to be
+    // since validation is done after the whole form is rendered.
+
+
+    // get baker_container_key (for selected baker is equal by convention to setup_baker_id,
+    // see processGeneratorContainerSubform() #process callback)
+    $element_parents = $form['#parents'];
+    // use $baker_container_key for clarity though may get rid of array_pop() here and use end($element_parents)
+    $baker_container_key = array_pop($element_parents);
+
+    // remove 'baker_container' key
+    $base_element_parents = array_slice($element_parents, 0, -1);
+
+
+
+    // Call baker_plugin submitConfigurationForm(),
+    // submitting should be done before $form_state->unsetValue() after restructuring the form_state values, see below.
+
+    // @todo: it is not correct to call submit inside a validate method (validateDrawerContainerSubForm())
+    //    also see https://www.drupal.org/node/2820359 for discussion on a #element_submit property
+    //$full_form = $form_state->getCompleteForm();
+    $subform = $form['baker_config'];
+    $sub_form_state = SubformState::createForSubform($subform, $full_form, $form_state);
+
+    $visualNSetupBakerManager = \Drupal::service('plugin.manager.visualn.setup_baker');
+    $setup_baker_id  = $form_state->getValue(array_merge($base_element_parents, ['setup_baker_id']));
+    // The submit callback shouldn't depend on plugin configuration, it relies only on form_state values.
+    $setup_baker_config  = [];
+    $baker_plugin = $visualNSetupBakerManager->createInstance($setup_baker_id, $setup_baker_config);
+    $baker_plugin->submitConfigurationForm($subform, $sub_form_state);
+
+
+    // move baker_config two levels up (remove 'baker_container' and $baker_container_key) in form_state values
+    $baker_config_values = $form_state->getValue(array_merge($element_parents, [$baker_container_key, 'baker_config']));
+    if (!is_null($baker_config_values)) {
+      $form_state->setValue(array_merge($base_element_parents, ['setup_baker_config']), $baker_config_values);
+    }
+
+    // remove remove 'baker_container' key itself from form_state
+    $form_state->unsetValue(array_merge($element_parents, [$baker_container_key]));
+    // also unset 'baker_container' key if empty
+    // this check is added in case something else is added to the container by extending classes
+    // @todo: actually the same check should be added before unsetting baker_container_key (and
+    //    to other places where the same logic with config forms is implemented)
+    if (!$form_state->getValue($element_parents)) {
+      $form_state->unsetValue($element_parents);
+    }
+  }
+
+
+
+
+
+
 
 }

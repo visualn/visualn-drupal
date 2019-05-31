@@ -98,7 +98,7 @@ class VisualNDataSourceForm extends EntityForm {
   }
 
   /**
-   * Return resource provider configuration form via ajax request at style change.
+   * Return resource provider configuration form via ajax request at resource provider change.
    * Should have a different name since ajaxCallback can be used by base class.
    */
   public static function ajaxCallbackResourceProvider(array $form, FormStateInterface $form_state, Request $request) {

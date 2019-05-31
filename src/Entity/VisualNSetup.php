@@ -28,8 +28,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id" = "id",
  *     "label" = "label",
  *     "uuid" = "uuid",
- *     "baker_id" = "baker_id",
- *     "baker_config" = "baker_config"
+ *     "setup_baker_id" = "setup_baker_id",
+ *     "setup_baker_config" = "setup_baker_config"
  *   },
  *   links = {
  *     "canonical" = "/admin/visualn/setups/manage/{visualn_setup}",
@@ -61,14 +61,14 @@ class VisualNSetup extends ConfigEntityBase implements VisualNSetupInterface {
    *
    * @var string
    */
-  protected $baker_id;
+  protected $setup_baker_id;
 
   /**
    * The VisualN setup baker config.
    *
    * @var array
    */
-  protected $baker_config = [];
+  protected $setup_baker_config = [];
 
   /**
    * The VisualN setup specific baker plugin.
@@ -81,7 +81,7 @@ class VisualNSetup extends ConfigEntityBase implements VisualNSetupInterface {
    * {@inheritdoc}
    */
   public function getBakerId() {
-    return $this->baker_id ?: '';
+    return $this->setup_baker_id ?: '';
   }
 
   /**
@@ -105,14 +105,14 @@ class VisualNSetup extends ConfigEntityBase implements VisualNSetupInterface {
    * {@inheritdoc}
    */
   public function getBakerConfig() {
-    return $this->baker_config;
+    return $this->setup_baker_config;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setBakerConfig($baker_config) {
-    $this->baker = $baker_config;
+    $this->setup_baker_config = $baker_config;
     return $this;
   }
 

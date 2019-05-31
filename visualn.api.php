@@ -238,7 +238,7 @@
  * automatically generate some random though realistically looking data. From a point
  * of view they may seem similar to Resource providers. Though there are significant
  * differences. Data generators usually create data on their own while Resource providers
- * rely on other parts of the system to get a resource object. As a particualar case, they
+ * rely on other parts of the system to get a resource object. As a particular case, they
  * can rely on Data generators for that. On the other hand, Resource providers
  * may invole complex logic to get a resource depending on its specifics, while for
  * Data generators it is as simple as converting an array into a resource object.

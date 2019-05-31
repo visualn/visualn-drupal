@@ -4,9 +4,13 @@ namespace Drupal\visualn\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\NestedArray;
+use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\SubformState;
 use Drupal\visualn\Manager\SetupBakerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+
+use Drupal\visualn\Helpers\VisualNFormsHelper;
 
 /**
  * Class VisualNSetupForm.
@@ -65,6 +69,7 @@ class VisualNSetupForm extends EntityForm {
     ];
 
     // @todo: this is almost a copy-paste from VisualNStyleForm
+    //   and VisualNDataSourceForm
 
     $bakers_list = [];
 
@@ -74,56 +79,66 @@ class VisualNSetupForm extends EntityForm {
       $bakers_list[$definition['id']] = $definition['label'];
     }
 
-    $default_baker = $visualn_setup->isNew() ? "" : $visualn_setup->getBakerId();
-    $form['baker_id'] = [
+    $ajax_wrapper_id = 'setup-baker-config-form-ajax';
+
+    $default_baker = $visualn_setup->getBakerId();
+    $form['setup_baker_id'] = [
       '#type' => 'select',
       '#title' => $this->t('Setup Baker'),
       '#options' => $bakers_list,
       '#default_value' => $default_baker,
       '#description' => $this->t("Baker for the drawer setup."),
       '#ajax' => [
-        'callback' => '::bakerConfigForm',
-        'wrapper' => 'baker-config-form-ajax',
+        'callback' => '::ajaxCallbackSetupBaker',
+        'wrapper' => $ajax_wrapper_id,
       ],
       '#empty_value' => '',
       '#required' => TRUE,
     ];
 
-    // @todo: attach setup baker configuration form inside a #process callback
-
-
-    // output setup baker form
-
-    // Attach baker configuration form
-    $baker_plugin_id = !empty($form_state->getValues()) ? $form_state->getValue('baker_id') : $default_baker;
-
-    // @todo: potentially config values can override style values e.g. "label" (see "name" attribute, it should be
-    //    contained inside a container)
-    $form['baker_config'] = [];
-    if ($baker_plugin_id) {
-      $baker_config = $visualn_setup->getBakerConfig();
-      $baker_plugin = $this->visualNSetupBakerManager->createInstance($baker_plugin_id, $baker_config);
-
-
-      $subform_state = SubformState::createForSubform($form['baker_config'], $form, $form_state);
-      $form['baker_config'] = $baker_plugin->buildConfigurationForm($form['baker_config'], $subform_state);
-    }
-
-    $form['baker_config'] += [
+    $form['baker_container'] = [
       '#tree' => TRUE,
-      '#prefix' => '<div id="baker-config-form-ajax">',
+      '#prefix' => '<div id="' . $ajax_wrapper_id . '">',
       '#suffix' => '</div>',
+      '#type' => 'container',
+      '#process' => [[$this, 'processSetupBakerSubform']],
+      '#weight' => 2,
     ];
+    $stored_configuration = [
+      'setup_baker_id' => $default_baker,
+      'setup_baker_config' => $visualn_setup->getBakerConfig(),
+    ];
+    $form['baker_container']['#stored_configuration'] = $stored_configuration;
+
+    // In processSetupBakerSubform() submit callback, configuration is stored in setup_baker_config,
+    // so it wouldn't override "label" or "name" attributes values in case there are config values
+    // with the same keys.
 
     return $form;
   }
 
+  // @todo: this should be static since may not work on field settings form (see fetcher field widget for example)
+  //public static function processSetupBakerSubform(array $element, FormStateInterface $form_state, $form) {
+  public function processSetupBakerSubform(array $element, FormStateInterface $form_state, $form) {
+    $configuration = [
+      'setup_baker_id' => $element['#stored_configuration']['setup_baker_id'],
+      'setup_baker_config' => $element['#stored_configuration']['setup_baker_config'],
+    ];
+    $element = VisualNFormsHelper::doProcessSetupBakerContainerSubform($element, $form_state, $form, $configuration);
+    return $element;
+  }
+
   /**
-   * @todo: Add description
-   * @todo: Rename method if needed
+   * Return setup baker configuration form via ajax request at setup baker change.
+   * Should have a different name since ajaxCallback can be used by base class.
    */
-  public function bakerConfigForm(array $form, FormStateInterface $form_state) {
-    return !empty($form['baker_config']) ? $form['baker_config'] : FALSE;
+  public static function ajaxCallbackSetupBaker(array $form, FormStateInterface $form_state, Request $request) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $visualn_style_id = $form_state->getValue($form_state->getTriggeringElement()['#parents']);
+    $triggering_element_parents = array_slice($triggering_element['#array_parents'], 0, -1);
+    $element = NestedArray::getValue($form, $triggering_element_parents);
+
+    return $element['baker_container'];
   }
 
   /**
@@ -153,26 +168,7 @@ class VisualNSetupForm extends EntityForm {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-
-    // @todo:
-
-    $baker_plugin_id = $form_state->getValue('baker_id');
-    // @todo: maybe use config (?)
-    //$baker_config = $visualn_setup->getBakerConfig();
-    $baker_config = [];
-    $baker_plugin = $this->visualNSetupBakerManager->createInstance($baker_plugin_id, $baker_config);
-
-    // Extract config values from baker config form for saving in VisualNSetup config entity
-    // and add baker plugin id for the visualn setup.
-    $this->entity->set('baker_id', $baker_plugin_id);
-    // give baker a chance to act on config values before saving (e.g. extract and transform config values)
-    // and maybe perform other actions
-
-    $subform_state = SubformState::createForSubform($form['baker_config'], $form, $form_state);
-    $baker_plugin->submitConfigurationForm($form['baker_config'], $subform_state);
-    $baker_config_values = $form_state->getValue('baker_config') ?: [];
-
-    $this->entity->set('baker_config', $baker_config_values);
+    // @todo: seems that there is no need in submitForm() here
   }
 
 }
