@@ -16,7 +16,7 @@ entity.visualn_style.collection:
   parent: visualn.admin_config_visualn
   weight: 1
 entity.visualn_setup.collection:
-  title: 'Drawer setups'
+  title: 'Generic setups'
   route_name: entity.visualn_setup.collection
   description: 'List ready to use drawer setups'
   parent: visualn.admin_config_visualn
