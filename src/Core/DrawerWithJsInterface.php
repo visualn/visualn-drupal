@@ -1,6 +1,7 @@
 <?php
 
 namespace Drupal\visualn\Core;
+
 use Drupal\visualn\Core\DrawerInterface;
 use Drupal\visualn\Core\VisualNPluginJsInterface;
 

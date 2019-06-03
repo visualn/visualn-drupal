@@ -26,7 +26,7 @@ abstract class SetupBakerBase extends PluginBase implements SetupBakerInterface 
   public function bakeSetup() {
     // @todo: this is not a good practice to return configuration, at least for implementing instances.
     //    the method should return raw setup (discussible) for the drawer to use (?)
-    //    also it should be alreade decoded to array (if JSON is used to store setup in baker config)
+    //    also it should be already decoded to array (if JSON is used to store setup in baker config)
     return $this->getConfiguration();
   }
 

@@ -27,4 +27,18 @@ interface DrawerSkinInterface extends VisualNPluginInterface, PluginFormInterfac
    */
   public function extractFormValues($form, FormStateInterface $form_state);
 
+  /**
+   * Get current skin instance UID.
+   *
+   * @todo: The methods could be moved into VisualNPluginInterface with a more
+   *   generic name, e.g. getPluginUid() though currently used only by skin
+   *   plugins but may be useful for combined drawers etc.
+   */
+  public function getSkinUid();
+
+  /**
+   * Set current skin instance UID.
+   */
+  public function setSkinUid($suid);
+
 }

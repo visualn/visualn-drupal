@@ -14,6 +14,8 @@ use Drupal\Core\Form\FormStateInterface;
  */
 abstract class DrawerSkinBase extends VisualNPluginBase implements DrawerSkinInterface {
 
+  protected $suid;
+
   /**
    * {@inheritdoc}
    */
@@ -50,6 +52,25 @@ abstract class DrawerSkinBase extends VisualNPluginBase implements DrawerSkinInt
   public function extractFormValues($form, FormStateInterface $form_state) {
     // Since it is supposed to be subform_state, get all the values without limiting the scope.
     return $form_state->getValues();
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function getSkinUid() {
+    if (empty($this->suid)) {
+      // generate suid for the drawer skin
+      $this->suid = substr(\Drupal::service('uuid')->generate(), 0, 8);
+    }
+    return $this->suid;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function setSkinUid($suid) {
+    $this->suid = $suid;
+    return $this;
   }
 
 }
