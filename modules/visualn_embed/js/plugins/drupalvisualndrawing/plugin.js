@@ -426,6 +426,8 @@
 
       // Execute widget editing action on double click.
       editor.on('doubleclick', function (evt) {
+        // @todo: after properties change, the new widget markup is appended
+        //   to the original one instead of replacing it
         editor.execCommand('configurevisualndrawing');
         // @todo: open 'edit' dialog
         /*

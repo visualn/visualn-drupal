@@ -38,3 +38,7 @@ function visualn_basic_drawers_theme($existing, $type, $theme, $path) {
     ],
   ];
 }
+
+// @todo: impelment hook_requirements() and check for required libraries though
+//   should be compatible with overrides i.e. should get library assets info (if
+//   any) and check if dowloaded, also see jquery_colorpicker module for example

@@ -86,6 +86,7 @@ class VisualNFetcherWidget extends WidgetBase {
     // @todo: instantiate at class creation
     $definitions = \Drupal::service('plugin.manager.visualn.drawing_fetcher')->getDefinitions();
     foreach ($definitions as $definition) {
+      // @todo: maybe check for required contexts
       $fetchers_list[$definition['id']] = $definition['label'];
     }
 

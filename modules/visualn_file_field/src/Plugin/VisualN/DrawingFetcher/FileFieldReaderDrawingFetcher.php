@@ -121,8 +121,7 @@ class FileFieldReaderDrawingFetcher extends DrawingFetcherBase {
     // select file field and maybe delta
     // @todo: maybe select also delta
 
-    // @todo: add as '#empty' select element propery
-    $options = ['' => t('- Select -')];
+    $options = [];
     // @todo: instantiate on create
     $entityManager = \Drupal::service('entity_field.manager');
     $bundle_fields = $entityManager->getFieldDefinitions($entity_type, $bundle);
@@ -147,6 +146,7 @@ class FileFieldReaderDrawingFetcher extends DrawingFetcherBase {
       //    the same question for other plugin types
       '#default_value' => $this->configuration['visualn_file_field'],
       '#description' => t('Select the VisualN File field for the drawing source'),
+      '#empty_option' => t('- Select -'),
     ];
 
     return $form;
