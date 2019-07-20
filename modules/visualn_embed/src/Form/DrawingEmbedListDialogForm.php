@@ -500,11 +500,20 @@ class DrawingEmbedListDialogForm extends FormBase {
     // use default drawing type thumbnail
     $default_thumbnail = drupal_get_path('module', 'visualn_drawing') . '/images/drawing-thumbnail-default.png';
     $drawing_types  = \Drupal::entityTypeManager()->getStorage('visualn_drawing_type')->loadMultiple();
+
+    $thumbnail_style = ImageStyle::load(VisualNDrawing::THUMBNAIL_IMAGE_STYLE);
     foreach ($drawing_types as $drawing_type) {
       $thumbnail_path = !empty($drawing_type->get('thumbnail_path')) ? $drawing_type->get('thumbnail_path') : $default_thumbnail;
-      $drawing_type_thumbnails[$drawing_type->id()] = file_url_transform_relative(file_create_url($thumbnail_path));
-      // @todo: image styles can be applied only to files in public:// (or private://) directory
-      //$drawing_type_thumbnails[$drawing_type->id()] = ImageStyle::load(VisualNDrawing::THUMBNAIL_IMAGE_STYLE)->buildUrl($thumbnail_path);
+
+      // remove leading slash if any
+      $thumbnail_path = ltrim($thumbnail_path, '/');
+
+      $styled_thumbnail_uri = $thumbnail_style->buildUri($thumbnail_path);
+      if (!file_exists($styled_thumbnail_uri)) {
+        $thumbnail_style->createDerivative($thumbnail_path, $styled_thumbnail_uri);
+      }
+      $styled_thumbnail = file_url_transform_relative(file_create_url($styled_thumbnail_uri));
+      $drawing_type_thumbnails[$drawing_type->id()] = $styled_thumbnail;
     }
 
     return $drawing_type_thumbnails;
