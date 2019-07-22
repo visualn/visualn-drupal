@@ -240,10 +240,11 @@ class EmbedDrawingFilter extends FilterBase {
               //   otherwise the if() could be moved to the upper level
               //   (see visualn_block VisualNBlock::build())
               if ($additional_config->get('allow_drawings_sharing')) {
-                // @todo: use a template (possibly inline initially)
+                // @todo: the template here is applied only to shared drawings, should be applied also to other cases
                 $drawing_markup = [
-                  'drawing_markup' => $drawing_markup,
-                  'share_link' => $share_link,
+                  '#drawing_markup' => $drawing_markup,
+                  '#share_link' => $share_link,
+                  '#theme' => 'visualn_embed_drawing_wrapper',
                 ];
               }
 

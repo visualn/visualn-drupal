@@ -51,6 +51,12 @@ function visualn_embed_theme($existing, $type, $theme, $path) {
         //   or together with fetcher field part of the drawing summary
       ],
     ],
+    'visualn_embed_drawing_wrapper' => [
+      'variables' => [
+        'drawing_markup' => '',
+        'share_link' => '',
+      ],
+    ],
     // drawings list dialog form
     'visualn_embed_drawing_select_dialog' => [
       'render element' => 'form',
