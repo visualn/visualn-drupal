@@ -20,10 +20,15 @@ class IFrameBuilder {
     // generate link uid
     $link_uid = 'link-uid-' .  substr(\Drupal::service('uuid')->generate(), 0, 5);
     // @todo: maybe use ajax callback instead of link click hander
-    $build['#markup'] = "<div class='visualn-iframe-share-link'><a href='' rel='".$link_uid."'>Share</a></div>";
-    // @todo: attach js script for the Share link
+    // Use template to override share link markup
+    // To alter the iframe code block markup, override the visualn_iframe.builder service itself
+    $build['share_link'] = [
+      '#theme' => 'visualn_iframe_share_link',
+      '#link_uid' => $link_uid,
+    ];
+    // attach js script for the Share link
     $build['#attached']['library'][] = 'visualn_iframe/visualn-iframe-share-link';
-    // @todo: generate and #ajax url or even share link url (as a temporary solution) to the script
+    // @todo: generate an #ajax url or even share link url (as a temporary solution) to the script
     $build['#attached']['drupalSettings']['visualn_iframe']['share_iframe_links'][$link_uid] = $iframe_url;
 
     return $build;

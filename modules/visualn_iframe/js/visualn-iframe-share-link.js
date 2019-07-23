@@ -3,7 +3,7 @@
     attach: function (context, settings) {
       $(context).find('body').once('visualn-iframe').each(function () {
         // @todo: hide all share boxes on a click on page outer space
-        $('.visualn-iframe-share-link a').click(function(e){
+        $('.js-visualn-iframe-share-link a').click(function(e){
           e.preventDefault();
           if (typeof $(this).data('iframeShareBox') === "undefined") {
             var link_uid = $(this).attr('rel');

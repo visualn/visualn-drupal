@@ -52,6 +52,11 @@ function visualn_iframe_theme() {
     'file' => 'visualn_iframe.page.inc',
     'template' => 'visualn_iframe',
   ];
+  $theme['visualn_iframe_share_link'] = [
+    'variables' => [
+      'link_uid' => '',
+    ],
+  ];
   // see hook_theme_suggestions_page() implementation
   // renders only content region
   $theme['visualn_iframe_page_content'] = [
