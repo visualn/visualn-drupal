@@ -2,6 +2,8 @@
 
 namespace Drupal\visualn\Core;
 
+// @todo: need to also implement ContextAwarePluginInterface ?
+//   or extending ContextAwarePluginBase is enough ?
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Core\Plugin\PluginFormInterface;

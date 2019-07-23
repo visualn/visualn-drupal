@@ -1,9 +1,6 @@
 <?php
 
-/**
- * @file
- * Conatins CSVResourceFormat
- */
+// @todo: review plugin id and class name, maybe rename to visualn_csv_remote
 
 namespace Drupal\visualn\Plugin\VisualN\RawResourceFormat;
 

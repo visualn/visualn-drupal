@@ -55,6 +55,11 @@ class DrawingEmbedListDialogForm extends FormBase {
       }
     }
 
+    // @todo: when an item selected and the resultant set after filters applied
+    //   doesn't contain that item, and error message is shown:
+    //   "An illegal choice has been detected. Please contact the site administrator."
+    // @todo: the pager doesn't keep selected item (since is called via GET request)
+
     $drawing_entities_list = [];
 
     // add filters
@@ -160,6 +165,15 @@ class DrawingEmbedListDialogForm extends FormBase {
         'callback' => '::ajaxSubmitForm',
         'event' => 'click',
       ],
+/*
+      // @todo: disable the button if there are no drawings in the list or no drawing selected
+      //   this one not getting disabled (maybe because the submit is converted to  <button> type)
+      '#states' => [
+        'disabled' => [
+          ':input[name="drawing_id"]' => ['value' => '0'],
+        ],
+      ],
+*/
     ];
     $form['status_messages'] = [
       '#type' => 'status_messages',
@@ -227,10 +241,12 @@ class DrawingEmbedListDialogForm extends FormBase {
     // @todo: actually it is always set, same as other values
     $items_per_page = $values['items_per_page'] ?: 20;
 
+    // @todo: alter query, add permissions check for entities
     // @todo: uses \Drupal::entityTypeManager() internally
     //   $query = $this->entityTypeManager->getStorage('node');
     //   $query_result = $query->getQuery()
     $query = \Drupal::entityQuery('visualn_drawing');
+    //$query->addTag('visualn_drawing_access');
     $query->pager($items_per_page);
     // show only published drawing entities
     $query->condition('status', 1);

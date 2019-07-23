@@ -223,6 +223,8 @@ class VisualNFetcherWidget extends WidgetBase {
       //    and drawer_container_key.
       $element = $fetcher_plugin->buildConfigurationForm($element, $subform_state);
 
+      // @todo: fetcher subform should be also validated (check other widgets/places as well)
+
       // change fetcher configuration form container to fieldset if not empty
       if (Element::children($element)) {
         $element['#type'] = 'fieldset';
