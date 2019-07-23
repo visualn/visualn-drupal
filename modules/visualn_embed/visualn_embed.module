@@ -55,6 +55,7 @@ function visualn_embed_theme($existing, $type, $theme, $path) {
       'variables' => [
         'drawing_markup' => '',
         'share_link' => '',
+        'drawing_type' => '',
       ],
     ],
     // drawings list dialog form

@@ -244,6 +244,7 @@ class EmbedDrawingFilter extends FilterBase {
                 $drawing_markup = [
                   '#drawing_markup' => $drawing_markup,
                   '#share_link' => $share_link,
+                  '#drawing_type' => $entity->bundle(),
                   '#theme' => 'visualn_embed_drawing_wrapper',
                 ];
               }
