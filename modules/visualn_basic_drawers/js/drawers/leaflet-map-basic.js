@@ -11,6 +11,7 @@
     // set center as a midpoint of all points (if not empty)
     var calculate_center = drawing.drawer.config.calculate_center;
     var map_height = drawing.drawer.config.map_height;
+    var protocol = drawing.drawer.config.protocol;
 
     var locations = data;
 
@@ -46,8 +47,8 @@
 
 
     // @todo: set provider in drawer js settings
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    L.tileLayer(protocol + '://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
     // add markers to the map

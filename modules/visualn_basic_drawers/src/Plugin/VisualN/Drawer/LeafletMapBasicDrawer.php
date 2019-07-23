@@ -124,6 +124,13 @@ class LeafletMapBasicDrawer extends DrawerWithJsBase {
   /**
    * @inheritdoc
    */
+  public function prepareJsConfig(array &$drawer_config) {
+    $drawer_config['protocol'] = \Drupal::request()->isSecure() ? 'https' : 'http';
+  }
+
+  /**
+   * @inheritdoc
+   */
   public function dataKeys() {
     $data_keys = [
       'title',
